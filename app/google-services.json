@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "55183023593",
+    "project_id": "motow-8f47c",
+    "storage_bucket": "motow-8f47c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:55183023593:android:ef7ab283818ceeb8537f78",
+        "android_client_info": {
+          "package_name": "com.example.motow"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "55183023593-tjpabemackbicc1rkv0o3rvn1h29im5h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBs0Zz8etzelL0-5GD3SBi3CGHzY8xlavU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "55183023593-tjpabemackbicc1rkv0o3rvn1h29im5h.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
