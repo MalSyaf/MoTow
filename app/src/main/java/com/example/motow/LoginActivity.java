@@ -12,12 +12,16 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.motow.databinding.ActivityLoginBinding;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -25,6 +29,7 @@ public class LoginActivity extends AppCompatActivity {
     TextView signUpRedirect;
     Button buttonLogin;
     FirebaseAuth mAuth;
+    FirebaseFirestore fStore;
 
     @Override
     public void onStart() {
@@ -32,9 +37,27 @@ public class LoginActivity extends AppCompatActivity {
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if(currentUser != null){
-            Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
-            startActivity(intent);
-            finish();
+            DocumentReference df = FirebaseFirestore.getInstance().collection("Users").document(currentUser.getUid());
+            df.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    if(documentSnapshot.getString("isAdmin") != null) {
+                        startActivity(new Intent(getApplicationContext(), AdminActivity.class));
+                        finish();
+                    }
+                    if(documentSnapshot.getString("isUser") != null) {
+                       startActivity(new Intent(getApplicationContext(), RiderActivity.class));
+                       finish();
+                   }
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    FirebaseAuth.getInstance().signOut();
+                    startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+                    finish();
+                }
+            });
         }
     }
 
@@ -44,6 +67,8 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         mAuth = FirebaseAuth.getInstance();
+        fStore = FirebaseFirestore.getInstance();
+
         loginEmail = findViewById(R.id.login_email);
         loginPassword = findViewById(R.id.login_password);
         buttonLogin = findViewById(R.id.login_button);
@@ -69,7 +94,6 @@ public class LoginActivity extends AppCompatActivity {
                     Toast.makeText(LoginActivity.this, "Enter email", Toast.LENGTH_SHORT).show();
                     return;
                 }
-
                 if (TextUtils.isEmpty(password)) {
                     Toast.makeText(LoginActivity.this, "Enter password", Toast.LENGTH_SHORT).show();
                     return;
@@ -80,19 +104,38 @@ public class LoginActivity extends AppCompatActivity {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if (task.isSuccessful()) {
-                                    Toast.makeText(LoginActivity.this, "Login successful.",
-                                            Toast.LENGTH_SHORT).show();
-                                    Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
-                                    startActivity(intent);
-                                    finish();
+                                    Toast.makeText(LoginActivity.this, "Login successful.", Toast.LENGTH_SHORT).show();
+                                    checkUserAccessLevel(task.getResult().getUser().getUid());
                                 } else {
-                                    Toast.makeText(LoginActivity.this, "Authentication failed.",
-                                            Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(LoginActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
                                 }
                             }
                         });
             }
         });
 
+    }
+
+    private void checkUserAccessLevel(String uid) {
+        DocumentReference df = fStore.collection("Users").document(uid);
+        // extract the data from the document
+        df.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                // identify the user access level
+                if (documentSnapshot.getString("isAdmin") != null) {
+                    // user is an admin
+                    Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+                if (documentSnapshot.getString("isUser") != null) {
+                    // user is a rider
+                    Intent intent = new Intent(getApplicationContext(), RiderActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+            }
+        });
     }
 }

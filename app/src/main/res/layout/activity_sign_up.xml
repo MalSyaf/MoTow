@@ -16,9 +16,20 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_marginTop="200dp"
+            android:layout_marginTop="40dp"
             android:padding="20dp">
-            
+
+            <EditText
+                android:layout_width="350dp"
+                android:layout_height="60dp"
+                android:id="@+id/username"
+                android:background="@drawable/lavender_border"
+                android:layout_marginTop="30dp"
+                android:padding="8dp"
+                android:hint="Full Name"
+                android:drawableLeft="@drawable/baseline_person_24"
+                android:drawablePadding="8dp"/>
+
             <EditText
                 android:layout_width="350dp"
                 android:layout_height="60dp"
@@ -52,6 +63,17 @@
                 android:hint="Confirm Password"
                 android:inputType="textPassword"
                 android:drawableLeft="@drawable/baseline_lock_24"
+                android:drawablePadding="8dp"/>
+
+            <EditText
+                android:layout_width="350dp"
+                android:layout_height="60dp"
+                android:id="@+id/signup_contact"
+                android:background="@drawable/lavender_border"
+                android:layout_marginTop="20dp"
+                android:padding="8dp"
+                android:hint="Phone Number"
+                android:drawableLeft="@drawable/baseline_phone_24"
                 android:drawablePadding="8dp"/>
 
             <Button
