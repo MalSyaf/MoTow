@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,6 +28,7 @@ import java.util.Map;
 public class SignUpActivity extends AppCompatActivity {
 
     EditText userName, signEmail, signPassword, signContact;
+    CheckBox isRiderBox, isTowerBox;
     TextView loginRedirect;
     Button buttonSign;
     FirebaseAuth mAuth;
@@ -55,8 +58,31 @@ public class SignUpActivity extends AppCompatActivity {
         signEmail = findViewById(R.id.signup_email);
         signPassword = findViewById(R.id.signup_password);
         signContact = findViewById(R.id.signup_contact);
+
+        isRiderBox = findViewById(R.id.rider_cbox);
+        isTowerBox = findViewById(R.id.tower_cbox);
+
         buttonSign = findViewById(R.id.signup_button);
         loginRedirect = findViewById(R.id.loginRedirectText);
+
+        // check boxes logics
+        isRiderBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if(compoundButton.isChecked()){
+                    isTowerBox.setChecked(false);
+                }
+            }
+        });
+
+        isTowerBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if(compoundButton.isChecked()){
+                    isRiderBox.setChecked(false);
+                }
+            }
+        });
 
         loginRedirect.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,6 +114,11 @@ public class SignUpActivity extends AppCompatActivity {
                     Toast.makeText(SignUpActivity.this, "Enter password", Toast.LENGTH_SHORT).show();
                     return;
                 }
+                // checkbox validation
+                if(!(isRiderBox.isChecked() || isTowerBox.isChecked())) {
+                    Toast.makeText(SignUpActivity.this, "Select account type", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
                 mAuth.createUserWithEmailAndPassword(email, password)
                         .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -99,14 +130,27 @@ public class SignUpActivity extends AppCompatActivity {
                                     Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                                     DocumentReference df = fStore.collection("Users").document(user.getUid());
                                     Map<String,Object> userInfo = new HashMap<>();
-                                    userInfo.put("FullName", userName.getText().toString());
-                                    userInfo.put("Email", signEmail.getText().toString());
-                                    userInfo.put("PhoneNumber", signContact.getText().toString());
-                                    // specify if the user is admin
-                                    userInfo.put("isUser", "1");
+
+                                    if(isRiderBox.isChecked()){
+                                        userInfo.put("isRider","1");
+                                        userInfo.put("fullName", userName.getText().toString());
+                                        userInfo.put("email", signEmail.getText().toString());
+                                        userInfo.put("phoneNumber", signContact.getText().toString());
+                                        userInfo.put("longitude", "0");
+                                        userInfo.put("latitude", "0");
+                                    }
+                                    if(isTowerBox.isChecked()){
+                                        userInfo.put("isTower", "1");
+                                        userInfo.put("fullName", userName.getText().toString());
+                                        userInfo.put("email", signEmail.getText().toString());
+                                        userInfo.put("phoneNumber", signContact.getText().toString());
+                                        userInfo.put("providerType", "null");
+                                        userInfo.put("companyName", "null");
+                                        userInfo.put("longitude", "0");
+                                        userInfo.put("latitude", "0");
+                                    }
 
                                     df.set(userInfo);
-
                                     startActivity(new Intent(getApplicationContext(), LoginActivity.class));
                                 } else {
                                     // If sign in fails, display a message to the user.

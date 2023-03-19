@@ -16,7 +16,7 @@
         android:layout_width="350dp"
         android:layout_height="70dp"
         android:text="Logout"
-        android:id="@+id/logout_button"
+        android:id="@+id/logoutadmin"
         android:textSize="18sp"
         android:layout_marginTop="30dp"
         app:cornerRadius="30dp"/>

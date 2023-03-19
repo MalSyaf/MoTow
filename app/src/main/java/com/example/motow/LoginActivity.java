@@ -38,11 +38,11 @@ public class LoginActivity extends AppCompatActivity {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if(currentUser != null){
             DocumentReference df = FirebaseFirestore.getInstance().collection("Users").document(currentUser.getUid());
-            df.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            /*df.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                 @Override
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
                     if(documentSnapshot.getString("isAdmin") != null) {
-                        startActivity(new Intent(getApplicationContext(), AdminActivity.class));
+                        startActivity(new Intent(getApplicationContext(), MapsActivity.class));
                         finish();
                     }
                     if(documentSnapshot.getString("isUser") != null) {
@@ -57,7 +57,7 @@ public class LoginActivity extends AppCompatActivity {
                     startActivity(new Intent(getApplicationContext(), LoginActivity.class));
                     finish();
                 }
-            });
+            });*/
         }
     }
 
@@ -129,9 +129,15 @@ public class LoginActivity extends AppCompatActivity {
                     startActivity(intent);
                     finish();
                 }
-                if (documentSnapshot.getString("isUser") != null) {
+                if (documentSnapshot.getString("isRider") != null) {
                     // user is a rider
                     Intent intent = new Intent(getApplicationContext(), RiderActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+                if (documentSnapshot.getString("isTower") != null) {
+                    // user is a rider
+                    Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
                     startActivity(intent);
                     finish();
                 }

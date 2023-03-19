@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,19 +8,109 @@
     android:orientation="vertical"
     tools:context=".RiderActivity">
 
-    <EditText
+    <fragment
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Hi Rider"
-        android:textAlignment="center"></EditText>
+        tools:context=".MapsActivity"
+        tools:layout="@layout/activity_maps" />
 
     <Button
-        android:layout_width="350dp"
-        android:layout_height="70dp"
-        android:text="Logout"
         android:id="@+id/logout_button"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:layout_above="@+id/navbar"
+        android:backgroundTint="#A81AFF"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="30dp"
+        android:padding="8dp"
+        android:text="Logout"
         android:textSize="18sp"
-        android:layout_marginTop="30dp"
-        app:cornerRadius="30dp"/>
+        android:textColor="@color/white"
+        app:cornerRadius="40dp" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <RelativeLayout
+        android:id="@+id/welcome_bar"
+        android:layout_width="350dp"
+        android:layout_height="80dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/welcome_bar"
+        android:elevation="50dp" >
+
+        <ImageView
+            android:id="@+id/welcome_pfp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="50dp"
+            android:layout_marginTop="15dp"/>
+    </RelativeLayout>
+    <TextView
+        android:id="@+id/user_name"
+        android:layout_width="250dp"
+        android:layout_height="50dp"
+        android:layout_alignLeft="@+id/welcome_bar"
+        android:layout_alignTop="@+id/welcome_bar"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="40dp"
+        android:layout_marginLeft="10dp"
+        android:layout_centerInParent="true"
+        android:text="Hi, John Doe!"
+        android:textColor="@color/black"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        android:textAlignment="center"
+        android:translationZ="90dp"/>
+
+    <RelativeLayout
+        android:id="@+id/navbar"
+        android:layout_width="600dp"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/bottom_nav_base"/>
+    <ImageView
+        android:id="@+id/home_btn"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
+        android:src="@drawable/main"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="35dp"
+        android:padding="8dp"/>
+    <ImageView
+        android:id="@+id/chat_btn"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:src="@drawable/chat"
+        android:padding="8dp"
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@+id/home_btn"
+        android:layout_marginLeft="50dp"
+        android:layout_marginBottom="5dp"/>
+    <ImageView
+        android:id="@+id/notify_btn"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:src="@drawable/notifications"
+        android:padding="8dp"
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@+id/chat_btn"
+        android:layout_marginLeft="50dp"
+        android:layout_marginBottom="5dp"/>
+    <ImageView
+        android:id="@+id/manage_btn"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:src="@drawable/manage_user"
+        android:padding="8dp"
+        android:layout_marginBottom="5dp"
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@+id/notify_btn"
+        android:layout_marginLeft="40dp"/>
+
+</RelativeLayout>
