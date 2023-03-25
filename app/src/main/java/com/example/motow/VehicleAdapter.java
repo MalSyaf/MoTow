@@ -1,49 +1,47 @@
 package com.example.motow;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 
-public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.MyViewHolder> {
+public class VehicleAdapter extends FirestoreRecyclerAdapter<Vehicle, VehicleAdapter.MyViewHolder> {
 
-    Context context;
-    ArrayList<Vehicle> vehicleArrayList;
-
-    public VehicleAdapter(Context context, ArrayList<Vehicle> vehicleArrayList) {
-        this.context = context;
-        this.vehicleArrayList = vehicleArrayList;
+    /**
+     * Create a new RecyclerView adapter that listens to a Firestore Query.  See {@link
+     * FirestoreRecyclerOptions} for configuration options.
+     *
+     * @param options
+     */
+    public VehicleAdapter(@NonNull FirestoreRecyclerOptions<Vehicle> options) {
+        super(options);
     }
 
     @NonNull
     @Override
     public VehicleAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
-        View v = LayoutInflater.from(context).inflate(R.layout.vehicle_card_view, parent, false);
-
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.vehicle_card_view, parent, false);
         return new MyViewHolder(v);
     }
 
-    @Override
-    public void onBindViewHolder(@NonNull VehicleAdapter.MyViewHolder holder, int position) {
-
-        Vehicle vehicle = vehicleArrayList.get(position);
-
-        holder.plateNum.setText(vehicle.plateNumber);
-        holder.brand.setText(vehicle.brand);
-        holder.model.setText(vehicle.model);
-        holder.color.setText(vehicle.color);
+    public void deleteItem(int position) {
+        getSnapshots().getSnapshot(position).getReference().delete();
     }
 
     @Override
-    public int getItemCount() {
-        return vehicleArrayList.size();
+    protected void onBindViewHolder(@NonNull MyViewHolder holder, int position, @NonNull Vehicle model) {
+
+        holder.plateNum.setText(model.plateNumber);
+        holder.brand.setText(model.brand);
+        holder.model.setText(model.model);
+        holder.color.setText(model.color);
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder{
@@ -56,7 +54,7 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.MyViewHo
             plateNum = itemView.findViewById(R.id.display_plate);
             brand = itemView.findViewById(R.id.display_brand);
             model = itemView.findViewById(R.id.display_model);
-            color =itemView.findViewById(R.id.display_color);
+            color = itemView.findViewById(R.id.display_color);
 
         }
     }

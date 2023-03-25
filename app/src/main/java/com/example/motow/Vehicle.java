@@ -4,7 +4,9 @@ public class Vehicle {
 
     String plateNumber, brand, model, color;
 
-    public Vehicle(){}
+    public Vehicle(){
+        // Empty constructor needed
+    }
 
     public Vehicle(String plateNumber, String brand, String model, String color) {
         this.plateNumber = plateNumber;

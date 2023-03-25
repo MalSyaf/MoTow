@@ -1,7 +1,9 @@
 package com.example.motow;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -11,14 +13,20 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -28,9 +36,11 @@ public class ManageVehicleActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     ArrayList<Vehicle> vehicleArrayList;
     VehicleAdapter vehicleAdapter;
-    FirebaseAuth fAuth;
-    FirebaseFirestore fStore;
-    String userId, ownerId;
+
+    String userId;
+    FirebaseAuth fAuth = FirebaseAuth.getInstance();
+    FirebaseFirestore fStore = FirebaseFirestore.getInstance();
+    CollectionReference vehicleRef = fStore.collection("Vehicles");
 
     ImageView backBtn;
     Button registerBtn;
@@ -47,16 +57,9 @@ public class ManageVehicleActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        fAuth = FirebaseAuth.getInstance();
-        fStore = FirebaseFirestore.getInstance();
         userId = fAuth.getCurrentUser().getUid();
 
-        vehicleArrayList = new ArrayList<Vehicle>();
-        vehicleAdapter = new VehicleAdapter(ManageVehicleActivity.this, vehicleArrayList);
-
-        recyclerView.setAdapter(vehicleAdapter);
-
-        EventChangeListener();
+        setUpRecyclerView();
 
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,33 +76,44 @@ public class ManageVehicleActivity extends AppCompatActivity {
                 finish();
             }
         });
-
-        DocumentReference documentReference = fStore.collection("Vehicles").document();
-        documentReference.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
-                ownerId = value.getString("ownerId");
-            }
-        });
     }
 
-    private void EventChangeListener() {
-        fStore.collection("Vehicles").whereEqualTo("ownerId", userId)
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                        if(error!=null){
-                            Log.e("Firestore error",error.getMessage());
-                            return;
-                        }
+    private void setUpRecyclerView() {
+        Query query = vehicleRef.whereEqualTo("ownerId", userId);
 
-                        for (DocumentChange dc : value.getDocumentChanges()){
-                                if(dc.getType() == DocumentChange.Type.ADDED){
-                                    vehicleArrayList.add(dc.getDocument().toObject(Vehicle.class));
-                                }
-                                vehicleAdapter.notifyDataSetChanged();
-                        }
-                    }
-                });
+        FirestoreRecyclerOptions<Vehicle> options = new FirestoreRecyclerOptions.Builder<Vehicle>()
+                .setQuery(query, Vehicle.class)
+                .build();
+
+        vehicleAdapter = new VehicleAdapter(options);
+
+        recyclerView = findViewById(R.id.recyclerview);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(vehicleAdapter);
+
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                vehicleAdapter.deleteItem(viewHolder.getAdapterPosition());
+            }
+        }).attachToRecyclerView(recyclerView);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        vehicleAdapter.startListening();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        vehicleAdapter.stopListening();
     }
 }
