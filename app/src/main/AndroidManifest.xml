@@ -17,8 +17,18 @@
         android:theme="@style/Theme.MoTow"
         tools:targetApi="31">
         <activity
+            android:name=".RegisterVehicleActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ManageVehicleActivity"
+            android:exported="false" />
+        <activity
+            android:name=".RiderInfoActivity"
+            android:exported="false" />
+        <activity
             android:name=".RiderManageActivity"
             android:exported="false" />
+
         <!--
              TODO: Before you run your application, you need a Google Maps API key.
 
@@ -35,7 +45,7 @@
             android:value="AIzaSyC03dDuqIpZ3B64WZYmR1T9P_DY9EcJrEM" />
 
         <activity
-            android:name=".TestCoordinate"
+            android:name=".test.TestCoordinate"
             android:exported="false" />
         <activity
             android:name=".RiderActivity"
@@ -44,7 +54,7 @@
             android:name=".AdminActivity"
             android:exported="false" />
         <activity
-            android:name=".MapsActivity"
+            android:name=".test.MapsActivity"
             android:exported="false"
             android:label="@string/title_activity_maps" />
         <activity

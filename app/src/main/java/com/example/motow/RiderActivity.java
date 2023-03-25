@@ -13,7 +13,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -32,12 +32,13 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
 
     private GoogleMap mMap;
     private Boolean check = false;
-    private Button logoutBtn;
 
     TextView userName;
     FirebaseAuth fAuth;
     FirebaseFirestore fStore;
     String userId;
+
+    ImageView pfp, chatBtn, notifybtn, manageBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,25 +47,27 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
 
         userName = findViewById(R.id.user_name);
 
-        logoutBtn = findViewById(R.id.logout_button);
+        manageBtn = findViewById(R.id.manage_btn);
+        pfp = findViewById(R.id.welcome_pfp);
 
         fAuth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
         userId = fAuth.getCurrentUser().getUid();
+
+        pfp.setImageDrawable(getResources().getDrawable(R.drawable.default_pfp));
+        manageBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getApplicationContext(), RiderManageActivity.class));
+                finish();
+            }
+        });
 
         DocumentReference documentReference = fStore.collection("Users").document(userId);
         documentReference.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
                 userName.setText("Hi, " + value.getString("fullName") + "!");
-            }
-        });
-
-        logoutBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(getApplicationContext(), LoginActivity.class));
-                finish();
             }
         });
 

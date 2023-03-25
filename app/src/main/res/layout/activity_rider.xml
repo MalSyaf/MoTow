@@ -13,7 +13,7 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".MapsActivity"
+        tools:context=".test.MapsActivity"
         tools:layout="@layout/activity_maps" />
 
     <Button
@@ -28,7 +28,7 @@
         android:layout_marginEnd="5dp"
         android:layout_marginBottom="30dp"
         android:padding="8dp"
-        android:text="Logout"
+        android:text="REQUEST ASSISTANCE"
         android:textSize="18sp"
         android:textColor="@color/white"
         app:cornerRadius="40dp" />
@@ -73,44 +73,44 @@
         android:layout_width="600dp"
         android:layout_height="60dp"
         android:layout_alignParentBottom="true"
-        android:background="@drawable/bottom_nav_base"/>
-    <ImageView
-        android:id="@+id/home_btn"
-        android:layout_width="55dp"
-        android:layout_height="55dp"
-        android:src="@drawable/main"
-        android:layout_alignParentBottom="true"
-        android:layout_marginLeft="35dp"
-        android:padding="8dp"/>
-    <ImageView
-        android:id="@+id/chat_btn"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
-        android:src="@drawable/chat"
-        android:padding="8dp"
-        android:layout_alignParentBottom="true"
-        android:layout_toRightOf="@+id/home_btn"
-        android:layout_marginLeft="50dp"
-        android:layout_marginBottom="5dp"/>
-    <ImageView
-        android:id="@+id/notify_btn"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
-        android:src="@drawable/notifications"
-        android:padding="8dp"
-        android:layout_alignParentBottom="true"
-        android:layout_toRightOf="@+id/chat_btn"
-        android:layout_marginLeft="50dp"
-        android:layout_marginBottom="5dp"/>
-    <ImageView
-        android:id="@+id/manage_btn"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
-        android:src="@drawable/manage_user"
-        android:padding="8dp"
-        android:layout_marginBottom="5dp"
-        android:layout_alignParentBottom="true"
-        android:layout_toRightOf="@+id/notify_btn"
-        android:layout_marginLeft="40dp"/>
-
+        android:background="@drawable/bottom_nav_base">
+        <ImageView
+            android:id="@+id/home_btn"
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            android:src="@drawable/main"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="35dp"
+            android:padding="8dp"/>
+        <ImageView
+            android:id="@+id/chat_btn"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:src="@drawable/chat"
+            android:padding="8dp"
+            android:layout_alignParentBottom="true"
+            android:layout_toRightOf="@+id/home_btn"
+            android:layout_marginLeft="50dp"
+            android:layout_marginBottom="5dp"/>
+        <ImageView
+            android:id="@+id/notify_btn"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:src="@drawable/notifications"
+            android:padding="8dp"
+            android:layout_alignParentBottom="true"
+            android:layout_toRightOf="@+id/chat_btn"
+            android:layout_marginLeft="50dp"
+            android:layout_marginBottom="5dp"/>
+        <ImageView
+            android:id="@+id/manage_btn"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:src="@drawable/manage_user"
+            android:padding="8dp"
+            android:layout_marginBottom="5dp"
+            android:layout_alignParentBottom="true"
+            android:layout_toRightOf="@+id/notify_btn"
+            android:layout_marginLeft="40dp"/>
+    </RelativeLayout>
 </RelativeLayout>
