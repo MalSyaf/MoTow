@@ -1,33 +1,16 @@
 package com.example.motow;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.motow.LoginActivity;
-import com.example.motow.ManageVehicleActivity;
-import com.example.motow.R;
-import com.example.motow.RiderActivity;
-import com.example.motow.RiderInfoActivity;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
-
-import java.io.File;
-import java.util.UUID;
 
 public class RiderManageActivity extends AppCompatActivity {
 
@@ -80,7 +63,7 @@ public class RiderManageActivity extends AppCompatActivity {
         personalInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(getApplicationContext(), RiderInfoActivity.class));
+                startActivity(new Intent(getApplicationContext(), UserInfoActivity.class));
                 finish();
             }
         });

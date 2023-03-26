@@ -17,18 +17,23 @@
         android:theme="@style/Theme.MoTow"
         tools:targetApi="31">
         <activity
+            android:name=".UserInfoActivity"
+            android:exported="false" />
+        <activity
+            android:name=".TowerManageActivity"
+            android:exported="false" />
+        <activity
+            android:name=".TowerActivity"
+            android:exported="false" />
+        <activity
             android:name=".RegisterVehicleActivity"
             android:exported="false" />
         <activity
             android:name=".ManageVehicleActivity"
             android:exported="false" />
         <activity
-            android:name=".RiderInfoActivity"
-            android:exported="false" />
-        <activity
             android:name=".RiderManageActivity"
             android:exported="false" />
-
         <!--
              TODO: Before you run your application, you need a Google Maps API key.
 

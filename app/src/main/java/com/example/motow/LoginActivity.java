@@ -137,7 +137,7 @@ public class LoginActivity extends AppCompatActivity {
                 }
                 if (documentSnapshot.getString("isTower") != null) {
                     // user is a rider
-                    Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
+                    Intent intent = new Intent(getApplicationContext(), TowerActivity.class);
                     startActivity(intent);
                     finish();
                 }

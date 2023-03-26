@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -16,7 +17,7 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 
-public class RiderInfoActivity extends AppCompatActivity {
+public class UserInfoActivity extends AppCompatActivity {
 
     ImageView backBtn;
     TextView fullName, email, phoneNo;
@@ -28,7 +29,7 @@ public class RiderInfoActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_rider_info);
+        setContentView(R.layout.activity_user_info);
 
         backBtn = findViewById(R.id.back_btn);
 
@@ -43,8 +44,26 @@ public class RiderInfoActivity extends AppCompatActivity {
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(getApplicationContext(), RiderManageActivity.class));
-                finish();
+                DocumentReference df = fStore.collection("Users").document(userId);
+                // extract the data from the document
+                df.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        // identify the user access level
+                        if (documentSnapshot.getString("isRider") != null) {
+                            // user is a rider
+                            Intent intent = new Intent(getApplicationContext(), RiderManageActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
+                        if (documentSnapshot.getString("isTower") != null) {
+                            // user is a rider
+                            Intent intent = new Intent(getApplicationContext(), TowerManageActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
+                    }
+                });
             }
         });
 
