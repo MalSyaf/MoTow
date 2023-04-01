@@ -30,15 +30,20 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class TowerActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private Boolean check = false;
 
     TextView userName;
-    FirebaseAuth fAuth;
-    FirebaseFirestore fStore;
+
+    // Firebase
     String userId;
+    FirebaseAuth fAuth = FirebaseAuth.getInstance();
+    FirebaseFirestore fStore = FirebaseFirestore.getInstance();
 
     ImageView pfp, chatBtn, notifybtn, manageBtn;
     Button offlineBtn, onlineBtn;
@@ -56,8 +61,6 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
         offlineBtn = findViewById(R.id.offline_btn);
         onlineBtn = findViewById(R.id.online_btn);
 
-        fAuth = FirebaseAuth.getInstance();
-        fStore = FirebaseFirestore.getInstance();
         userId = fAuth.getCurrentUser().getUid();
 
         pfp.setImageDrawable(getResources().getDrawable(R.drawable.default_pfp));
@@ -67,6 +70,9 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
             public void onClick(View view) {
                 offlineBtn.setVisibility(View.INVISIBLE);
                 onlineBtn.setVisibility(View.VISIBLE);
+
+                DocumentReference documentReference = fStore.collection("Users").document(userId);
+
             }
         });
 

@@ -1,5 +1,8 @@
 package com.example.motow;
 
+import android.content.Intent;
+import android.graphics.drawable.Drawable;
+import android.media.Image;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,8 +14,18 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.rpc.context.AttributeContext;
 
 public class VehicleAdapter extends FirestoreRecyclerAdapter<Vehicle, VehicleAdapter.MyViewHolder> {
+
+    FirebaseAuth fAuth = FirebaseAuth.getInstance();
+    FirebaseFirestore fStore = FirebaseFirestore.getInstance();
+    String userId = fAuth.getCurrentUser().getUid();
 
     /**
      * Create a new RecyclerView adapter that listens to a Firestore Query.  See {@link
@@ -37,7 +50,6 @@ public class VehicleAdapter extends FirestoreRecyclerAdapter<Vehicle, VehicleAda
 
     @Override
     protected void onBindViewHolder(@NonNull MyViewHolder holder, int position, @NonNull Vehicle model) {
-
         holder.plateNum.setText(model.plateNumber);
         holder.brand.setText(model.brand);
         holder.model.setText(model.model);
@@ -47,6 +59,7 @@ public class VehicleAdapter extends FirestoreRecyclerAdapter<Vehicle, VehicleAda
     public static class MyViewHolder extends RecyclerView.ViewHolder{
 
         TextView plateNum, brand, model, color;
+        ImageView vehicleImage;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);

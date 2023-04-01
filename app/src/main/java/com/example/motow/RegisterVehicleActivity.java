@@ -26,8 +26,8 @@ public class RegisterVehicleActivity extends AppCompatActivity {
     ImageView backBtn;
     EditText plateNum, brand, model, color;
     Button registerBtn, resetBtn;
-    FirebaseAuth fAuth;
-    FirebaseFirestore fStore;
+    FirebaseAuth fAuth = FirebaseAuth.getInstance();
+    FirebaseFirestore fStore = FirebaseFirestore.getInstance();
     String userId;
 
     @Override
@@ -45,8 +45,6 @@ public class RegisterVehicleActivity extends AppCompatActivity {
         registerBtn = findViewById(R.id.register_btn);
         resetBtn = findViewById(R.id.reset_btn);
 
-        fAuth = FirebaseAuth.getInstance();
-        fStore = FirebaseFirestore.getInstance();
         userId = fAuth.getCurrentUser().getUid();
 
         backBtn.setOnClickListener(new View.OnClickListener() {

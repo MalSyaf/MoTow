@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -16,101 +16,206 @@
         tools:context=".test.MapsActivity"
         tools:layout="@layout/activity_maps" />
 
+    <RelativeLayout
+        android:id="@+id/select_vehicle"
+        android:layout_width="298dp"
+        android:layout_height="397dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerInParent="true"
+        android:background="@drawable/welcome_bar"
+        android:elevation="50dp"
+        app:layout_constraintBottom_toBottomOf="@+id/navbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="156dp"
+        android:layout_marginBottom="114dp"
+        android:visibility="invisible">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:textAlignment="center"
+            android:layout_centerHorizontal="true"
+            android:text="Select Vehicle"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/back_btn"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="20dp"
+            android:src="@drawable/baseline_arrow_back_ios_24"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerview"
+            android:layout_width="280dp"
+            android:layout_height="265dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="52dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/confirm_btn"
+            android:layout_width="264dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="19dp"
+            android:backgroundTint="@color/purple_200"
+            android:padding="8dp"
+            android:text="CONFIRM"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            app:cornerRadius="40dp" />
+    </RelativeLayout>
+
     <Button
-        android:id="@+id/logout_button"
-        android:layout_width="300dp"
-        android:layout_height="50dp"
+        android:id="@+id/request_btn"
+        android:layout_width="264dp"
+        android:layout_height="wrap_content"
         android:layout_above="@+id/navbar"
-        android:backgroundTint="#A81AFF"
+        android:backgroundTint="@color/purple_200"
         android:layout_centerHorizontal="true"
         android:layout_marginStart="5dp"
         android:layout_marginTop="5dp"
         android:layout_marginEnd="5dp"
-        android:layout_marginBottom="30dp"
+        android:layout_marginBottom="103dp"
         android:padding="8dp"
         android:text="REQUEST ASSISTANCE"
         android:textSize="18sp"
         android:textColor="@color/white"
-        app:cornerRadius="40dp" />
+        app:cornerRadius="40dp"
+        app:layout_constraintBottom_toBottomOf="@+id/navbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
 
+    <TextView
+        android:id="@+id/search_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:text="Searching for Assistance"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        android:translationZ="90dp"
+        app:layout_constraintBottom_toTopOf="@+id/cancel_btn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:visibility="invisible"/>
+
+    <Button
+        android:id="@+id/cancel_btn"
+        android:layout_width="264dp"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/navbar"
+        android:backgroundTint="@color/purple_200"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="103dp"
+        android:padding="8dp"
+        android:text="CANCEL"
+        android:textSize="18sp"
+        android:textColor="@color/white"
+        app:cornerRadius="40dp"
+        app:layout_constraintBottom_toBottomOf="@+id/navbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:visibility="invisible"/>
+
+    <!--Welcome Bar-->
     <RelativeLayout
         android:id="@+id/welcome_bar"
-        android:layout_width="350dp"
-        android:layout_height="80dp"
+        android:layout_width="313dp"
+        android:layout_height="70dp"
         android:layout_alignParentTop="true"
         android:layout_centerInParent="true"
-        android:layout_marginTop="30dp"
         android:background="@drawable/welcome_bar"
-        android:elevation="50dp" >
+        android:elevation="50dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="34dp">
 
         <ImageView
             android:id="@+id/welcome_pfp"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_alignParentEnd="true"
-            android:layout_marginEnd="50dp"
-            android:layout_marginTop="15dp"/>
-    </RelativeLayout>
-    <TextView
-        android:id="@+id/user_name"
-        android:layout_width="250dp"
-        android:layout_height="50dp"
-        android:layout_alignLeft="@+id/welcome_bar"
-        android:layout_alignTop="@+id/welcome_bar"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="40dp"
-        android:layout_marginLeft="10dp"
-        android:layout_centerInParent="true"
-        android:text="Hi, John Doe!"
-        android:textColor="@color/black"
-        android:textSize="30sp"
-        android:textStyle="bold"
-        android:textAlignment="center"
-        android:translationZ="90dp"/>
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="50dp" />
 
+        <TextView
+            android:id="@+id/user_name"
+            android:layout_width="158dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="46dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:translationZ="90dp" />
+    </RelativeLayout>
+
+    <!--Navbar-->
     <RelativeLayout
         android:id="@+id/navbar"
-        android:layout_width="600dp"
+        android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:layout_alignParentBottom="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:flow_verticalAlign="center"
         android:background="@drawable/bottom_nav_base">
         <ImageView
             android:id="@+id/home_btn"
-            android:layout_width="55dp"
-            android:layout_height="55dp"
-            android:src="@drawable/main"
-            android:layout_alignParentBottom="true"
-            android:layout_marginLeft="35dp"
-            android:padding="8dp"/>
+            android:layout_width="40dp"
+            android:layout_height="20dp"
+            android:layout_centerVertical="true"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="22dp"
+            android:layout_marginLeft="55dp"
+            android:src="@drawable/main"/>
+
         <ImageView
             android:id="@+id/chat_btn"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
-            android:src="@drawable/chat"
-            android:padding="8dp"
-            android:layout_alignParentBottom="true"
-            android:layout_toRightOf="@+id/home_btn"
-            android:layout_marginLeft="50dp"
-            android:layout_marginBottom="5dp"/>
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="145dp"
+            android:src="@drawable/chat"/>
+
         <ImageView
             android:id="@+id/notify_btn"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
-            android:src="@drawable/notifications"
-            android:padding="8dp"
-            android:layout_alignParentBottom="true"
-            android:layout_toRightOf="@+id/chat_btn"
-            android:layout_marginLeft="50dp"
-            android:layout_marginBottom="5dp"/>
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="17dp"
+            android:layout_marginLeft="230dp"
+            android:src="@drawable/notifications"/>
+
         <ImageView
             android:id="@+id/manage_btn"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
-            android:src="@drawable/manage_user"
-            android:padding="8dp"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_marginTop="17dp"
             android:layout_marginBottom="5dp"
-            android:layout_alignParentBottom="true"
-            android:layout_toRightOf="@+id/notify_btn"
-            android:layout_marginLeft="40dp"/>
+            android:layout_marginLeft="315dp"
+            android:src="@drawable/manage_user"/>
     </RelativeLayout>
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

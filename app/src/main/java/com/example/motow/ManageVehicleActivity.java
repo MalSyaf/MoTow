@@ -15,8 +15,10 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.example.motow.test.MapsActivity;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
@@ -42,7 +44,7 @@ public class ManageVehicleActivity extends AppCompatActivity {
     FirebaseFirestore fStore = FirebaseFirestore.getInstance();
     CollectionReference vehicleRef = fStore.collection("Vehicles");
 
-    ImageView backBtn;
+    ImageView backBtn, vehicleImage;
     Button registerBtn;
 
     @Override
@@ -64,8 +66,26 @@ public class ManageVehicleActivity extends AppCompatActivity {
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(getApplicationContext(), RiderManageActivity.class));
-                finish();
+                DocumentReference df = fStore.collection("Users").document(userId);
+                // extract the data from the document
+                df.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        // identify the user access level
+                        if (documentSnapshot.getString("isRider") != null) {
+                            // user is a rider
+                            Intent intent = new Intent(getApplicationContext(), RiderManageActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
+                        if (documentSnapshot.getString("isTower") != null) {
+                            // user is a rider
+                            Intent intent = new Intent(getApplicationContext(), TowerManageActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
+                    }
+                });
             }
         });
 

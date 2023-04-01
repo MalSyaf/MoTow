@@ -31,7 +31,7 @@ public class RiderManageActivity extends AppCompatActivity {
         logoutBtn = findViewById(R.id.logout_btn);
         homeBtn = findViewById(R.id.home_btn);
         pfp = findViewById(R.id.pfp);
-        changePfp = findViewById(R.id.change_pfp);
+        changePfp = findViewById(R.id.change_pfp_btn);
 
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();

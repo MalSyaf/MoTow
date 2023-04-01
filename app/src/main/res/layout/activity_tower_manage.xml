@@ -67,7 +67,6 @@
         android:drawableRight="@drawable/baseline_arrow_forward_ios_24"/>
 
     <View
-        android:id="@+id/view9"
         android:layout_width="366dp"
         android:layout_height="2dp"
         android:background="@color/line"
@@ -170,54 +169,49 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/delete_account" />
 
+    <!--Navbar-->
     <RelativeLayout
         android:id="@+id/navbar"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:background="@drawable/bottom_nav_base"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:flow_verticalAlign="center"
-        app:layout_constraintBottom_toBottomOf="parent">
-
+        android:background="@drawable/bottom_nav_base">
         <ImageView
             android:id="@+id/home_btn"
-            android:layout_width="55dp"
-            android:layout_height="55dp"
-            android:layout_alignParentBottom="true"
-            android:layout_marginLeft="35dp"
-            android:padding="8dp"
-            android:src="@drawable/main" />
+            android:layout_width="40dp"
+            android:layout_height="20dp"
+            android:layout_centerVertical="true"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="22dp"
+            android:layout_marginLeft="55dp"
+            android:src="@drawable/main"/>
 
         <ImageView
             android:id="@+id/chat_btn"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
-            android:layout_alignParentBottom="true"
-            android:layout_marginLeft="50dp"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_marginTop="16dp"
             android:layout_marginBottom="5dp"
-            android:layout_toRightOf="@+id/home_btn"
-            android:padding="8dp"
-            android:src="@drawable/chat" />
+            android:layout_marginLeft="145dp"
+            android:src="@drawable/chat"/>
 
         <ImageView
             android:id="@+id/notify_btn"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
-            android:layout_alignParentBottom="true"
-            android:layout_marginLeft="50dp"
-            android:layout_marginBottom="5dp"
-            android:layout_toRightOf="@+id/chat_btn"
-            android:padding="8dp"
-            android:src="@drawable/notifications" />
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="17dp"
+            android:layout_marginLeft="230dp"
+            android:src="@drawable/notifications"/>
 
         <ImageView
             android:id="@+id/manage_btn"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
-            android:layout_alignParentBottom="true"
-            android:layout_marginLeft="40dp"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_marginTop="17dp"
             android:layout_marginBottom="5dp"
-            android:layout_toRightOf="@+id/notify_btn"
-            android:padding="8dp"
-            android:src="@drawable/manage_user" />
+            android:layout_marginLeft="315dp"
+            android:src="@drawable/manage_user"/>
     </RelativeLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
