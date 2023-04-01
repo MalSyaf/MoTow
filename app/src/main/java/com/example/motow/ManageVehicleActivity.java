@@ -117,7 +117,6 @@ public class ManageVehicleActivity extends AppCompatActivity {
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
                 return false;
             }
-
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 vehicleAdapter.deleteItem(viewHolder.getAdapterPosition());

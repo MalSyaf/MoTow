@@ -17,13 +17,17 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -41,9 +45,10 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
     TextView userName;
 
     // Firebase
-    String userId;
     FirebaseAuth fAuth = FirebaseAuth.getInstance();
     FirebaseFirestore fStore = FirebaseFirestore.getInstance();
+    String userId = fAuth.getCurrentUser().getUid();
+    CollectionReference vehicleRef = fStore.collection("Vehicles");
 
     ImageView pfp, chatBtn, notifybtn, manageBtn;
     Button offlineBtn, onlineBtn;
@@ -71,8 +76,7 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                 offlineBtn.setVisibility(View.INVISIBLE);
                 onlineBtn.setVisibility(View.VISIBLE);
 
-                DocumentReference documentReference = fStore.collection("Users").document(userId);
-
+                changeStatusToOnline();
             }
         });
 
@@ -81,6 +85,8 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
             public void onClick(View view) {
                 offlineBtn.setVisibility(View.VISIBLE);
                 onlineBtn.setVisibility(View.INVISIBLE);
+
+                changeStatusToOffline();
             }
         });
 
@@ -116,8 +122,29 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
             @Override
             public void onLocationChanged(@NonNull Location location) {
                 if (check) {
-                    LatLng lokasi = new LatLng(location.getLatitude(), location.getLongitude());
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lokasi, 18f));
+                    double latitude = location.getLatitude();
+                    double longitude = location.getLongitude();
+                    LatLng currentLocation = new LatLng(latitude, longitude);
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 18f));
+
+                    Map<String, Object> infoUpdate = new HashMap<>();
+                    infoUpdate.put("latitude", latitude);
+                    infoUpdate.put("longitude", longitude);
+
+                    fStore.collection("Users")
+                            .document(userId)
+                            .update(infoUpdate)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void unused) {
+                                    //
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Toast.makeText(TowerActivity.this, "Coordinate Error", Toast.LENGTH_SHORT).show();
+                                }
+                            });
                 }
             }
             @Override
@@ -133,6 +160,46 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                 //
             }
         });
+    }
+
+    private void changeStatusToOnline() {
+        Map<String, Object> infoUpdate = new HashMap<>();
+        infoUpdate.put("status", "online");
+
+        fStore.collection("Users")
+                .document(userId)
+                .update(infoUpdate)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Toast.makeText(TowerActivity.this, "You are online!", Toast.LENGTH_SHORT).show();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(TowerActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void changeStatusToOffline() {
+        Map<String, Object> infoUpdate = new HashMap<>();
+        infoUpdate.put("status", "offline");
+
+        fStore.collection("Users")
+                .document(userId)
+                .update(infoUpdate)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Toast.makeText(TowerActivity.this, "You are offline!", Toast.LENGTH_SHORT).show();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(TowerActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     @Override

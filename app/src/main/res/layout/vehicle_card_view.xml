@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
+<com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/vehicle_container"
     android:layout_width="245dp"
     android:layout_height="81dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -74,7 +75,7 @@
                 android:layout_height="wrap_content"
                 android:layout_toRightOf="@+id/plateNumber"
                 android:layout_marginTop="10dp"
-                android:text="Plate Number"
+                android:text="Plate"
                 android:textSize="14sp"/>
             <TextView
                 android:id="@+id/display_brand"
@@ -103,4 +104,4 @@
                 android:textSize="14sp"/>
         </RelativeLayout>
     </LinearLayout>
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>

@@ -1,6 +1,7 @@
 package com.example.motow;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.media.Image;
 import android.view.LayoutInflater;
@@ -10,11 +11,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.card.MaterialCardView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -22,6 +25,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.rpc.context.AttributeContext;
 
 public class VehicleAdapter extends FirestoreRecyclerAdapter<Vehicle, VehicleAdapter.MyViewHolder> {
+
+    public static OnItemClickListener listener;
 
     FirebaseAuth fAuth = FirebaseAuth.getInstance();
     FirebaseFirestore fStore = FirebaseFirestore.getInstance();
@@ -56,10 +61,11 @@ public class VehicleAdapter extends FirestoreRecyclerAdapter<Vehicle, VehicleAda
         holder.color.setText(model.color);
     }
 
-    public static class MyViewHolder extends RecyclerView.ViewHolder{
+    public class MyViewHolder extends RecyclerView.ViewHolder{
 
         TextView plateNum, brand, model, color;
-        ImageView vehicleImage;
+        MaterialCardView vehicleContainer;
+
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -69,6 +75,27 @@ public class VehicleAdapter extends FirestoreRecyclerAdapter<Vehicle, VehicleAda
             model = itemView.findViewById(R.id.display_model);
             color = itemView.findViewById(R.id.display_color);
 
+            vehicleContainer = itemView.findViewById(R.id.vehicle_container);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int position = getAdapterPosition();
+                    if(position!=RecyclerView.NO_POSITION && listener != null){
+                        listener.onItemClick(getSnapshots().getSnapshot(position), position);
+                        vehicleContainer.setStrokeWidth(4);
+                        vehicleContainer.setStrokeColor(Color.BLACK);
+                    }
+                }
+            });
         }
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(DocumentSnapshot documentSnapshot, int position);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
     }
 }
