@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".RegisterVehicleActivity">
+    tools:context=".EditCompanyActivity">
 
     <ImageView
         android:id="@+id/back_btn"
@@ -18,13 +18,13 @@
         android:layout_marginLeft="30dp"/>
 
     <EditText
-        android:id="@+id/register_plate"
+        android:id="@+id/reg_company"
         android:layout_width="350dp"
         android:layout_height="60dp"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="100dp"
         android:background="@drawable/lavender_border"
-        android:hint="Plate Number"
+        android:hint="Company Name"
         android:padding="8dp"
         android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
@@ -32,46 +32,38 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/register_brand"
+        android:id="@+id/reg_regNum"
         android:layout_width="350dp"
         android:layout_height="60dp"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="180dp"
         android:background="@drawable/lavender_border"
-        android:hint="Brand"
+        android:hint="Registration No."
         android:padding="8dp"
         android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-        android:id="@+id/register_model"
-        android:layout_width="350dp"
-        android:layout_height="60dp"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="260dp"
-        android:background="@drawable/lavender_border"
-        android:hint="Model"
-        android:padding="8dp"
-        android:textAlignment="center"
-        app:layout_constraintEnd_toEndOf="parent"
+    <CheckBox
+        android:id="@+id/private_cbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Private"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/reg_regNum"
+        android:layout_marginTop="30dp"
+        android:layout_marginLeft="70dp"/>
 
-    <EditText
-        android:id="@+id/register_color"
-        android:layout_width="350dp"
-        android:layout_height="60dp"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="340dp"
-        android:background="@drawable/lavender_border"
-        android:hint="Color"
-        android:padding="8dp"
-        android:textAlignment="center"
+    <CheckBox
+        android:id="@+id/company_cbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Under a Company"
+        app:layout_constraintTop_toBottomOf="@+id/reg_regNum"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_marginTop="30dp"
+        android:layout_marginRight="70dp"/>
 
     <Button
         android:id="@+id/register_btn"
@@ -79,7 +71,7 @@
         android:layout_height="wrap_content"
         android:text="Register"
         android:layout_marginLeft="100dp"
-        android:layout_marginTop="450dp"
+        android:layout_marginTop="350dp"
         android:backgroundTint="@color/purple_200"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
@@ -89,7 +81,7 @@
         android:layout_height="wrap_content"
         android:text="Reset"
         android:layout_marginRight="100dp"
-        android:layout_marginTop="450dp"
+        android:layout_marginTop="350dp"
         android:backgroundTint="@color/red"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>

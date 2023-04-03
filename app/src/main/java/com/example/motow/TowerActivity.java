@@ -31,18 +31,20 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class TowerActivity extends FragmentActivity implements OnMapReadyCallback {
 
+    // Google Map
     private GoogleMap mMap;
     private Boolean check = false;
-
-    TextView userName;
 
     // Firebase
     FirebaseAuth fAuth = FirebaseAuth.getInstance();
@@ -50,6 +52,8 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
     String userId = fAuth.getCurrentUser().getUid();
     CollectionReference vehicleRef = fStore.collection("Vehicles");
 
+    // Interface
+    TextView userName;
     ImageView pfp, chatBtn, notifybtn, manageBtn;
     Button offlineBtn, onlineBtn;
 
@@ -73,9 +77,6 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
         offlineBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                offlineBtn.setVisibility(View.INVISIBLE);
-                onlineBtn.setVisibility(View.VISIBLE);
-
                 changeStatusToOnline();
             }
         });
@@ -127,7 +128,7 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                     LatLng currentLocation = new LatLng(latitude, longitude);
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 18f));
 
-                    Map<String, Object> infoUpdate = new HashMap<>();
+                    /*Map<String, Object> infoUpdate = new HashMap<>();
                     infoUpdate.put("latitude", latitude);
                     infoUpdate.put("longitude", longitude);
 
@@ -144,7 +145,7 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                                 public void onFailure(@NonNull Exception e) {
                                     Toast.makeText(TowerActivity.this, "Coordinate Error", Toast.LENGTH_SHORT).show();
                                 }
-                            });
+                            });*/
                 }
             }
             @Override
@@ -162,6 +163,24 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
         });
     }
 
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+        check = true;
+
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        mMap.setMyLocationEnabled(true);
+    }
+
     private void changeStatusToOnline() {
         Map<String, Object> infoUpdate = new HashMap<>();
         infoUpdate.put("status", "online");
@@ -172,6 +191,8 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
+                        offlineBtn.setVisibility(View.INVISIBLE);
+                        onlineBtn.setVisibility(View.VISIBLE);
                         Toast.makeText(TowerActivity.this, "You are online!", Toast.LENGTH_SHORT).show();
                     }
                 }).addOnFailureListener(new OnFailureListener() {
@@ -200,23 +221,5 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                         Toast.makeText(TowerActivity.this, "Error", Toast.LENGTH_SHORT).show();
                     }
                 });
-    }
-
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-        check = true;
-
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        mMap.setMyLocationEnabled(true);
     }
 }

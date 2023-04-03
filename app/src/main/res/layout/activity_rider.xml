@@ -16,6 +16,63 @@
         tools:context=".test.MapsActivity"
         tools:layout="@layout/activity_maps" />
 
+    <Button
+        android:id="@+id/request_btn"
+        android:layout_width="264dp"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/navbar"
+        android:backgroundTint="@color/purple_200"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="103dp"
+        android:padding="8dp"
+        android:text="REQUEST ASSISTANCE"
+        android:textSize="18sp"
+        android:textColor="@color/white"
+        app:cornerRadius="40dp"
+        app:layout_constraintBottom_toBottomOf="@+id/navbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <TextView
+        android:id="@+id/search_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:text="Searching for Assistance"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        android:translationZ="90dp"
+        app:layout_constraintBottom_toTopOf="@+id/cancel_btn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:visibility="invisible"/>
+
+    <Button
+        android:id="@+id/cancel_btn"
+        android:layout_width="264dp"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/navbar"
+        android:backgroundTint="@color/purple_200"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="103dp"
+        android:padding="8dp"
+        android:text="CANCEL"
+        android:textSize="18sp"
+        android:textColor="@color/white"
+        app:cornerRadius="40dp"
+        app:layout_constraintBottom_toBottomOf="@+id/navbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:visibility="invisible"/>
+
+    <!-- Select Vehicle Container -->
     <RelativeLayout
         android:id="@+id/select_vehicle"
         android:layout_width="298dp"
@@ -81,61 +138,95 @@
             app:cornerRadius="40dp" />
     </RelativeLayout>
 
-    <Button
-        android:id="@+id/request_btn"
-        android:layout_width="264dp"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/navbar"
-        android:backgroundTint="@color/purple_200"
-        android:layout_centerHorizontal="true"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginEnd="5dp"
-        android:layout_marginBottom="103dp"
-        android:padding="8dp"
-        android:text="REQUEST ASSISTANCE"
-        android:textSize="18sp"
-        android:textColor="@color/white"
-        app:cornerRadius="40dp"
-        app:layout_constraintBottom_toBottomOf="@+id/navbar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
-
-    <TextView
-        android:id="@+id/search_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAlignment="center"
-        android:textColor="@color/black"
-        android:text="Searching for Assistance"
-        android:textSize="13sp"
-        android:textStyle="bold"
-        android:translationZ="90dp"
-        app:layout_constraintBottom_toTopOf="@+id/cancel_btn"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:visibility="invisible"/>
-
-    <Button
-        android:id="@+id/cancel_btn"
-        android:layout_width="264dp"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/navbar"
-        android:backgroundTint="@color/purple_200"
-        android:layout_centerHorizontal="true"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginEnd="5dp"
-        android:layout_marginBottom="103dp"
-        android:padding="8dp"
-        android:text="CANCEL"
-        android:textSize="18sp"
-        android:textColor="@color/white"
-        app:cornerRadius="40dp"
+    <!-- Assistance Found Container -->
+    <RelativeLayout
+        android:id="@+id/tower_container"
+        android:layout_width="291dp"
+        android:layout_height="397dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerInParent="true"
+        android:background="@drawable/welcome_bar"
+        android:elevation="50dp"
         app:layout_constraintBottom_toBottomOf="@+id/navbar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:visibility="invisible"/>
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="156dp"
+        android:layout_marginBottom="114dp"
+        android:visibility="invisible">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:textAlignment="center"
+            android:layout_centerHorizontal="true"
+            android:text="Assistance Found!"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/tower_pfp"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="60dp" />
+        <TextView
+            android:id="@+id/tower_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="178dp"
+            android:textAlignment="center"
+            android:layout_centerHorizontal="true"
+            android:text="Name"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+        <TextView
+            android:id="@+id/tower_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="220dp"
+            android:textAlignment="center"
+            android:layout_centerHorizontal="true"
+            android:text="Type"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+        <TextView
+            android:id="@+id/tower_vehicle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="262dp"
+            android:textAlignment="center"
+            android:layout_centerHorizontal="true"
+            android:text="Vehicle"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+        <TextView
+            android:id="@+id/tower_plate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="303dp"
+            android:textAlignment="center"
+            android:layout_centerHorizontal="true"
+            android:text="Plate"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+        <Button
+            android:id="@+id/ok_btn"
+            android:layout_width="264dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginTop="341dp"
+            android:backgroundTint="@color/purple_200"
+            android:padding="8dp"
+            android:text="OK"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            app:cornerRadius="40dp" />
+    </RelativeLayout>
 
     <!--Welcome Bar-->
     <RelativeLayout

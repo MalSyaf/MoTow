@@ -38,9 +38,11 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -65,11 +67,11 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
     VehicleAdapter vehicleAdapter;
 
     // Interface
-    TextView userName, searchText;
+    TextView userName, searchText, towerName, towerType, towerVehicle, towerPlate;
     ImageView pfp, chatBtn, notifybtn, manageBtn, backBtn;
     Button requestBtn, confirmBtn, cancelBtn;
-    RelativeLayout selectVehicle;
-    String vehicleId, towerId;
+    RelativeLayout selectVehicle, towerContainer;
+    String vehicleId, towerId, currentVehicleId, currentPlateNum;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +87,13 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
         confirmBtn = findViewById(R.id.confirm_btn);
         cancelBtn = findViewById(R.id.cancel_btn);
         backBtn = findViewById(R.id.back_btn);
+
+        // Tower Container Initialization
+        towerContainer = findViewById(R.id.tower_container);
+        towerName = findViewById(R.id.tower_name);
+        towerType = findViewById(R.id.tower_type);
+        towerVehicle = findViewById(R.id.tower_vehicle);
+        towerPlate = findViewById(R.id.tower_plate);
 
         selectVehicle = findViewById(R.id.select_vehicle);
         setUpRecyclerView();
@@ -226,16 +235,40 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
     private void getAvailableTower() {
         fStore.collection("Users")
                 .whereEqualTo("status", "online")
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
-                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                        if(value.isEmpty()){
-                            Toast.makeText(RiderActivity.this, "No current tower available", Toast.LENGTH_SHORT).show();
-                            searchText.setVisibility(View.INVISIBLE);
-                            cancelBtn.setVisibility(View.INVISIBLE);
-                            requestBtn.setVisibility(View.VISIBLE);
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()){
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                towerContainer.setVisibility(View.VISIBLE);
+                                searchText.setVisibility(View.INVISIBLE);
+                                cancelBtn.setVisibility(View.INVISIBLE);
+
+                                towerId = document.getId();
+                                currentVehicleId = document.getString("currentVehicle");
+
+                                towerName.setText(document.getString("fullName"));
+                                towerType.setText(document.getString("providerType"));
+
+                                fStore.collection("Vehicles")
+                                        .whereEqualTo("ownerId", towerId)
+                                        .whereEqualTo("vehicleId", currentVehicleId)
+                                        .get()
+                                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                if(task.isSuccessful()){
+                                                    for (QueryDocumentSnapshot vehicle : task.getResult()) {
+                                                        towerVehicle.setText(vehicle.getString("brand") + " " +vehicle.getString("model") + " " + "(" +vehicle.getString("color") + ")");
+                                                        towerPlate.setText(vehicle.getString("plateNumber"));
+                                                    }
+                                                }
+                                            }
+                                        });
+                            }
                         } else {
-                            towerId = value.getDocuments().toString();
+                            Toast.makeText(RiderActivity.this, "No Provider Available", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });

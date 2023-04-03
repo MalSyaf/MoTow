@@ -132,22 +132,24 @@ public class SignUpActivity extends AppCompatActivity {
                                     Map<String,Object> userInfo = new HashMap<>();
 
                                     if(isRiderBox.isChecked()){
+                                        userInfo.put("userId", mAuth.getCurrentUser().getUid());
                                         userInfo.put("isRider","1");
                                         userInfo.put("fullName", userName.getText().toString());
                                         userInfo.put("email", signEmail.getText().toString());
                                         userInfo.put("phoneNumber", signContact.getText().toString());
-                                        userInfo.put("longitude", "0");
-                                        userInfo.put("latitude", "0");
+                                        userInfo.put("longitude", null);
+                                        userInfo.put("latitude", null);
                                     }
                                     if(isTowerBox.isChecked()){
+                                        userInfo.put("userId", mAuth.getCurrentUser().getUid());
                                         userInfo.put("isTower", "1");
                                         userInfo.put("fullName", userName.getText().toString());
                                         userInfo.put("email", signEmail.getText().toString());
                                         userInfo.put("phoneNumber", signContact.getText().toString());
-                                        userInfo.put("providerType", "null");
-                                        userInfo.put("companyName", "null");
-                                        userInfo.put("longitude", "0");
-                                        userInfo.put("latitude", "0");
+                                        userInfo.put("providerType", null);
+                                        userInfo.put("companyName", null);
+                                        userInfo.put("longitude", null);
+                                        userInfo.put("latitude", null);
                                     }
 
                                     df.set(userInfo);

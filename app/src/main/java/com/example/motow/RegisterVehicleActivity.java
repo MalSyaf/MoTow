@@ -12,11 +12,15 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +32,7 @@ public class RegisterVehicleActivity extends AppCompatActivity {
     Button registerBtn, resetBtn;
     FirebaseAuth fAuth = FirebaseAuth.getInstance();
     FirebaseFirestore fStore = FirebaseFirestore.getInstance();
-    String userId;
+    String userId, vehicleId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,11 +101,12 @@ public class RegisterVehicleActivity extends AppCompatActivity {
                                 brand.setText(null);
                                 model.setText(null);
                                 color.setText(null);
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Toast.makeText(RegisterVehicleActivity.this, "Registration Failed", Toast.LENGTH_SHORT).show();
+                                String documentId = documentReference.getId();
+                                Map<String, Object> vehicleId = new HashMap<>();
+                                vehicleId.put("vehicleId", documentId);
+                                fStore.collection("Vehicles")
+                                        .document(documentId)
+                                        .update(vehicleId);
                             }
                         });
             }
