@@ -15,6 +15,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -23,12 +24,19 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -45,8 +53,13 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class RiderActivity extends FragmentActivity implements OnMapReadyCallback{
@@ -67,11 +80,15 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
     VehicleAdapter vehicleAdapter;
 
     // Interface
-    TextView userName, searchText, towerName, towerType, towerVehicle, towerPlate;
+    TextView userName, searchText, towerName, towerType, towerVehicle, towerPlate, towerBarStatus;
     ImageView pfp, chatBtn, notifybtn, manageBtn, backBtn;
-    Button requestBtn, confirmBtn, cancelBtn;
-    RelativeLayout selectVehicle, towerContainer;
+    Button requestBtn, confirmBtn, cancelBtn, okBtn;
+    RelativeLayout selectVehicle, towerContainer, towerBar;
     String vehicleId, towerId, currentVehicleId, currentPlateNum;
+    public String towerStringLatitude, towerStringLongitude, currentTowerId;
+    public Double towerLatitude, towerLongitude, tLatitude, tLongitude;
+    public LatLng towerLocation, currentLocation;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +104,7 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
         confirmBtn = findViewById(R.id.confirm_btn);
         cancelBtn = findViewById(R.id.cancel_btn);
         backBtn = findViewById(R.id.back_btn);
+        okBtn = findViewById(R.id.ok_btn);
 
         // Tower Container Initialization
         towerContainer = findViewById(R.id.tower_container);
@@ -94,6 +112,10 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
         towerType = findViewById(R.id.tower_type);
         towerVehicle = findViewById(R.id.tower_vehicle);
         towerPlate = findViewById(R.id.tower_plate);
+
+        // Tower Bar Initialization
+        towerBar = findViewById(R.id.tower_bar);
+        towerBarStatus = findViewById(R.id.tower_bar_status);
 
         selectVehicle = findViewById(R.id.select_vehicle);
         setUpRecyclerView();
@@ -142,6 +164,7 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
 
                 updateCurrentVehicle();
                 getAvailableTower();
+
             }
         });
         cancelBtn.setOnClickListener(new View.OnClickListener() {
@@ -153,8 +176,14 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
             }
         });
 
-
-
+        towerBar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                towerContainer.setVisibility(View.VISIBLE);
+                towerBar.setVisibility(View.INVISIBLE);
+                towerBarStatus.setText("Assistance is on the way!");
+            }
+        });
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
@@ -168,15 +197,17 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 100);
         }
 
+
+
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 500, 0, new LocationListener() {
             @Override
             public void onLocationChanged(@NonNull Location location) {
                 if (check) {
-
-
                     double latitude = location.getLatitude();
                     double longitude = location.getLongitude();
-                    LatLng currentLocation = new LatLng(latitude, longitude);
+
+                    currentLocation = new LatLng(latitude, longitude);
+
 
                     CircleOptions circleOptions = new CircleOptions()
                             .center(currentLocation)
@@ -184,9 +215,51 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                             .strokeWidth(2)
                             .strokeColor(Color.BLUE)
                             .fillColor(Color.parseColor("#500084d3"));
-                    //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 0f));
-                    mMap.addCircle(circleOptions);
+
+                    mMap.moveCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(currentLocation, 12)));
+                    //mMap.addCircle(circleOptions);
                     updateCurrentLocation(latitude, longitude);
+
+                    okBtn.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            towerBar.setVisibility(View.VISIBLE);
+                            towerContainer.setVisibility(View.INVISIBLE);
+                            towerBarStatus.setText("Assistance is On The Way!");
+                            fetchTowerId();
+
+                        }
+                    });
+
+                    fStore.collection("Users")
+                            .whereEqualTo("userId", currentTowerId)
+                            .get()
+                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                    if(task.isSuccessful()){
+                                        for (QueryDocumentSnapshot document : task.getResult()) {
+                                            towerLatitude = document.getDouble("latitude");
+                                            towerLongitude = document.getDouble("longitude");
+
+                                            float[] distance = new float[2];
+                                            Location.distanceBetween( towerLatitude, towerLongitude, circleOptions.getCenter().latitude, circleOptions.getCenter().longitude, distance);
+
+                                            if( distance[0] > circleOptions.getRadius()  ){
+                                                Toast.makeText(RiderActivity.this, "Outside", Toast.LENGTH_SHORT).show();
+                                            } else {
+                                                Toast.makeText(RiderActivity.this, "Inside", Toast.LENGTH_SHORT).show();
+                                            }
+                                            LatLng towerLocation = new LatLng(towerLatitude, towerLongitude);
+                                            mMap.addMarker(new MarkerOptions().position(towerLocation).title("Assistance is On The Way!").icon(BitmapDescriptorFactory.fromResource(R.drawable.tow_truck)));
+                                        }
+                                    }
+                                }
+                            });
+
+
+
+
                 }
             }
             @Override
@@ -211,6 +284,24 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
         });
     }
 
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+        check = true;
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        mMap.setMyLocationEnabled(true);
+    }
+
     private void updateCurrentLocation(double latitude, double longitude) {
         Map<String, Object> infoUpdate = new HashMap<>();
         infoUpdate.put("latitude", latitude);
@@ -228,6 +319,23 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Toast.makeText(RiderActivity.this, "Coordinate Error", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void fetchTowerId() {
+        fStore.collection("Processes")
+                .whereEqualTo("riderId", userId)
+                .whereEqualTo("processStatus", "ongoing")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()){
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                currentTowerId = document.getString("towerId");
+                            }
+                        }
                     }
                 });
     }
@@ -266,10 +374,41 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                                                 }
                                             }
                                         });
+
+                                Date dateAndTime = Calendar.getInstance().getTime();
+                                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+                                SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm:ss", Locale.getDefault());
+                                String date = dateFormat.format(dateAndTime);
+                                String time = timeFormat.format(dateAndTime);
+
+                                Map<String, Object> process = new HashMap<>();
+                                process.put("riderId", userId);
+                                process.put("towerId", towerId);
+                                process.put("processStatus", "ongoing");
+                                process.put("paymentStatus", null);
+                                process.put("date", date);
+                                process.put("time", time);
+
+                                fStore.collection("Processes")
+                                        .add(process)
+                                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                            @Override
+                                            public void onSuccess(DocumentReference documentReference) {
+                                                String documentId = documentReference.getId();
+                                                Map<String, Object> processId = new HashMap<>();
+                                                processId.put("processId", documentId);
+                                                fStore.collection("Processes")
+                                                        .document(documentId)
+                                                        .update(processId);
+                                            }
+                                        });
                             }
-                        } else {
-                            Toast.makeText(RiderActivity.this, "No Provider Available", Toast.LENGTH_SHORT).show();
                         }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(RiderActivity.this, "No Provider Available", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -292,24 +431,6 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                         Toast.makeText(RiderActivity.this, "Error", Toast.LENGTH_SHORT).show();
                     }
                 });
-    }
-
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-        check = true;
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        mMap.setMyLocationEnabled(true);
     }
 
     private void setUpRecyclerView() {
