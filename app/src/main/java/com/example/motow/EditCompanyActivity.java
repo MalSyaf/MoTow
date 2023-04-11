@@ -14,8 +14,10 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -90,48 +92,52 @@ public class EditCompanyActivity extends AppCompatActivity {
                         .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                             @Override
                             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                                Toast.makeText(EditCompanyActivity.this, "Company is existed", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(EditCompanyActivity.this, "Company existed", Toast.LENGTH_SHORT).show();
+                            }
+                        }).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
                             }
                         }).addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
                                 companyInfo.put("companyName", companyNameFilled);
                                 companyInfo.put("registrationNumber", regNumFilled);
+
+                                fStore.collection("Company")
+                                        .add(companyInfo)
+                                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                            @Override
+                                            public void onSuccess(DocumentReference documentReference) {
+                                                Toast.makeText(EditCompanyActivity.this, "Company is Registered", Toast.LENGTH_SHORT).show();
+                                                companyName.setText(null);
+                                                regNum.setText(null);
+                                                isPrivate.setChecked(false);
+                                                isCompany.setChecked(false);
+
+                                                Map<String, Object> updateInfo= new HashMap<>();
+                                                if(isPrivate.isChecked()){
+                                                    updateInfo.put("companyId", documentReference.getId());
+                                                    updateInfo.put("providerType", "private");
+                                                }
+                                                if(isCompany.isChecked()){
+                                                    updateInfo.put("companyId", documentReference.getId());
+                                                    updateInfo.put("providerType", "company");
+                                                }
+
+                                                fStore.collection("Users")
+                                                        .document(userId)
+                                                        .update(updateInfo);
+                                            }
+                                        }).addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                Toast.makeText(EditCompanyActivity.this, "Company Register Unsuccessful", Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
                             }
                         });
 
-
-                fStore.collection("Company")
-                        .add(companyInfo)
-                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                            @Override
-                            public void onSuccess(DocumentReference documentReference) {
-                                Toast.makeText(EditCompanyActivity.this, "Company is Registered", Toast.LENGTH_SHORT).show();
-                                companyName.setText(null);
-                                regNum.setText(null);
-                                isPrivate.setChecked(false);
-                                isCompany.setChecked(false);
-
-                                Map<String, Object> updateInfo= new HashMap<>();
-                                if(isPrivate.isChecked()){
-                                    updateInfo.put("companyId", documentReference.getId());
-                                    updateInfo.put("providerType", "private");
-                                }
-                                if(isCompany.isChecked()){
-                                    updateInfo.put("companyId", documentReference.getId());
-                                    updateInfo.put("providerType", "company");
-                                }
-
-                                fStore.collection("Users")
-                                        .document(userId)
-                                        .update(updateInfo);
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Toast.makeText(EditCompanyActivity.this, "Company Register Unsuccessful", Toast.LENGTH_SHORT).show();
-                            }
-                        });
             }
         });
 

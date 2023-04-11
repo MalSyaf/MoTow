@@ -15,7 +15,6 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -24,17 +23,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -46,20 +41,14 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 public class RiderActivity extends FragmentActivity implements OnMapReadyCallback{
@@ -69,61 +58,77 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
     private Boolean check = false;
 
     // Firebase
-    FirebaseAuth fAuth = FirebaseAuth.getInstance();
-    FirebaseFirestore fStore = FirebaseFirestore.getInstance();
-    String userId = fAuth.getCurrentUser().getUid();
-    CollectionReference vehicleRef = fStore.collection("Vehicles");
+    FirebaseAuth fAuth;
+    FirebaseFirestore fStore;
+    String userId;
+    CollectionReference vehicleRef;
 
     // Recycler View
     RecyclerView recyclerView;
-    ArrayList<Vehicle> vehicleArrayList;
     VehicleAdapter vehicleAdapter;
+
+    // Nav bar
+    ImageView pfp, chatBtn, notifybtn, manageBtn, backBtn;
 
     // Interface
     TextView userName, searchText, towerName, towerType, towerVehicle, towerPlate, towerBarStatus;
-    ImageView pfp, chatBtn, notifybtn, manageBtn, backBtn;
     Button requestBtn, confirmBtn, cancelBtn, okBtn;
     RelativeLayout selectVehicle, towerContainer, towerBar;
-    String vehicleId, towerId, currentVehicleId, currentPlateNum;
-    public String towerStringLatitude, towerStringLongitude, currentTowerId;
-    public Double towerLatitude, towerLongitude, tLatitude, tLongitude;
-    public LatLng towerLocation, currentLocation;
+    public String vehicleId, towerId, currentVehicleId, currentPlateNum;
+    String towerStringLatitude, towerStringLongitude, currentTowerId;
+    Double towerLatitude, towerLongitude, tLatitude, tLongitude;
+    LatLng towerLocation, currentLocation;
 
+    CircleOptions circleOptions;
+
+    private Marker mSelectedMarker = null;
+    private ArrayList<Marker> mTripMarkers = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rider);
 
+        // Firebase
+        fAuth = FirebaseAuth.getInstance();
+        fStore = FirebaseFirestore.getInstance();
+        userId = fAuth.getCurrentUser().getUid();
+        vehicleRef = fStore.collection("Vehicles");
+
+        // Welcome bar
         userName = findViewById(R.id.user_name);
-        searchText = findViewById(R.id.search_text);
         pfp = findViewById(R.id.welcome_pfp);
 
+        // Nav bar
         manageBtn = findViewById(R.id.manage_btn);
-        requestBtn = findViewById(R.id.request_btn);
-        confirmBtn = findViewById(R.id.confirm_btn);
-        cancelBtn = findViewById(R.id.cancel_btn);
-        backBtn = findViewById(R.id.back_btn);
-        okBtn = findViewById(R.id.ok_btn);
 
-        // Tower Container Initialization
+        // Tower found container
         towerContainer = findViewById(R.id.tower_container);
         towerName = findViewById(R.id.tower_name);
         towerType = findViewById(R.id.tower_type);
         towerVehicle = findViewById(R.id.tower_vehicle);
         towerPlate = findViewById(R.id.tower_plate);
 
-        // Tower Bar Initialization
+        // Tower bar
         towerBar = findViewById(R.id.tower_bar);
         towerBarStatus = findViewById(R.id.tower_bar_status);
 
+        // Vehicle list
         selectVehicle = findViewById(R.id.select_vehicle);
         setUpRecyclerView();
 
-        // Profile picture
+        // Other interface
+        backBtn = findViewById(R.id.back_btn);
+        requestBtn = findViewById(R.id.request_btn);
+        confirmBtn = findViewById(R.id.confirm_btn);
+        searchText = findViewById(R.id.search_text);
+        cancelBtn = findViewById(R.id.cancel_btn);
+        okBtn = findViewById(R.id.ok_btn);
+
+        // Set profile picture
         pfp.setImageDrawable(getResources().getDrawable(R.drawable.default_pfp));
 
-        // Display username
+        // Display rider name
         DocumentReference documentReference = fStore.collection("Users").document(userId);
         documentReference.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
             @Override
@@ -132,7 +137,7 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
             }
         });
 
-        // Navbar buttons
+        // Nav bar buttons navigation
         manageBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -141,6 +146,7 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
             }
         });
 
+        // Buttons listener
         requestBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -162,9 +168,66 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                 cancelBtn.setVisibility(View.VISIBLE);
                 searchText.setVisibility(View.VISIBLE);
 
+                // Update rider's current vehicle in database
                 updateCurrentVehicle();
-                getAvailableTower();
 
+                // Check online tower & location
+                fStore.collection("Users")
+                        .whereEqualTo("isTower", "1")
+                        .whereEqualTo("status", "online")
+                        .get()
+                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                if(task.isSuccessful()){
+                                    for (QueryDocumentSnapshot document : task.getResult()){
+                                        tLatitude = document.getDouble("latitude");
+                                        tLongitude = document.getDouble("longitude");
+                                        //String towerStatus = document.getString("status");
+
+                                        float[] distance = new float[2];
+                                        Location.distanceBetween( tLatitude, tLongitude, circleOptions.getCenter().latitude, circleOptions.getCenter().longitude, distance);
+
+                                        // Check if tower's location is within the circle
+                                        if(distance[0] > circleOptions.getRadius()){
+                                            // Outside the radius
+                                            Toast.makeText(RiderActivity.this, "No tower currently available in the area.", Toast.LENGTH_SHORT).show();
+                                            cancelBtn.setVisibility(View.GONE);
+                                            searchText.setVisibility(View.GONE);
+                                            requestBtn.setVisibility(View.VISIBLE);
+                                        } else if (distance[0] < circleOptions.getRadius()) {
+                                            // Inside the radius
+                                            towerId = document.getString("userId");
+                                            Toast.makeText(RiderActivity.this, "Inside", Toast.LENGTH_SHORT).show();
+
+                                            fStore.collection("Users")
+                                                    .document(towerId)
+                                                            .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                                                @Override
+                                                                public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
+
+                                                                    mMap.clear();
+                                                                    double tCurrentLatitude = value.getDouble("latitude");
+                                                                    double tCurrentLongitude = value.getDouble("longitude");
+
+                                                                    towerLocation = new LatLng(tCurrentLatitude, tCurrentLongitude);
+
+                                                                    mMap.addMarker(new MarkerOptions().position(towerLocation).title("Assistance is On The Way!").icon(BitmapDescriptorFactory.fromResource(R.drawable.tow_truck)));
+                                                                }
+                                                            });
+                                        }
+                                    }
+                                }
+                            }
+                        });
+            }
+        });
+        okBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                towerBar.setVisibility(View.VISIBLE);
+                towerContainer.setVisibility(View.INVISIBLE);
+                towerBarStatus.setText("Assistance is On The Way!");
             }
         });
         cancelBtn.setOnClickListener(new View.OnClickListener() {
@@ -175,7 +238,6 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                 requestBtn.setVisibility(View.VISIBLE);
             }
         });
-
         towerBar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -185,81 +247,47 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
             }
         });
 
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        // Get vehicle id on item clicked for recycler view
+        vehicleAdapter.setOnItemClickListener(new VehicleAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(DocumentSnapshot documentSnapshot, int position) {
+                currentVehicleId = documentSnapshot.getId();
+            }
+        });
+
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PackageManager.PERMISSION_GRANTED);
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, PackageManager.PERMISSION_GRANTED);
-
         LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 100);
         }
 
-
-
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 500, 0, new LocationListener() {
             @Override
             public void onLocationChanged(@NonNull Location location) {
                 if (check) {
+                    // Rider's coordinate
                     double latitude = location.getLatitude();
                     double longitude = location.getLongitude();
 
+                    // Update current coordinate in database
+                    updateCurrentLocation(latitude, longitude);
+
                     currentLocation = new LatLng(latitude, longitude);
 
-
-                    CircleOptions circleOptions = new CircleOptions()
+                    // Rider's area radius
+                    circleOptions = new CircleOptions()
                             .center(currentLocation)
                             .radius(10000)
                             .strokeWidth(2)
                             .strokeColor(Color.BLUE)
                             .fillColor(Color.parseColor("#500084d3"));
 
-                    mMap.moveCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(currentLocation, 12)));
-                    //mMap.addCircle(circleOptions);
-                    updateCurrentLocation(latitude, longitude);
-
-                    okBtn.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            towerBar.setVisibility(View.VISIBLE);
-                            towerContainer.setVisibility(View.INVISIBLE);
-                            towerBarStatus.setText("Assistance is On The Way!");
-                            fetchTowerId();
-
-                        }
-                    });
-
-                    fStore.collection("Users")
-                            .whereEqualTo("userId", currentTowerId)
-                            .get()
-                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                @Override
-                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                    if(task.isSuccessful()){
-                                        for (QueryDocumentSnapshot document : task.getResult()) {
-                                            towerLatitude = document.getDouble("latitude");
-                                            towerLongitude = document.getDouble("longitude");
-
-                                            float[] distance = new float[2];
-                                            Location.distanceBetween( towerLatitude, towerLongitude, circleOptions.getCenter().latitude, circleOptions.getCenter().longitude, distance);
-
-                                            if( distance[0] > circleOptions.getRadius()  ){
-                                                Toast.makeText(RiderActivity.this, "Outside", Toast.LENGTH_SHORT).show();
-                                            } else {
-                                                Toast.makeText(RiderActivity.this, "Inside", Toast.LENGTH_SHORT).show();
-                                            }
-                                            LatLng towerLocation = new LatLng(towerLatitude, towerLongitude);
-                                            mMap.addMarker(new MarkerOptions().position(towerLocation).title("Assistance is On The Way!").icon(BitmapDescriptorFactory.fromResource(R.drawable.tow_truck)));
-                                        }
-                                    }
-                                }
-                            });
-
-
-
-
+                    mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLocation));
+                    mMap.addCircle(circleOptions);
                 }
             }
             @Override
@@ -273,13 +301,6 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
             @Override
             public void onStatusChanged(String provider, int status, Bundle extras) {
                 //
-            }
-        });
-
-        vehicleAdapter.setOnItemClickListener(new VehicleAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(DocumentSnapshot documentSnapshot, int position) {
-                vehicleId = documentSnapshot.getId();
             }
         });
     }
@@ -323,99 +344,9 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                 });
     }
 
-    private void fetchTowerId() {
-        fStore.collection("Processes")
-                .whereEqualTo("riderId", userId)
-                .whereEqualTo("processStatus", "ongoing")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()){
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                currentTowerId = document.getString("towerId");
-                            }
-                        }
-                    }
-                });
-    }
-
-    private void getAvailableTower() {
-        fStore.collection("Users")
-                .whereEqualTo("status", "online")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()){
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                towerContainer.setVisibility(View.VISIBLE);
-                                searchText.setVisibility(View.INVISIBLE);
-                                cancelBtn.setVisibility(View.INVISIBLE);
-
-                                towerId = document.getId();
-                                currentVehicleId = document.getString("currentVehicle");
-
-                                towerName.setText(document.getString("fullName"));
-                                towerType.setText(document.getString("providerType"));
-
-                                fStore.collection("Vehicles")
-                                        .whereEqualTo("ownerId", towerId)
-                                        .whereEqualTo("vehicleId", currentVehicleId)
-                                        .get()
-                                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                                if(task.isSuccessful()){
-                                                    for (QueryDocumentSnapshot vehicle : task.getResult()) {
-                                                        towerVehicle.setText(vehicle.getString("brand") + " " +vehicle.getString("model") + " " + "(" +vehicle.getString("color") + ")");
-                                                        towerPlate.setText(vehicle.getString("plateNumber"));
-                                                    }
-                                                }
-                                            }
-                                        });
-
-                                Date dateAndTime = Calendar.getInstance().getTime();
-                                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-                                SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm:ss", Locale.getDefault());
-                                String date = dateFormat.format(dateAndTime);
-                                String time = timeFormat.format(dateAndTime);
-
-                                Map<String, Object> process = new HashMap<>();
-                                process.put("riderId", userId);
-                                process.put("towerId", towerId);
-                                process.put("processStatus", "ongoing");
-                                process.put("paymentStatus", null);
-                                process.put("date", date);
-                                process.put("time", time);
-
-                                fStore.collection("Processes")
-                                        .add(process)
-                                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                                            @Override
-                                            public void onSuccess(DocumentReference documentReference) {
-                                                String documentId = documentReference.getId();
-                                                Map<String, Object> processId = new HashMap<>();
-                                                processId.put("processId", documentId);
-                                                fStore.collection("Processes")
-                                                        .document(documentId)
-                                                        .update(processId);
-                                            }
-                                        });
-                            }
-                        }
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(RiderActivity.this, "No Provider Available", Toast.LENGTH_SHORT).show();
-                    }
-                });
-    }
-
     private void updateCurrentVehicle() {
         Map<String, Object> infoUpdate = new HashMap<>();
-        infoUpdate.put("currentVehicle", vehicleId);
+        infoUpdate.put("currentVehicle", currentVehicleId);
 
         fStore.collection("Users")
                 .document(userId)
@@ -447,13 +378,11 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(vehicleAdapter);
     }
-
     @Override
     protected void onStart() {
         super.onStart();
         vehicleAdapter.startListening();
     }
-
     @Override
     protected void onStop() {
         super.onStop();

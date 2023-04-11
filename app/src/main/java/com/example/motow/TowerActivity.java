@@ -24,8 +24,10 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -182,23 +184,39 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
     }
 
     private void changeStatusToOnline() {
-        Map<String, Object> infoUpdate = new HashMap<>();
-        infoUpdate.put("status", "online");
-
         fStore.collection("Users")
-                .document(userId)
-                .update(infoUpdate)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                .whereEqualTo("userId", userId)
+                .whereNotEqualTo("companyId", null)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
-                    public void onSuccess(Void unused) {
-                        offlineBtn.setVisibility(View.INVISIBLE);
-                        onlineBtn.setVisibility(View.VISIBLE);
-                        Toast.makeText(TowerActivity.this, "You are online!", Toast.LENGTH_SHORT).show();
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(task.isSuccessful()){
+                            Map<String, Object> infoUpdate = new HashMap<>();
+                            infoUpdate.put("status", "online");
+
+                            fStore.collection("Users")
+                                    .document(userId)
+                                    .update(infoUpdate)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void unused) {
+                                            offlineBtn.setVisibility(View.INVISIBLE);
+                                            onlineBtn.setVisibility(View.VISIBLE);
+                                            Toast.makeText(TowerActivity.this, "You are online!", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }).addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Toast.makeText(TowerActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                        }
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(TowerActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(TowerActivity.this, "Company and Vehicle has not been registered", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
