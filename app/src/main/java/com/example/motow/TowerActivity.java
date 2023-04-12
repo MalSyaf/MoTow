@@ -123,18 +123,6 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
             }
         });
 
-        fStore.collection("Users")
-                .document(userId)
-                .get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        if(documentSnapshot.getString("status") == "online"){
-                            getAssistance();
-                        }
-                    }
-                });
-
         DocumentReference documentReference = fStore.collection("Users").document(userId);
         documentReference.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
             @Override
@@ -161,27 +149,12 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                 if (check) {
                     double latitude = location.getLatitude();
                     double longitude = location.getLongitude();
+
+                    // Update current coordinate in database
+                    updateCurrentLocation(latitude, longitude);
+
                     LatLng currentLocation = new LatLng(latitude, longitude);
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 18f));
-
-                    Map<String, Object> infoUpdate = new HashMap<>();
-                    infoUpdate.put("latitude", latitude);
-                    infoUpdate.put("longitude", longitude);
-
-                    fStore.collection("Users")
-                            .document(userId)
-                            .update(infoUpdate)
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void unused) {
-                                    //
-                                }
-                            }).addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Toast.makeText(TowerActivity.this, "Coordinate Error", Toast.LENGTH_SHORT).show();
-                                }
-                            });
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 12f));
                 }
             }
             @Override
@@ -197,6 +170,8 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                 //
             }
         });
+
+        getAssistance(userId);
     }
 
     @Override
@@ -217,17 +192,37 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
         mMap.setMyLocationEnabled(true);
     }
 
-    private void getAssistance() {
+    private void updateCurrentLocation(double latitude, double longitude) {
+        Map<String, Object> infoUpdate = new HashMap<>();
+        infoUpdate.put("latitude", latitude);
+        infoUpdate.put("longitude", longitude);
+
+        fStore.collection("Users")
+                .document(userId)
+                .update(infoUpdate)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        //
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        //
+                    }
+                });
+    }
+
+    private void getAssistance(String userId) {
         fStore.collection("Processes")
                 .whereEqualTo("towerId", userId)
-                .whereEqualTo("processStatus", "ongoing")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if(task.isSuccessful()){
-                            for(QueryDocumentSnapshot document : task.getResult()){
+                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                        for(QueryDocumentSnapshot document: value){
+                            if(document.getString("processStatus") == "ongoing") {
                                 String riderId = document.getString("riderId");
+
                                 fStore.collection("Users")
                                         .document(riderId)
                                         .get()
@@ -252,6 +247,7 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                             }
                         }
                     }
+
                 });
     }
 

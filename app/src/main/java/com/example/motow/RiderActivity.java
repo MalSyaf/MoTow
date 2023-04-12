@@ -279,7 +279,6 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
             @Override
             public void onLocationChanged(@NonNull Location location) {
                 if (check) {
-                    // Rider's coordinate
                     double latitude = location.getLatitude();
                     double longitude = location.getLongitude();
 
