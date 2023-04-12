@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,6 +38,7 @@ import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.HashMap;
@@ -49,10 +51,15 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
     private Boolean check = false;
 
     // Firebase
-    FirebaseAuth fAuth = FirebaseAuth.getInstance();
-    FirebaseFirestore fStore = FirebaseFirestore.getInstance();
-    String userId = fAuth.getCurrentUser().getUid();
-    CollectionReference vehicleRef = fStore.collection("Vehicles");
+    FirebaseAuth fAuth;
+    FirebaseFirestore fStore;
+    String userId;
+    CollectionReference vehicleRef;
+
+    // Rider container
+    private RelativeLayout riderContainer;
+    private TextView riderName, riderVehicle, riderPlate;
+    private Button acceptBtn, rejectBtn;
 
     // Interface
     TextView userName;
@@ -63,6 +70,20 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tower);
+
+        // Firebase
+        fAuth = FirebaseAuth.getInstance();
+        fStore = FirebaseFirestore.getInstance();
+        userId = fAuth.getCurrentUser().getUid();
+        vehicleRef = fStore.collection("Vehicles");
+
+        // Rider container
+        riderContainer = findViewById(R.id.rider_container);
+        riderName = findViewById(R.id.rider_name);
+        riderVehicle = findViewById(R.id.rider_vehicle);
+        riderPlate = findViewById(R.id.rider_plate);
+        acceptBtn = findViewById(R.id.accept_btn);
+        rejectBtn = findViewById(R.id.reject_btn);
 
         userName = findViewById(R.id.user_name);
 
@@ -76,13 +97,22 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
 
         pfp.setImageDrawable(getResources().getDrawable(R.drawable.default_pfp));
 
+        // Navbar buttons
+        manageBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getApplicationContext(), TowerManageActivity.class));
+                finish();
+            }
+        });
+
+        // Button listeners
         offlineBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 changeStatusToOnline();
             }
         });
-
         onlineBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -93,13 +123,17 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
             }
         });
 
-        manageBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(getApplicationContext(), TowerManageActivity.class));
-                finish();
-            }
-        });
+        fStore.collection("Users")
+                .document(userId)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if(documentSnapshot.getString("status") == "online"){
+                            getAssistance();
+                        }
+                    }
+                });
 
         DocumentReference documentReference = fStore.collection("Users").document(userId);
         documentReference.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
@@ -130,7 +164,7 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                     LatLng currentLocation = new LatLng(latitude, longitude);
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 18f));
 
-                    /*Map<String, Object> infoUpdate = new HashMap<>();
+                    Map<String, Object> infoUpdate = new HashMap<>();
                     infoUpdate.put("latitude", latitude);
                     infoUpdate.put("longitude", longitude);
 
@@ -147,7 +181,7 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                                 public void onFailure(@NonNull Exception e) {
                                     Toast.makeText(TowerActivity.this, "Coordinate Error", Toast.LENGTH_SHORT).show();
                                 }
-                            });*/
+                            });
                 }
             }
             @Override
@@ -183,15 +217,52 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
         mMap.setMyLocationEnabled(true);
     }
 
-    private void changeStatusToOnline() {
-        fStore.collection("Users")
-                .whereEqualTo("userId", userId)
-                .whereNotEqualTo("companyId", null)
+    private void getAssistance() {
+        fStore.collection("Processes")
+                .whereEqualTo("towerId", userId)
+                .whereEqualTo("processStatus", "ongoing")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if(task.isSuccessful()){
+                            for(QueryDocumentSnapshot document : task.getResult()){
+                                String riderId = document.getString("riderId");
+                                fStore.collection("Users")
+                                        .document(riderId)
+                                        .get()
+                                        .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                            @Override
+                                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                                riderContainer.setVisibility(View.VISIBLE);
+                                                riderName.setText(documentSnapshot.getString("fullName"));
+                                                String riderCurrentVehicle = documentSnapshot.getString("currentVehicle");
+                                                fStore.collection("Vehicles")
+                                                        .document(riderCurrentVehicle)
+                                                        .get()
+                                                        .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                                            @Override
+                                                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                                                riderVehicle.setText(documentSnapshot.getString("brand") + " " + documentSnapshot.getString("model") + " (" + documentSnapshot.getString("color") + ")");
+                                                                riderPlate.setText(documentSnapshot.getString("plateNumber"));
+                                                            }
+                                                        });
+                                            }
+                                        });
+                            }
+                        }
+                    }
+                });
+    }
+
+    private void changeStatusToOnline() {
+        fStore.collection("Users")
+                .document(userId)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if(documentSnapshot.getString("companyId") != null & documentSnapshot.getString("currentVehicle") != null){
                             Map<String, Object> infoUpdate = new HashMap<>();
                             infoUpdate.put("status", "online");
 
@@ -205,18 +276,10 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                                             onlineBtn.setVisibility(View.VISIBLE);
                                             Toast.makeText(TowerActivity.this, "You are online!", Toast.LENGTH_SHORT).show();
                                         }
-                                    }).addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            Toast.makeText(TowerActivity.this, "Error", Toast.LENGTH_SHORT).show();
-                                        }
                                     });
+                        } else {
+                            Toast.makeText(TowerActivity.this, "Register company and vehicle", Toast.LENGTH_SHORT).show();
                         }
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(TowerActivity.this, "Company and Vehicle has not been registered", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -232,11 +295,6 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                     @Override
                     public void onSuccess(Void unused) {
                         Toast.makeText(TowerActivity.this, "You are offline!", Toast.LENGTH_SHORT).show();
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(TowerActivity.this, "Error", Toast.LENGTH_SHORT).show();
                     }
                 });
     }

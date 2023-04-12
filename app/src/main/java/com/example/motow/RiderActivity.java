@@ -38,6 +38,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -47,8 +48,12 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class RiderActivity extends FragmentActivity implements OnMapReadyCallback{
@@ -72,9 +77,9 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
 
     // Interface
     TextView userName, searchText, towerName, towerType, towerVehicle, towerPlate, towerBarStatus;
-    Button requestBtn, confirmBtn, cancelBtn, okBtn;
+    Button requestBtn, confirmBtn, cancelBtn, okBtn, paymentBtn;
     RelativeLayout selectVehicle, towerContainer, towerBar;
-    public String vehicleId, towerId, currentVehicleId, currentPlateNum;
+    public String vehicleId, towerId, currentVehicleId, currentPlateNum, tCurrentVehicle, currentProcessId;
     String towerStringLatitude, towerStringLongitude, currentTowerId;
     Double towerLatitude, towerLongitude, tLatitude, tLongitude;
     LatLng towerLocation, currentLocation;
@@ -124,6 +129,7 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
         searchText = findViewById(R.id.search_text);
         cancelBtn = findViewById(R.id.cancel_btn);
         okBtn = findViewById(R.id.ok_btn);
+        paymentBtn = findViewById(R.id.payment_btn);
 
         // Set profile picture
         pfp.setImageDrawable(getResources().getDrawable(R.drawable.default_pfp));
@@ -137,7 +143,7 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
             }
         });
 
-        // Nav bar buttons navigation
+        // Nav bar buttons
         manageBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -183,7 +189,6 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                                     for (QueryDocumentSnapshot document : task.getResult()){
                                         tLatitude = document.getDouble("latitude");
                                         tLongitude = document.getDouble("longitude");
-                                        //String towerStatus = document.getString("status");
 
                                         float[] distance = new float[2];
                                         Location.distanceBetween( tLatitude, tLongitude, circleOptions.getCenter().latitude, circleOptions.getCenter().longitude, distance);
@@ -198,23 +203,28 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                                         } else if (distance[0] < circleOptions.getRadius()) {
                                             // Inside the radius
                                             towerId = document.getString("userId");
-                                            Toast.makeText(RiderActivity.this, "Inside", Toast.LENGTH_SHORT).show();
+                                            //Toast.makeText(RiderActivity.this, "Inside", Toast.LENGTH_SHORT).show();
 
+                                            // Add tower's marker
                                             fStore.collection("Users")
                                                     .document(towerId)
                                                             .addSnapshotListener(new EventListener<DocumentSnapshot>() {
                                                                 @Override
                                                                 public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
-
                                                                     mMap.clear();
                                                                     double tCurrentLatitude = value.getDouble("latitude");
                                                                     double tCurrentLongitude = value.getDouble("longitude");
 
                                                                     towerLocation = new LatLng(tCurrentLatitude, tCurrentLongitude);
-
-                                                                    mMap.addMarker(new MarkerOptions().position(towerLocation).title("Assistance is On The Way!").icon(BitmapDescriptorFactory.fromResource(R.drawable.tow_truck)));
+                                                                    mMap.addMarker(new MarkerOptions().position(towerLocation).title(value.getString("fullName")).icon(BitmapDescriptorFactory.fromResource(R.drawable.tow_truck)));
                                                                 }
                                                             });
+
+                                            // Display tower's detail
+                                            displayTowerInfo(towerId);
+
+                                            // Create processes
+                                            createProcess(towerId);
                                         }
                                     }
                                 }
@@ -360,6 +370,70 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Toast.makeText(RiderActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void displayTowerInfo(String towerId) {
+        cancelBtn.setVisibility(View.GONE);
+        searchText.setVisibility(View.GONE);
+        towerContainer.setVisibility(View.VISIBLE);
+
+        // Display tower's info
+        fStore.collection("Users")
+                .document(towerId)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        towerName.setText(documentSnapshot.getString("fullName"));
+                        towerType.setText(documentSnapshot.getString("providerType"));
+
+                        tCurrentVehicle = documentSnapshot.getString("currentVehicle");
+
+                        // Get tower's current vehicle info
+                        fStore.collection("Vehicles")
+                                .document(tCurrentVehicle)
+                                .get()
+                                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                    @Override
+                                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                        towerVehicle.setText(documentSnapshot.getString("brand") + " " + documentSnapshot.getString("model") + " (" + documentSnapshot.getString("color") + ")");
+                                        towerPlate.setText(documentSnapshot.getString("plateNumber"));
+                                    }
+                                });
+                    }
+                });
+    }
+
+    // Create process table
+    private void createProcess(String towerId) {
+        Date dateAndTime = Calendar.getInstance().getTime();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm:ss", Locale.getDefault());
+        String date = dateFormat.format(dateAndTime);
+        String time = timeFormat.format(dateAndTime);
+
+        Map<String, Object> process = new HashMap<>();
+        process.put("riderId", userId);
+        process.put("towerId", towerId);
+        process.put("processStatus", "ongoing");
+        process.put("paymentStatus", null);
+        process.put("date", date);
+        process.put("time", time);
+
+        // Add process table in database
+        fStore.collection("Processes")
+                .add(process)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        String documentId = documentReference.getId();
+                        Map<String, Object> processId = new HashMap<>();
+                        processId.put("processId", documentId);
+                        fStore.collection("Processes")
+                                .document(documentId)
+                                .update(processId);
                     }
                 });
     }
