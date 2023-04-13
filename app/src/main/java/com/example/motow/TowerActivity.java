@@ -62,6 +62,7 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
     private ImageView pfp, chatBtn, notifybtn, manageBtn;
 
     // Rider container
+    private String riderId;
     private RelativeLayout riderContainer;
     private TextView riderName, riderVehicle, riderPlate;
     private Button acceptBtn, rejectBtn;
@@ -69,8 +70,7 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
     // Interface
     private TextView userName;
     private Button offlineBtn, onlineBtn;
-
-    private String riderId;
+    private String currentProcessId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,8 +124,7 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
             @Override
             public void onClick(View view) {
                 offlineBtn.setVisibility(View.VISIBLE);
-                onlineBtn.setVisibility(View.INVISIBLE);
-
+                onlineBtn.setVisibility(View.GONE);
                 changeStatusToOffline();
             }
         });
@@ -225,6 +224,8 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                         for(QueryDocumentSnapshot documentSnapshot:value){
                             riderId = null;
                             riderId = documentSnapshot.getString("riderId");
+
+                            // Find on-going process
                             fStore.collection("Processes")
                                     .whereEqualTo("towerId", userId)
                                     .whereEqualTo("riderId", riderId)
@@ -236,6 +237,10 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                                             if(task.isSuccessful()){
                                                 for(QueryDocumentSnapshot document: task.getResult()){
                                                     riderContainer.setVisibility(View.VISIBLE);
+                                                    onlineBtn.setVisibility(View.GONE);
+
+                                                    currentProcessId = document.getId();
+
                                                     fStore.collection("Users")
                                                             .document(riderId)
                                                             .get()
@@ -256,6 +261,33 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                                                                     });
                                                                 }
                                                             });
+                                                    acceptBtn.setOnClickListener(new View.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(View view) {
+
+                                                        }
+                                                    });
+
+                                                    rejectBtn.setOnClickListener(new View.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(View view) {
+                                                            riderContainer.setVisibility(View.GONE);
+                                                            offlineBtn.setVisibility(View.VISIBLE);
+
+                                                            HashMap<String, Object> updateStatus = new HashMap<>();
+                                                            updateStatus.put("processStatus", "rejected");
+
+                                                            fStore.collection("Processes")
+                                                                    .document(currentProcessId)
+                                                                    .update(updateStatus)
+                                                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                        @Override
+                                                                        public void onSuccess(Void unused) {
+                                                                            Toast.makeText(TowerActivity.this, "Request has been rejected", Toast.LENGTH_SHORT).show();
+                                                                        }
+                                                                    });
+                                                        }
+                                                    });
                                                 }
                                             }
                                         }

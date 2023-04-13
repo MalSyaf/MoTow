@@ -158,21 +158,21 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
         requestBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                requestBtn.setVisibility(View.INVISIBLE);
+                requestBtn.setVisibility(View.GONE);
                 selectVehicle.setVisibility(View.VISIBLE);
             }
         });
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                selectVehicle.setVisibility(View.INVISIBLE);
+                selectVehicle.setVisibility(View.GONE);
                 requestBtn.setVisibility(View.VISIBLE);
             }
         });
         confirmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                selectVehicle.setVisibility(View.INVISIBLE);
+                selectVehicle.setVisibility(View.GONE);
                 cancelBtn.setVisibility(View.VISIBLE);
                 searchText.setVisibility(View.VISIBLE);
 
@@ -238,15 +238,15 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
             @Override
             public void onClick(View view) {
                 towerBar.setVisibility(View.VISIBLE);
-                towerContainer.setVisibility(View.INVISIBLE);
+                towerContainer.setVisibility(View.GONE);
                 towerBarStatus.setText("Assistance is On The Way!");
             }
         });
         cancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                searchText.setVisibility(View.INVISIBLE);
-                cancelBtn.setVisibility(View.INVISIBLE);
+                searchText.setVisibility(View.GONE);
+                cancelBtn.setVisibility(View.GONE);
                 requestBtn.setVisibility(View.VISIBLE);
             }
         });
@@ -254,7 +254,7 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
             @Override
             public void onClick(View view) {
                 towerContainer.setVisibility(View.VISIBLE);
-                towerBar.setVisibility(View.INVISIBLE);
+                towerBar.setVisibility(View.GONE);
                 towerBarStatus.setText("Assistance is on the way!");
             }
         });
