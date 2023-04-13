@@ -24,7 +24,9 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -51,10 +53,13 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
     private Boolean check = false;
 
     // Firebase
-    FirebaseAuth fAuth;
-    FirebaseFirestore fStore;
-    String userId;
-    CollectionReference vehicleRef;
+    private FirebaseAuth fAuth;
+    private FirebaseFirestore fStore;
+    private String userId;
+    private CollectionReference vehicleRef;
+
+    // Nav bar
+    private ImageView pfp, chatBtn, notifybtn, manageBtn;
 
     // Rider container
     private RelativeLayout riderContainer;
@@ -62,9 +67,10 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
     private Button acceptBtn, rejectBtn;
 
     // Interface
-    TextView userName;
-    ImageView pfp, chatBtn, notifybtn, manageBtn;
-    Button offlineBtn, onlineBtn;
+    private TextView userName;
+    private Button offlineBtn, onlineBtn;
+
+    private String riderId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +83,9 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
         userId = fAuth.getCurrentUser().getUid();
         vehicleRef = fStore.collection("Vehicles");
 
+        // Nav bar
+        manageBtn = findViewById(R.id.manage_btn);
+
         // Rider container
         riderContainer = findViewById(R.id.rider_container);
         riderName = findViewById(R.id.rider_name);
@@ -85,16 +94,13 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
         acceptBtn = findViewById(R.id.accept_btn);
         rejectBtn = findViewById(R.id.reject_btn);
 
-        userName = findViewById(R.id.user_name);
-
-        manageBtn = findViewById(R.id.manage_btn);
+        // Interface
         pfp = findViewById(R.id.welcome_pfp);
-
+        userName = findViewById(R.id.user_name);
         offlineBtn = findViewById(R.id.offline_btn);
         onlineBtn = findViewById(R.id.online_btn);
 
-        userId = fAuth.getCurrentUser().getUid();
-
+        // Set profile picture
         pfp.setImageDrawable(getResources().getDrawable(R.drawable.default_pfp));
 
         // Navbar buttons
@@ -111,6 +117,7 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
             @Override
             public void onClick(View view) {
                 changeStatusToOnline();
+                getAssistance(userId);
             }
         });
         onlineBtn.setOnClickListener(new View.OnClickListener() {
@@ -123,6 +130,7 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
             }
         });
 
+        // Set username
         DocumentReference documentReference = fStore.collection("Users").document(userId);
         documentReference.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
             @Override
@@ -134,10 +142,8 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
         ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, PackageManager.PERMISSION_GRANTED);
         ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION}, PackageManager.PERMISSION_GRANTED);
-
         LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 100);
@@ -170,8 +176,6 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                 //
             }
         });
-
-        getAssistance(userId);
     }
 
     @Override
@@ -215,39 +219,49 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
 
     private void getAssistance(String userId) {
         fStore.collection("Processes")
-                .whereEqualTo("towerId", userId)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                        for(QueryDocumentSnapshot document: value){
-                            if(document.getString("processStatus") == "ongoing") {
-                                String riderId = document.getString("riderId");
-
-                                fStore.collection("Users")
-                                        .document(riderId)
-                                        .get()
-                                        .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                            @Override
-                                            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                                riderContainer.setVisibility(View.VISIBLE);
-                                                riderName.setText(documentSnapshot.getString("fullName"));
-                                                String riderCurrentVehicle = documentSnapshot.getString("currentVehicle");
-                                                fStore.collection("Vehicles")
-                                                        .document(riderCurrentVehicle)
-                                                        .get()
-                                                        .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                                            @Override
-                                                            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                                                riderVehicle.setText(documentSnapshot.getString("brand") + " " + documentSnapshot.getString("model") + " (" + documentSnapshot.getString("color") + ")");
-                                                                riderPlate.setText(documentSnapshot.getString("plateNumber"));
-                                                            }
-                                                        });
+                        for(QueryDocumentSnapshot documentSnapshot:value){
+                            riderId = null;
+                            riderId = documentSnapshot.getString("riderId");
+                            fStore.collection("Processes")
+                                    .whereEqualTo("towerId", userId)
+                                    .whereEqualTo("riderId", riderId)
+                                    .whereEqualTo("processStatus", "ongoing")
+                                    .get()
+                                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                            if(task.isSuccessful()){
+                                                for(QueryDocumentSnapshot document: task.getResult()){
+                                                    riderContainer.setVisibility(View.VISIBLE);
+                                                    fStore.collection("Users")
+                                                            .document(riderId)
+                                                            .get()
+                                                            .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                                                @Override
+                                                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                                                    riderName.setText(documentSnapshot.getString("fullName"));
+                                                                    String riderCurrentVehicle = documentSnapshot.getString("currentVehicle");
+                                                                    fStore.collection("Vehicles")
+                                                                            .document(riderCurrentVehicle)
+                                                                            .get()
+                                                                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                                                    @Override
+                                                                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                                                            riderVehicle.setText(documentSnapshot.getString("brand") + " " + documentSnapshot.getString("model") + " (" + documentSnapshot.getString("color") + ")");
+                                                                            riderPlate.setText(documentSnapshot.getString("plateNumber"));
+                                                                        }
+                                                                    });
+                                                                }
+                                                            });
+                                                }
                                             }
-                                        });
-                            }
+                                        }
+                                    });
                         }
                     }
-
                 });
     }
 

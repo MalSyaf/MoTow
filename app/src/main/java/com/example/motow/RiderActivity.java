@@ -58,36 +58,38 @@ import java.util.Map;
 
 public class RiderActivity extends FragmentActivity implements OnMapReadyCallback{
 
-    // Google Map
+    // Google map
     private GoogleMap mMap;
     private Boolean check = false;
 
     // Firebase
-    FirebaseAuth fAuth;
-    FirebaseFirestore fStore;
-    String userId;
-    CollectionReference vehicleRef;
-
-    // Recycler View
-    RecyclerView recyclerView;
-    VehicleAdapter vehicleAdapter;
+    private FirebaseAuth fAuth;
+    private FirebaseFirestore fStore;
+    private String userId;
+    private CollectionReference vehicleRef;
 
     // Nav bar
-    ImageView pfp, chatBtn, notifybtn, manageBtn, backBtn;
+    private ImageView chatBtn, notifybtn, manageBtn;
+
+    // Recycler View
+    private RecyclerView recyclerView;
+    private VehicleAdapter vehicleAdapter;
+
+    // Tower
+    private String towerId, tCurrentVehicle;
+    private RelativeLayout towerContainer, towerBar;
+    private TextView towerName, towerType, towerVehicle, towerPlate, towerBarStatus;
+    private LatLng towerLocation;
+    private Double tLatitude, tLongitude;
 
     // Interface
-    TextView userName, searchText, towerName, towerType, towerVehicle, towerPlate, towerBarStatus;
-    Button requestBtn, confirmBtn, cancelBtn, okBtn, paymentBtn;
-    RelativeLayout selectVehicle, towerContainer, towerBar;
-    public String vehicleId, towerId, currentVehicleId, currentPlateNum, tCurrentVehicle, currentProcessId;
-    String towerStringLatitude, towerStringLongitude, currentTowerId;
-    Double towerLatitude, towerLongitude, tLatitude, tLongitude;
-    LatLng towerLocation, currentLocation;
-
-    CircleOptions circleOptions;
-
-    private Marker mSelectedMarker = null;
-    private ArrayList<Marker> mTripMarkers = new ArrayList<>();
+    private RelativeLayout selectVehicle;
+    private TextView userName, searchText;
+    private ImageView pfp, backBtn;
+    private Button requestBtn, confirmBtn, cancelBtn, okBtn, paymentBtn;
+    public String currentVehicleId;
+    private LatLng currentLocation;
+    private CircleOptions circleOptions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
