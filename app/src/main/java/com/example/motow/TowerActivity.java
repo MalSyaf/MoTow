@@ -12,6 +12,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -67,10 +68,15 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
     private TextView riderName, riderVehicle, riderPlate;
     private Button acceptBtn, rejectBtn;
 
+    // Rider bar
+    private RelativeLayout riderBar;
+    private ImageView riderPfp;
+    private TextView riderBarVehicle, riderBarPlate;
+
     // Interface
     private TextView userName;
     private Button offlineBtn, onlineBtn;
-    private String currentProcessId;
+    private String currentProcessId, riderCurrentVehicle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +99,12 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
         riderPlate = findViewById(R.id.rider_plate);
         acceptBtn = findViewById(R.id.accept_btn);
         rejectBtn = findViewById(R.id.reject_btn);
+
+        // Rider bar
+        riderBar = findViewById(R.id.rider_bar);
+        riderPfp = findViewById(R.id.rider_bar_pfp);
+        riderBarVehicle = findViewById(R.id.rider_bar_vehicle);
+        riderBarPlate = findViewById(R.id.rider_bar_plate);
 
         // Interface
         pfp = findViewById(R.id.welcome_pfp);
@@ -229,7 +241,7 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                             fStore.collection("Processes")
                                     .whereEqualTo("towerId", userId)
                                     .whereEqualTo("riderId", riderId)
-                                    .whereEqualTo("processStatus", "ongoing")
+                                    .whereEqualTo("processStatus", "requesting")
                                     .get()
                                     .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                         @Override
@@ -248,7 +260,7 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                                                                 @Override
                                                                 public void onSuccess(DocumentSnapshot documentSnapshot) {
                                                                     riderName.setText(documentSnapshot.getString("fullName"));
-                                                                    String riderCurrentVehicle = documentSnapshot.getString("currentVehicle");
+                                                                    riderCurrentVehicle = documentSnapshot.getString("currentVehicle");
                                                                     fStore.collection("Vehicles")
                                                                             .document(riderCurrentVehicle)
                                                                             .get()
@@ -264,7 +276,66 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                                                     acceptBtn.setOnClickListener(new View.OnClickListener() {
                                                         @Override
                                                         public void onClick(View view) {
+                                                            riderContainer.setVisibility(View.GONE);
+                                                            riderBar.setVisibility(View.VISIBLE);
 
+                                                            HashMap<String, Object> userStatus = new HashMap<>();
+                                                            userStatus.put("status", "onduty");
+
+                                                            fStore.collection("Users")
+                                                                    .document(userId)
+                                                                    .update(userStatus)
+                                                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                        @Override
+                                                                        public void onSuccess(Void unused) {
+                                                                            //
+                                                                        }
+                                                                    });
+
+                                                            HashMap<String, Object> updateStatus = new HashMap<>();
+                                                            updateStatus.put("processStatus", "ongoing");
+
+                                                            fStore.collection("Processes")
+                                                                    .document(currentProcessId)
+                                                                    .update(updateStatus)
+                                                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                        @Override
+                                                                        public void onSuccess(Void unused) {
+                                                                            Toast.makeText(TowerActivity.this, "Request has been accepted", Toast.LENGTH_SHORT).show();
+                                                                        }
+                                                                    });
+
+                                                            fStore.collection("Vehicles")
+                                                                    .document(riderCurrentVehicle)
+                                                                    .get()
+                                                                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                                                        @Override
+                                                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                                                            riderBarVehicle.setText(documentSnapshot.getString("brand") + " " + documentSnapshot.getString("model") + " (" + documentSnapshot.getString("color") + ")");
+                                                                            riderBarPlate.setText(documentSnapshot.getString("plateNumber"));
+                                                                        }
+                                                                    });
+
+                                                            fStore.collection("Users")
+                                                                    .document(riderId)
+                                                                    .get()
+                                                                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                                                        @Override
+                                                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                                                            double riderLatitude = documentSnapshot.getDouble("latitude");
+                                                                            double riderLongitude = documentSnapshot.getDouble("longitude");
+
+                                                                            LatLng riderLocation = new LatLng(riderLatitude, riderLongitude);
+                                                                            mMap.addMarker(new MarkerOptions().position(riderLocation).title(documentSnapshot.getString("fullName")));
+
+                                                                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("google.navigation:q=" + riderLatitude + "," + riderLongitude));
+                                                                            intent.setPackage("com.google.android.apps.maps");
+
+                                                                            if(intent.resolveActivity(getPackageManager()) != null){
+                                                                                startActivity(intent);
+                                                                            }
+                                                                        }
+                                                                    });
                                                         }
                                                     });
 

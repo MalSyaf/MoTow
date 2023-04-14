@@ -184,6 +184,59 @@
             app:cornerRadius="40dp" />
     </RelativeLayout>
 
+    <!-- Rider Bar -->
+    <RelativeLayout
+        android:id="@+id/rider_bar"
+        android:layout_width="291dp"
+        android:layout_height="62dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerInParent="true"
+        android:background="@drawable/welcome_bar"
+        android:elevation="50dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="550dp"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/rider_bar_pfp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="6dp"
+            android:layout_marginEnd="21dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentBottom="true"/>
+
+        <TextView
+            android:id="@+id/rider_bar_vehicle"
+            android:layout_width="192dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="24dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="20dp"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:translationZ="90dp" />
+
+        <TextView
+            android:id="@+id/rider_bar_plate"
+            android:layout_width="192dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="24dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="10dp"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:translationZ="90dp" />
+    </RelativeLayout>
+
     <!-- Navbar -->
     <RelativeLayout
         android:id="@+id/navbar"
