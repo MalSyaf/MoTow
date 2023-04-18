@@ -77,21 +77,20 @@
         android:layout_width="264dp"
         android:layout_height="wrap_content"
         android:layout_above="@+id/navbar"
-        android:backgroundTint="@color/purple_200"
         android:layout_centerHorizontal="true"
         android:layout_marginStart="5dp"
-        android:layout_marginTop="5dp"
         android:layout_marginEnd="5dp"
         android:layout_marginBottom="80dp"
+        android:backgroundTint="@color/purple_200"
         android:padding="8dp"
         android:text="MAKE PAYMENT"
-        android:textSize="18sp"
         android:textColor="@color/white"
+        android:textSize="18sp"
+        android:visibility="gone"
         app:cornerRadius="40dp"
         app:layout_constraintBottom_toBottomOf="@+id/navbar"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:visibility="gone"/>
+        app:layout_constraintStart_toStartOf="parent"/>
 
     <!-- Select Vehicle Container -->
     <RelativeLayout
@@ -293,7 +292,6 @@
         android:layout_alignParentTop="true"
         android:layout_centerInParent="true"
         android:background="@drawable/welcome_bar"
-        android:elevation="50dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"

@@ -30,7 +30,7 @@
         app:cornerRadius="40dp"
         app:layout_constraintBottom_toBottomOf="@+id/navbar"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"/>
 
     <Button
         android:id="@+id/online_btn"
@@ -48,7 +48,51 @@
         android:textSize="18sp"
         android:textColor="@color/white"
         app:cornerRadius="40dp"
-        android:visibility="invisible"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/navbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <Button
+        android:id="@+id/pickup_btn"
+        android:layout_width="264dp"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/navbar"
+        android:backgroundTint="@color/purple_200"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="78dp"
+        android:padding="8dp"
+        android:text="PICK-UP"
+        android:textSize="18sp"
+        android:textColor="@color/white"
+        app:cornerRadius="40dp"
+        android:visibility="gone"
+        android:translationZ="1dp"
+        app:layout_constraintBottom_toBottomOf="@+id/navbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <Button
+        android:id="@+id/complete_btn"
+        android:layout_width="264dp"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/navbar"
+        android:backgroundTint="@color/green_btn"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="78dp"
+        android:padding="8dp"
+        android:text="COMPLETE"
+        android:textSize="18sp"
+        android:textColor="@color/white"
+        app:cornerRadius="40dp"
+        android:visibility="gone"
+        android:translationZ="1dp"
         app:layout_constraintBottom_toBottomOf="@+id/navbar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
@@ -192,11 +236,10 @@
         android:layout_alignParentTop="true"
         android:layout_centerInParent="true"
         android:background="@drawable/welcome_bar"
-        android:elevation="50dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="550dp"
+        android:layout_marginTop="520dp"
         android:visibility="gone">
 
         <ImageView

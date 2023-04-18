@@ -75,7 +75,7 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
 
     // Interface
     private TextView userName;
-    private Button offlineBtn, onlineBtn;
+    private Button offlineBtn, onlineBtn, pickupBtn, completeBtn;
     private String currentProcessId, riderCurrentVehicle;
 
     @Override
@@ -111,6 +111,8 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
         userName = findViewById(R.id.user_name);
         offlineBtn = findViewById(R.id.offline_btn);
         onlineBtn = findViewById(R.id.online_btn);
+        pickupBtn = findViewById(R.id.pickup_btn);
+        completeBtn = findViewById(R.id.complete_btn);
 
         // Set profile picture
         pfp.setImageDrawable(getResources().getDrawable(R.drawable.default_pfp));
@@ -237,7 +239,7 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                             riderId = null;
                             riderId = documentSnapshot.getString("riderId");
 
-                            // Find on-going process
+                            // Find request
                             fStore.collection("Processes")
                                     .whereEqualTo("towerId", userId)
                                     .whereEqualTo("riderId", riderId)
@@ -278,6 +280,7 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                                                         public void onClick(View view) {
                                                             riderContainer.setVisibility(View.GONE);
                                                             riderBar.setVisibility(View.VISIBLE);
+                                                            pickupBtn.setVisibility(View.VISIBLE);
 
                                                             HashMap<String, Object> userStatus = new HashMap<>();
                                                             userStatus.put("status", "onduty");
@@ -355,6 +358,75 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                                                                         @Override
                                                                         public void onSuccess(Void unused) {
                                                                             Toast.makeText(TowerActivity.this, "Request has been rejected", Toast.LENGTH_SHORT).show();
+                                                                        }
+                                                                    });
+
+                                                            HashMap<String, Object> userStatus = new HashMap<>();
+                                                            userStatus.put("status", "offline");
+
+                                                            fStore.collection("Users")
+                                                                    .document(userId)
+                                                                    .update(userStatus)
+                                                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                        @Override
+                                                                        public void onSuccess(Void unused) {
+                                                                            //
+                                                                        }
+                                                                    });
+                                                        }
+                                                    });
+
+                                                    pickupBtn.setOnClickListener(new View.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(View view) {
+                                                            pickupBtn.setVisibility(View.GONE);
+                                                            completeBtn.setVisibility(View.VISIBLE);
+
+                                                            HashMap<String, Object> updateStatus = new HashMap<>();
+                                                            updateStatus.put("processStatus", "towed");
+
+                                                            fStore.collection("Processes")
+                                                                    .document(currentProcessId)
+                                                                    .update(updateStatus)
+                                                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                        @Override
+                                                                        public void onSuccess(Void unused) {
+                                                                            Toast.makeText(TowerActivity.this, "Vehicle has been towed", Toast.LENGTH_SHORT).show();
+                                                                        }
+                                                                    });
+                                                        }
+                                                    });
+
+                                                    completeBtn.setOnClickListener(new View.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(View view) {
+                                                            riderBar.setVisibility(View.GONE);
+                                                            completeBtn.setVisibility(View.GONE);
+                                                            onlineBtn.setVisibility(View.VISIBLE);
+
+                                                            HashMap<String, Object> userStatus = new HashMap<>();
+                                                            userStatus.put("status", "online");
+
+                                                            fStore.collection("Users")
+                                                                    .document(userId)
+                                                                    .update(userStatus)
+                                                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                        @Override
+                                                                        public void onSuccess(Void unused) {
+                                                                            //
+                                                                        }
+                                                                    });
+
+                                                            HashMap<String, Object> updateStatus = new HashMap<>();
+                                                            updateStatus.put("processStatus", "completed");
+
+                                                            fStore.collection("Processes")
+                                                                    .document(currentProcessId)
+                                                                    .update(updateStatus)
+                                                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                        @Override
+                                                                        public void onSuccess(Void unused) {
+                                                                            Toast.makeText(TowerActivity.this, "Process has been completed", Toast.LENGTH_SHORT).show();
                                                                         }
                                                                     });
                                                         }
