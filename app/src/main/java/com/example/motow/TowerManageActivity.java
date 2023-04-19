@@ -1,43 +1,85 @@
 package com.example.motow;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
+
+import java.util.HashMap;
+
+import io.grpc.Context;
 
 public class TowerManageActivity extends AppCompatActivity {
 
-    ImageView homeBtn;
-    TextView towerName, personalInfo, manageVehicle, logoutBtn;
-
     // Firebase
-    FirebaseAuth fAuth = FirebaseAuth.getInstance();
-    FirebaseFirestore fStore = FirebaseFirestore.getInstance();
-    String userId;
+    private FirebaseAuth fAuth;
+    private FirebaseFirestore fStore;
+    private StorageReference storageReference;
+    private String userId;
+
+    // Interface
+    private ImageView pfp, homeBtn, chatBtn, notifyBtn;
+    private TextView towerName, changePfp, personalInfo, manageVehicles, deleteAcc, cancelDelete, logoutBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tower_manage);
 
+        // Firebase
+        fAuth = FirebaseAuth.getInstance();
+        fStore = FirebaseFirestore.getInstance();
+        storageReference = FirebaseStorage.getInstance().getReference();
         userId = fAuth.getCurrentUser().getUid();
 
-        homeBtn = findViewById(R.id.home_btn);
+        StorageReference profileRef = storageReference.child("profile.jpg");
+        profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                Picasso.get().load(uri).into(pfp);
+            }
+        });
 
+        // Navbar
+        homeBtn = findViewById(R.id.home_btn);
+        chatBtn = findViewById(R.id.chat_btn);
+        notifyBtn = findViewById(R.id.notify_btn);
+
+        // Interface
         towerName = findViewById(R.id.tower_name);
+        pfp = findViewById(R.id.pfp);
+        changePfp = findViewById(R.id.change_pfp_btn);
         personalInfo = findViewById(R.id.personal_info);
-        manageVehicle = findViewById(R.id.manage_vehicles);
+        manageVehicles = findViewById(R.id.manage_vehicles);
+        deleteAcc = findViewById(R.id.delete_account);
+        cancelDelete = findViewById(R.id.cancel_delete);
         logoutBtn = findViewById(R.id.logout_btn);
 
         // Display username
@@ -49,13 +91,7 @@ public class TowerManageActivity extends AppCompatActivity {
             }
         });
 
-        manageVehicle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(getApplicationContext(), ManageVehicleActivity.class));
-                finish();
-            }
-        });
+        // Navbar
         homeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -64,6 +100,15 @@ public class TowerManageActivity extends AppCompatActivity {
             }
         });
 
+        // Manage interface
+        changePfp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Open gallery from phone
+                Intent openGallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(openGallery, 1000);
+            }
+        });
         personalInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -71,7 +116,25 @@ public class TowerManageActivity extends AppCompatActivity {
                 finish();
             }
         });
-
+        manageVehicles.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getApplicationContext(), ManageVehicleActivity.class));
+                finish();
+            }
+        });
+        deleteAcc.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                requestDeletion();
+            }
+        });
+        cancelDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                cancelDeletion();
+            }
+        });
         logoutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -79,5 +142,108 @@ public class TowerManageActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == 1000){
+            if(requestCode == Activity.RESULT_OK){
+                Uri pfpUri = data.getData();
+
+                //pfp.setImageURI(pfpUri);
+
+                uploadImageToFirebase(pfpUri);
+            }
+        }
+    }
+
+    private void uploadImageToFirebase(Uri pfpUri) {
+        // Upload image to firebase storage
+        StorageReference fileRef = storageReference.child("profile.jpg");
+        fileRef.putFile(pfpUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                fileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        Picasso.get().load(uri).into(pfp);
+                    }
+                });
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(TowerManageActivity.this, "Upload failed", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void requestDeletion() {
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle("Are you sure?");
+        alert.setMessage("This account will not be accessible after 7 working days.");
+        alert.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                // Delete request field
+                HashMap<String, Object> delRequest = new HashMap<>();
+                delRequest.put("delRequest", 1);
+
+                fStore.collection("Users")
+                        .document(userId)
+                        .update(delRequest)
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                Toast.makeText(TowerManageActivity.this, "Request has been sent", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+                deleteAcc.setVisibility(View.GONE);
+                cancelDelete.setVisibility(View.VISIBLE);
+            }
+        });
+        alert.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                //
+            }
+        });
+        alert.create().show();
+    }
+
+    private void cancelDeletion() {
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle("Are you sure?");
+        alert.setMessage("Do you want to cancel the account deletion?");
+        alert.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                // Add request field
+                HashMap<String, Object> delRequest = new HashMap<>();
+                delRequest.put("delRequest", FieldValue.delete());
+
+                fStore.collection("Users")
+                        .document(userId)
+                        .update(delRequest)
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                Toast.makeText(TowerManageActivity.this, "Account deletion has been canceled", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+                deleteAcc.setVisibility(View.VISIBLE);
+                cancelDelete.setVisibility(View.GONE);
+            }
+        });
+        alert.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                //
+            }
+        });
+        alert.create().show();
     }
 }

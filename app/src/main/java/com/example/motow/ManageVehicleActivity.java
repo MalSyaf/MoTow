@@ -35,15 +35,17 @@ import java.util.ArrayList;
 
 public class ManageVehicleActivity extends AppCompatActivity {
 
+    //Firebase
+    private FirebaseAuth fAuth;
+    private FirebaseFirestore fStore;
+    private String userId;
+    private CollectionReference vehicleRef;
+
+    // Recycler view
     RecyclerView recyclerView;
-    ArrayList<Vehicle> vehicleArrayList;
     VehicleAdapter vehicleAdapter;
 
-    String userId;
-    FirebaseAuth fAuth = FirebaseAuth.getInstance();
-    FirebaseFirestore fStore = FirebaseFirestore.getInstance();
-    CollectionReference vehicleRef = fStore.collection("Vehicles");
-
+    // Interface
     ImageView backBtn, vehicleImage;
     Button registerBtn;
 
@@ -52,14 +54,20 @@ public class ManageVehicleActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manage_vehicle);
 
+        // Firebase
+        fAuth = FirebaseAuth.getInstance();
+        fStore = FirebaseFirestore.getInstance();
+        vehicleRef = fStore.collection("Vehicles");
+        userId = fAuth.getCurrentUser().getUid();
+
+        // Interface
         backBtn = findViewById(R.id.back_btn);
         registerBtn = findViewById(R.id.register_btn);
 
+        // Recycler view
         recyclerView = findViewById(R.id.recyclerview);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        userId = fAuth.getCurrentUser().getUid();
 
         setUpRecyclerView();
 
@@ -123,13 +131,11 @@ public class ManageVehicleActivity extends AppCompatActivity {
             }
         }).attachToRecyclerView(recyclerView);
     }
-
     @Override
     protected void onStart() {
         super.onStart();
         vehicleAdapter.startListening();
     }
-
     @Override
     protected void onStop() {
         super.onStop();

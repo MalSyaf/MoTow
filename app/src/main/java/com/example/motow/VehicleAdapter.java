@@ -28,10 +28,6 @@ public class VehicleAdapter extends FirestoreRecyclerAdapter<Vehicle, VehicleAda
 
     public static OnItemClickListener listener;
 
-    FirebaseAuth fAuth = FirebaseAuth.getInstance();
-    FirebaseFirestore fStore = FirebaseFirestore.getInstance();
-    String userId = fAuth.getCurrentUser().getUid();
-
     /**
      * Create a new RecyclerView adapter that listens to a Firestore Query.  See {@link
      * FirestoreRecyclerOptions} for configuration options.
