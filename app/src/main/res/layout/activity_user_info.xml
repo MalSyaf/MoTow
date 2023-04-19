@@ -7,110 +7,142 @@
     android:layout_height="match_parent"
     tools:context=".UserInfoActivity">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <ImageView
-            android:id="@+id/back_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/baseline_arrow_back_ios_24"
-            android:layout_marginTop="30dp"
-            android:layout_marginLeft="20dp"/>
-
-        <!-- Name -->
-        <RelativeLayout
+        <LinearLayout
+            android:id="@+id/linearLayout"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginTop="60dp"
-            android:background="@drawable/personal_info">
-            <TextView
-                android:id="@+id/edit_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="15dp"
-                android:layout_marginRight="15dp"
-                android:text="Name"
-                android:textSize="20sp"
-                android:textStyle="bold"/>
-            <TextView
-                android:id="@+id/fullname"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:textSize="20sp"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="50dp"
-                android:textStyle="bold"/>
+            android:layout_height="match_parent"
+            android:orientation="vertical">
             <ImageView
+                android:id="@+id/back_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/baseline_arrow_forward_ios_24"
-                android:layout_centerVertical="true"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="15dp"/>
-        </RelativeLayout>
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="30dp"
+                android:src="@drawable/baseline_arrow_back_ios_24" />
 
-        <!-- Email -->
+            <!-- Name -->
+            <RelativeLayout
+                android:id="@+id/name_layout"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="60dp"
+                android:background="@drawable/personal_info">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="15dp"
+                    android:text="Name"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="20dp"
+                    android:text="User Name"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+            </RelativeLayout>
+
+            <!-- Email -->
+            <RelativeLayout
+                android:id="@+id/email_layout"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="3dp"
+                android:background="@drawable/personal_info">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="15dp"
+                    android:text="Email"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/email"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="20dp"
+                    android:text="User Email"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+            </RelativeLayout>
+
+            <!-- Phone Number -->
+            <RelativeLayout
+                android:id="@+id/phone_layout"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/personal_info">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="15dp"
+                    android:text="Phone"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/phone_no"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="20dp"
+                    android:text="User Phone"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+            </RelativeLayout>
+        </LinearLayout>
+
+        <!-- Provider Type -->
         <RelativeLayout
+            android:id="@+id/type_layout"
             android:layout_width="match_parent"
             android:layout_height="50dp"
+            android:layout_marginTop="300dp"
             android:background="@drawable/personal_info"
-            android:layout_marginTop="3dp">
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="15dp"
-                android:layout_marginRight="15dp"
-                android:text="Email"
-                android:textSize="20sp"
-                android:textStyle="bold"/>
-            <TextView
-                android:id="@+id/email"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:textSize="20sp"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="15dp"
-                android:textStyle="bold"/>
-        </RelativeLayout>
+            android:visibility="gone"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
 
-        <!-- Phone Number -->
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@drawable/personal_info">
             <TextView
-                android:id="@+id/edit_phoneNum"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:layout_marginLeft="15dp"
+                android:layout_marginLeft="20dp"
                 android:layout_marginRight="15dp"
-                android:text="Phone"
+                android:text="Provider Type"
                 android:textSize="20sp"
-                android:textStyle="bold"/>
+                android:textStyle="bold" />
+
             <TextView
-                android:id="@+id/phone_no"
+                android:id="@+id/type"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
+                android:layout_marginRight="20dp"
+                android:text="Register Type"
+                android:textColor="@color/red"
                 android:textSize="20sp"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="50dp"
-                android:textStyle="bold"/>
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/baseline_arrow_forward_ios_24"
-                android:layout_centerVertical="true"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="15dp"/>
+                android:textStyle="bold" />
         </RelativeLayout>
 
         <!-- Tower Company -->
@@ -119,36 +151,164 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:background="@drawable/personal_info"
-            android:layout_marginTop="50dp"
-            android:visibility="invisible">
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@+id/type_layout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
             <TextView
-                android:id="@+id/edit_company"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:layout_marginLeft="15dp"
+                android:layout_marginLeft="20dp"
                 android:layout_marginRight="15dp"
                 android:text="Company"
                 android:textSize="20sp"
-                android:textStyle="bold"/>
+                android:textStyle="bold" />
+
             <TextView
                 android:id="@+id/company"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
+                android:layout_marginRight="20dp"
+                android:text="Register Company"
+                android:textColor="@color/red"
                 android:textSize="20sp"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="50dp"
-                android:textStyle="bold"
-                android:text="register company"
-                android:textColor="@color/red"/>
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/baseline_arrow_forward_ios_24"
-                android:layout_centerVertical="true"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="15dp"/>
+                android:textStyle="bold" />
         </RelativeLayout>
-    </LinearLayout>
+
+        <Button
+            android:id="@+id/manage_info_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/purple_200"
+            android:text="Manage Info"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginBottom="220dp"/>
+
+        <!-- Edit Info -->
+        <EditText
+            android:id="@+id/edit_name"
+            android:layout_width="350dp"
+            android:layout_height="60dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="100dp"
+            android:background="@drawable/lavender_border"
+            android:hint="Full Name"
+            android:padding="8dp"
+            android:textAlignment="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:visibility="gone"/>
+        <EditText
+            android:id="@+id/edit_email"
+            android:editable="false"
+            android:layout_width="350dp"
+            android:layout_height="60dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/lavender_border"
+            android:hint="Email"
+            android:padding="8dp"
+            android:textAlignment="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/edit_name"
+            android:visibility="gone"/>
+        <EditText
+            android:id="@+id/edit_phone"
+            android:layout_width="350dp"
+            android:layout_height="60dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/lavender_border"
+            android:hint="Phone No."
+            android:padding="8dp"
+            android:textAlignment="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/edit_email"
+            android:visibility="gone"/>
+
+        <EditText
+            android:id="@+id/edit_company"
+            android:layout_width="350dp"
+            android:layout_height="60dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="330dp"
+            android:background="@drawable/lavender_border"
+            android:hint="Company Name"
+            android:padding="8dp"
+            android:textAlignment="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:visibility="gone"/>
+        <EditText
+            android:id="@+id/edit_regnum"
+            android:layout_width="350dp"
+            android:layout_height="60dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/lavender_border"
+            android:hint="Registration No."
+            android:padding="8dp"
+            android:textAlignment="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/edit_company"
+            android:visibility="gone"/>
+
+        <CheckBox
+            android:id="@+id/private_cbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Private"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/edit_regnum"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="70dp"
+            android:visibility="gone"/>
+        <CheckBox
+            android:id="@+id/company_cbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Under a Company"
+            app:layout_constraintTop_toBottomOf="@+id/edit_regnum"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="20dp"
+            android:layout_marginRight="70dp"
+            android:visibility="gone"/>
+
+        <Button
+            android:id="@+id/save_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="630dp"
+            android:backgroundTint="@color/purple_200"
+            android:text="Save"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginLeft="250dp"
+            android:visibility="gone"/>
+        <Button
+            android:id="@+id/cancel_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="630dp"
+            android:backgroundTint="@color/red"
+            android:text="Cancel"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginLeft="50dp"
+            android:visibility="gone"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

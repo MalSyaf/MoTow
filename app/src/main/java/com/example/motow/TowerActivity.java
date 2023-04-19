@@ -447,7 +447,7 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        if(documentSnapshot.getString("companyId") != null & documentSnapshot.getString("currentVehicle") != null){
+                        if(documentSnapshot.getString("companyRegNum") != null & documentSnapshot.getString("currentVehicle") != null & documentSnapshot.getString("providerType") != null){
                             Map<String, Object> infoUpdate = new HashMap<>();
                             infoUpdate.put("status", "online");
 

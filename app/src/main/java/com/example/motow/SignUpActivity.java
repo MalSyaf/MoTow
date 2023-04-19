@@ -147,7 +147,8 @@ public class SignUpActivity extends AppCompatActivity {
                                         userInfo.put("email", signEmail.getText().toString());
                                         userInfo.put("phoneNumber", signContact.getText().toString());
                                         userInfo.put("providerType", null);
-                                        userInfo.put("companyId", null);
+                                        userInfo.put("companyName", null);
+                                        userInfo.put("companyRegNum", null);
                                         userInfo.put("currentVehicle", null);
                                         userInfo.put("longitude", null);
                                         userInfo.put("latitude", null);

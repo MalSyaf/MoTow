@@ -17,9 +17,6 @@
         android:theme="@style/Theme.MoTow"
         tools:targetApi="31" >
         <activity
-            android:name=".EditCompanyActivity"
-            android:exported="false" />
-        <activity
             android:name=".UserInfoActivity"
             android:exported="false" />
         <activity
