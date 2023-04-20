@@ -265,6 +265,10 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
         });
     }
 
+    public void startService(View v){
+
+    }
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;

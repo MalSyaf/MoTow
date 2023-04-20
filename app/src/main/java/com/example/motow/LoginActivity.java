@@ -12,8 +12,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.motow.test.MapsActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -25,50 +25,25 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 public class LoginActivity extends AppCompatActivity {
 
-    EditText loginEmail, loginPassword;
-    TextView signUpRedirect;
-    Button buttonLogin;
-    FirebaseAuth mAuth;
-    FirebaseFirestore fStore;
+    // Firebase
+    private FirebaseAuth fAuth;
+    private FirebaseFirestore fStore;
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if(currentUser != null){
-            DocumentReference df = FirebaseFirestore.getInstance().collection("Users").document(currentUser.getUid());
-            /*df.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                @Override
-                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                    if(documentSnapshot.getString("isAdmin") != null) {
-                        startActivity(new Intent(getApplicationContext(), MapsActivity.class));
-                        finish();
-                    }
-                    if(documentSnapshot.getString("isUser") != null) {
-                       startActivity(new Intent(getApplicationContext(), RiderActivity.class));
-                       finish();
-                   }
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    FirebaseAuth.getInstance().signOut();
-                    startActivity(new Intent(getApplicationContext(), LoginActivity.class));
-                    finish();
-                }
-            });*/
-        }
-    }
+    // Interface
+    private EditText loginEmail, loginPassword;
+    private TextView signUpRedirect;
+    private Button buttonLogin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        mAuth = FirebaseAuth.getInstance();
+        // Firebase
+        fAuth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
 
+        // Interface
         loginEmail = findViewById(R.id.login_email);
         loginPassword = findViewById(R.id.login_password);
         buttonLogin = findViewById(R.id.login_button);
@@ -99,7 +74,7 @@ public class LoginActivity extends AppCompatActivity {
                     return;
                 }
 
-                mAuth.signInWithEmailAndPassword(email, password)
+                fAuth.signInWithEmailAndPassword(email, password)
                         .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
@@ -125,7 +100,7 @@ public class LoginActivity extends AppCompatActivity {
                 // identify the user access level
                 if (documentSnapshot.getString("isAdmin") != null) {
                     // user is an admin
-                    Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
+                    Intent intent = new Intent(getApplicationContext(), AdminActivity.class);
                     startActivity(intent);
                     finish();
                 }
@@ -143,5 +118,34 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        // Check if user is signed in (non-null) and update UI accordingly.
+        if(FirebaseAuth.getInstance().getCurrentUser() != null){
+            DocumentReference df = FirebaseFirestore.getInstance().collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid());
+            df.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    if(documentSnapshot.getString("isRider") != null){
+                        startActivity(new Intent(getApplicationContext(), RiderActivity.class));
+                        finish();
+                    }
+                    if(documentSnapshot.getString("isTower") != null){
+                        startActivity(new Intent(getApplicationContext(), TowerActivity.class));
+                        finish();
+                    }
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    FirebaseAuth.getInstance().signOut();
+                    startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+                    finish();
+                }
+            });
+        }
     }
 }

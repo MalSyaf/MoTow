@@ -23,8 +23,6 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import java.util.HashMap;
 
@@ -61,6 +59,15 @@ public class RiderManageActivity extends AppCompatActivity {
         deleteAcc = findViewById(R.id.delete_account);
         cancelDelete = findViewById(R.id.cancel_delete);
         logoutBtn = findViewById(R.id.logout_btn);
+
+        logoutBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FirebaseAuth.getInstance().signOut();
+                startActivity(new Intent(getApplicationContext(), SignUpActivity.class));
+                finish();
+            }
+        });
 
         // Display username
         DocumentReference documentReference = fStore.collection("Users").document(userId);
@@ -105,13 +112,6 @@ public class RiderManageActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 cancelDeletion();
-            }
-        });
-        logoutBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(getApplicationContext(), LoginActivity.class));
-                finish();
             }
         });
     }

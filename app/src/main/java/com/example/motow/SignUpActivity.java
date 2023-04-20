@@ -27,12 +27,15 @@ import java.util.Map;
 
 public class SignUpActivity extends AppCompatActivity {
 
-    EditText userName, signEmail, signPassword, signContact;
-    CheckBox isRiderBox, isTowerBox;
-    TextView loginRedirect;
-    Button buttonSign;
-    FirebaseAuth mAuth;
-    FirebaseFirestore fStore;
+    // Firebase
+    private FirebaseAuth fAuth;
+    private FirebaseFirestore fStore;
+
+    // Interface
+    private EditText signIC, userName, signEmail, signPassword, signContact;
+    private CheckBox isRiderBox, isTowerBox;
+    private TextView loginRedirect;
+    private Button buttonSign;
 
     /*@Override
     public void onStart() {
@@ -51,17 +54,20 @@ public class SignUpActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
 
-        mAuth = FirebaseAuth.getInstance();
+        // Firebase
+        fAuth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
 
+        // Form
+        signIC = findViewById(R.id.ic_num);
         userName = findViewById(R.id.username);
         signEmail = findViewById(R.id.signup_email);
         signPassword = findViewById(R.id.signup_password);
         signContact = findViewById(R.id.signup_contact);
-
         isRiderBox = findViewById(R.id.rider_cbox);
         isTowerBox = findViewById(R.id.tower_cbox);
 
+        // Interface
         buttonSign = findViewById(R.id.signup_button);
         loginRedirect = findViewById(R.id.loginRedirectText);
 
@@ -74,7 +80,6 @@ public class SignUpActivity extends AppCompatActivity {
                 }
             }
         });
-
         isTowerBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -96,12 +101,18 @@ public class SignUpActivity extends AppCompatActivity {
         buttonSign.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String username, email, password;
+                String icNum, username, email, password, phoneNum;
 
+                icNum = String.valueOf(signIC.getText());
                 username = String.valueOf(userName.getText());
                 email = String.valueOf(signEmail.getText());
                 password = String.valueOf(signPassword.getText());
+                phoneNum = String.valueOf(signContact.getText());
 
+                if (TextUtils.isEmpty(icNum)) {
+                    Toast.makeText(SignUpActivity.this, "Enter identification number", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 if (TextUtils.isEmpty(username)) {
                     Toast.makeText(SignUpActivity.this, "Enter full name", Toast.LENGTH_SHORT).show();
                     return;
@@ -114,35 +125,45 @@ public class SignUpActivity extends AppCompatActivity {
                     Toast.makeText(SignUpActivity.this, "Enter password", Toast.LENGTH_SHORT).show();
                     return;
                 }
+                if (TextUtils.isEmpty(phoneNum)) {
+                    Toast.makeText(SignUpActivity.this, "Enter phone number", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 // checkbox validation
                 if(!(isRiderBox.isChecked() || isTowerBox.isChecked())) {
                     Toast.makeText(SignUpActivity.this, "Select account type", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                mAuth.createUserWithEmailAndPassword(email, password)
+                fAuth.createUserWithEmailAndPassword(email, password)
                         .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if (task.isSuccessful()) {
-                                    FirebaseUser user = mAuth.getCurrentUser();
+                                    FirebaseUser user = fAuth.getCurrentUser();
                                     Toast.makeText(SignUpActivity.this, "Account created.", Toast.LENGTH_SHORT).show();
-                                    Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                                     DocumentReference df = fStore.collection("Users").document(user.getUid());
                                     Map<String,Object> userInfo = new HashMap<>();
 
                                     if(isRiderBox.isChecked()){
-                                        userInfo.put("userId", mAuth.getCurrentUser().getUid());
+                                        userInfo.put("userId", fAuth.getCurrentUser().getUid());
                                         userInfo.put("isRider","1");
+                                        userInfo.put("icNum", signIC.getText().toString());
                                         userInfo.put("fullName", userName.getText().toString());
                                         userInfo.put("email", signEmail.getText().toString());
                                         userInfo.put("phoneNumber", signContact.getText().toString());
+                                        userInfo.put("currentVehicle", null);
                                         userInfo.put("longitude", null);
                                         userInfo.put("latitude", null);
+
+                                        Intent intent = new Intent(getApplicationContext(), RiderActivity.class);
+                                        startActivity(intent);
                                     }
                                     if(isTowerBox.isChecked()){
-                                        userInfo.put("userId", mAuth.getCurrentUser().getUid());
+                                        userInfo.put("userId", fAuth.getCurrentUser().getUid());
                                         userInfo.put("isTower", "1");
+                                        userInfo.put("icNum", signIC.getText().toString());
                                         userInfo.put("fullName", userName.getText().toString());
                                         userInfo.put("email", signEmail.getText().toString());
                                         userInfo.put("phoneNumber", signContact.getText().toString());
@@ -152,10 +173,12 @@ public class SignUpActivity extends AppCompatActivity {
                                         userInfo.put("currentVehicle", null);
                                         userInfo.put("longitude", null);
                                         userInfo.put("latitude", null);
+
+                                        Intent intent = new Intent(getApplicationContext(), TowerActivity.class);
+                                        startActivity(intent);
                                     }
 
                                     df.set(userInfo);
-                                    startActivity(new Intent(getApplicationContext(), LoginActivity.class));
                                 } else {
                                     // If sign in fails, display a message to the user.
                                     Toast.makeText(SignUpActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();

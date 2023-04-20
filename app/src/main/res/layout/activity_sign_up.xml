@@ -5,95 +5,120 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SignUpActivity">
+    tools:context=".SignUpActivity"
+    android:background="@drawable/loginbg">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="20dp">
+        <EditText
+            android:id="@+id/ic_num"
+            android:background="@drawable/lavender_border"
+            android:layout_width="350dp"
+            android:layout_height="60dp"
+            android:layout_marginTop="50dp"
+            android:padding="8dp"
+            android:hint="Identification No."
+            android:drawableLeft="@drawable/baseline_credit_card_24"
+            android:drawablePadding="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-            <EditText
-                android:layout_width="350dp"
-                android:layout_height="60dp"
-                android:id="@+id/username"
-                android:background="@drawable/lavender_border"
-                android:layout_marginTop="20dp"
-                android:padding="8dp"
-                android:hint="Full Name"
-                android:drawableLeft="@drawable/baseline_person_24"
-                android:drawablePadding="8dp"/>
+        <EditText
+            android:layout_width="350dp"
+            android:layout_height="60dp"
+            android:id="@+id/username"
+            android:background="@drawable/lavender_border"
+            android:layout_marginTop="15dp"
+            android:padding="8dp"
+            android:hint="Full Name"
+            android:drawableLeft="@drawable/baseline_person_24"
+            android:drawablePadding="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ic_num" />
 
-            <EditText
-                android:layout_width="350dp"
-                android:layout_height="60dp"
-                android:id="@+id/signup_email"
-                android:background="@drawable/lavender_border"
-                android:layout_marginTop="20dp"
-                android:padding="8dp"
-                android:hint="Email"
-                android:drawableLeft="@drawable/baseline_email_24"
-                android:drawablePadding="8dp"/>
+        <EditText
+            android:layout_width="350dp"
+            android:layout_height="60dp"
+            android:id="@+id/signup_email"
+            android:background="@drawable/lavender_border"
+            android:layout_marginTop="15dp"
+            android:padding="8dp"
+            android:hint="Email"
+            android:drawableLeft="@drawable/baseline_email_24"
+            android:drawablePadding="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/username"/>
 
-            <EditText
-                android:layout_width="350dp"
-                android:layout_height="60dp"
-                android:id="@+id/signup_password"
-                android:background="@drawable/lavender_border"
-                android:layout_marginTop="20dp"
-                android:padding="8dp"
-                android:hint="Password"
-                android:inputType="textPassword"
-                android:drawableLeft="@drawable/baseline_lock_24"
-                android:drawablePadding="8dp"/>
+        <EditText
+            android:layout_width="350dp"
+            android:layout_height="60dp"
+            android:id="@+id/signup_password"
+            android:background="@drawable/lavender_border"
+            android:layout_marginTop="15dp"
+            android:padding="8dp"
+            android:hint="Password"
+            android:inputType="textPassword"
+            android:drawableLeft="@drawable/baseline_lock_24"
+            android:drawablePadding="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/signup_email"/>
 
-            <EditText
-                android:layout_width="350dp"
-                android:layout_height="60dp"
-                android:id="@+id/signup_confirm"
-                android:background="@drawable/lavender_border"
-                android:layout_marginTop="20dp"
-                android:padding="8dp"
-                android:hint="Confirm Password"
-                android:inputType="textPassword"
-                android:drawableLeft="@drawable/baseline_lock_24"
-                android:drawablePadding="8dp"/>
-
-            <EditText
-                android:layout_width="350dp"
-                android:layout_height="60dp"
-                android:id="@+id/signup_contact"
-                android:background="@drawable/lavender_border"
-                android:layout_marginTop="20dp"
-                android:padding="8dp"
-                android:hint="Phone Number"
-                android:drawableLeft="@drawable/baseline_phone_24"
-                android:drawablePadding="8dp"/>
+        <EditText
+            android:layout_width="350dp"
+            android:layout_height="60dp"
+            android:id="@+id/signup_contact"
+            android:background="@drawable/lavender_border"
+            android:layout_marginTop="15dp"
+            android:padding="8dp"
+            android:hint="Phone Number"
+            android:drawableLeft="@drawable/baseline_phone_24"
+            android:drawablePadding="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/signup_password"/>
 
             <CheckBox
                 android:id="@+id/rider_cbox"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:text="Register as Rider"/>
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="15dp"
+                android:text="Register as Rider"
+                android:textColor="@color/white"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/tower_cbox"
+                app:layout_constraintTop_toBottomOf="@id/signup_contact"/>
 
             <CheckBox
                 android:id="@+id/tower_cbox"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:text="Register as Tower"/>
+                android:layout_marginTop="15dp"
+                android:layout_marginRight="20dp"
+                android:text="Register as Tower"
+                android:textColor="@color/white"
+                app:layout_constraintStart_toEndOf="@id/rider_cbox"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/signup_contact"/>
 
             <Button
                 android:layout_width="350dp"
                 android:layout_height="70dp"
+                android:layout_marginTop="70dp"
                 android:text="Sign Up"
                 android:id="@+id/signup_button"
                 android:textSize="18sp"
-                app:cornerRadius="30dp"/>
+                app:cornerRadius="30dp"
+                android:backgroundTint="@color/purple_200"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/signup_contact"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -104,7 +129,9 @@
                 android:padding="8dp"
                 android:textSize="18sp"
                 android:layout_marginTop="8dp"
-                android:textColor="@color/lavender"/>
-        </LinearLayout>
-    </LinearLayout>
+                android:textColor="@color/white"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/signup_button"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

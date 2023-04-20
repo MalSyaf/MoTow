@@ -27,9 +27,6 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
 import java.util.HashMap;
@@ -41,7 +38,6 @@ public class TowerManageActivity extends AppCompatActivity {
     // Firebase
     private FirebaseAuth fAuth;
     private FirebaseFirestore fStore;
-    private StorageReference storageReference;
     private String userId;
 
     // Interface
@@ -56,16 +52,7 @@ public class TowerManageActivity extends AppCompatActivity {
         // Firebase
         fAuth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
-        storageReference = FirebaseStorage.getInstance().getReference();
         userId = fAuth.getCurrentUser().getUid();
-
-        StorageReference profileRef = storageReference.child("profile.jpg");
-        profileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            @Override
-            public void onSuccess(Uri uri) {
-                Picasso.get().load(uri).into(pfp);
-            }
-        });
 
         // Navbar
         homeBtn = findViewById(R.id.home_btn);
@@ -81,6 +68,16 @@ public class TowerManageActivity extends AppCompatActivity {
         deleteAcc = findViewById(R.id.delete_account);
         cancelDelete = findViewById(R.id.cancel_delete);
         logoutBtn = findViewById(R.id.logout_btn);
+
+        logoutBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FirebaseAuth.getInstance().signOut();
+                Intent intent = new Intent(TowerManageActivity.this, LoginActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
 
         // Display username
         DocumentReference documentReference = fStore.collection("Users").document(userId);
@@ -151,32 +148,8 @@ public class TowerManageActivity extends AppCompatActivity {
             if(requestCode == Activity.RESULT_OK){
                 Uri pfpUri = data.getData();
 
-                //pfp.setImageURI(pfpUri);
-
-                uploadImageToFirebase(pfpUri);
             }
         }
-    }
-
-    private void uploadImageToFirebase(Uri pfpUri) {
-        // Upload image to firebase storage
-        StorageReference fileRef = storageReference.child("profile.jpg");
-        fileRef.putFile(pfpUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                fileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                    @Override
-                    public void onSuccess(Uri uri) {
-                        Picasso.get().load(uri).into(pfp);
-                    }
-                });
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(TowerManageActivity.this, "Upload failed", Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
     private void requestDeletion() {
