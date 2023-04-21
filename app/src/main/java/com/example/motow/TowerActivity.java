@@ -90,6 +90,8 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
         vehicleRef = fStore.collection("Vehicles");
 
         // Nav bar
+        chatBtn = findViewById(R.id.chat_btn);
+        notifybtn = findViewById(R.id.notify_btn);
         manageBtn = findViewById(R.id.manage_btn);
 
         // Rider container
@@ -118,6 +120,20 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
         pfp.setImageDrawable(getResources().getDrawable(R.drawable.default_pfp));
 
         // Navbar buttons
+        chatBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getApplicationContext(), TowerChatActivity.class));
+                finish();
+            }
+        });
+        notifybtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getApplicationContext(), NotifyActivity.class));
+                finish();
+            }
+        });
         manageBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -281,6 +297,14 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                                                             riderContainer.setVisibility(View.GONE);
                                                             riderBar.setVisibility(View.VISIBLE);
                                                             pickupBtn.setVisibility(View.VISIBLE);
+
+                                                            HashMap<String, Object> informRider = new HashMap<>();
+                                                            informRider.put("towerId", userId);
+                                                            informRider.put("riderId", riderId);
+                                                            informRider.put("message", "I'm on my way!");
+
+                                                            fStore.collection("Chats")
+                                                                    .add(informRider);
 
                                                             HashMap<String, Object> userStatus = new HashMap<>();
                                                             userStatus.put("status", "onduty");

@@ -44,7 +44,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-public class ChatActivity extends AppCompatActivity {
+public class TowerChatActivity extends AppCompatActivity {
 
     // Firebase
     private FirebaseAuth fAuth;
@@ -67,7 +67,6 @@ public class ChatActivity extends AppCompatActivity {
     private String towerId, riderId, towerPhone, riderPhone, number;
     private static final int REQUEST_CALL = 1;
     public String chatId;
-    int flag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,6 +119,7 @@ public class ChatActivity extends AppCompatActivity {
                                                             if(task.isSuccessful()){
                                                                 for(QueryDocumentSnapshot document: task.getResult()){
                                                                     towerId = document.getString("towerId");
+                                                                    towerPhone = document.getString("phoneNumber");
                                                                 }
                                                             }
                                                         }
@@ -152,15 +152,13 @@ public class ChatActivity extends AppCompatActivity {
                     }
                 });
 
-        flag = 0;
-
         sendBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String textMessage = inputMessage.getText().toString();
 
                 if(TextUtils.isEmpty(textMessage)) {
-                    Toast.makeText(ChatActivity.this, "Type a message", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(TowerChatActivity.this, "Type a message", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -171,8 +169,6 @@ public class ChatActivity extends AppCompatActivity {
                             @Override
                             public void onSuccess(DocumentSnapshot documentSnapshot) {
                                 if(documentSnapshot.getString("isRider") != null) {
-
-
                                     Date dateAndTime = Calendar.getInstance().getTime();
                                     SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm:ss", Locale.getDefault());
                                     String time = timeFormat.format(dateAndTime);
@@ -182,19 +178,20 @@ public class ChatActivity extends AppCompatActivity {
                                     sentMessage.put("towerId", towerId);
                                     sentMessage.put("message", textMessage);
                                     sentMessage.put("time", time);
-                                    sentMessage.put("flag", Integer.toString(flag));
-
 
                                     fStore.collection("Chats")
                                             .add(sentMessage)
                                             .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                                                 @Override
                                                 public void onSuccess(DocumentReference documentReference) {
-                                                    flag++;
+                                                    chatId = documentReference.getId();
+                                                    Map<String, Object> updateProcessId = new HashMap<>();
+                                                    updateProcessId.put("processId", chatId);
+                                                    fStore.collection("Processes")
+                                                            .document(chatId)
+                                                            .update(updateProcessId);
                                                 }
                                             });
-
-
                                 }
                                 if(documentSnapshot.getString("isTower") != null) {
                                     Date dateAndTime = Calendar.getInstance().getTime();
@@ -280,7 +277,7 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void setUpRecyclerView() {
-        Query query = chatRef.whereEqualTo("riderId", userId);
+        Query query = chatRef.whereEqualTo("towerId", userId);
         FirestoreRecyclerOptions<Chats> options = new FirestoreRecyclerOptions.Builder<Chats>()
                 .setQuery(query, Chats.class)
                 .build();
@@ -289,7 +286,6 @@ public class ChatActivity extends AppCompatActivity {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         RecyclerView recyclerView = findViewById(R.id.chat_recycler);
         recyclerView.setHasFixedSize(true);
-        layoutManager.setReverseLayout(true);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(chatsAdapter);
     }

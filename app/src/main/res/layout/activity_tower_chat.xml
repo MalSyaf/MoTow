@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ChatActivity">
+    tools:context=".TowerChatActivity">
 
     <View
         android:id="@+id/viewBackground"
@@ -51,7 +51,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_margin="26dp"/>
-    
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/chat_recycler"
         android:layout_width="match_parent"
@@ -62,7 +62,8 @@
         android:padding="20dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="@+id/viewBackground"
-        app:layout_constraintTop_toBottomOf="@id/back_btn" />
+        app:layout_constraintTop_toBottomOf="@id/back_btn"
+        />
 
     <FrameLayout
         android:id="@+id/layout_send"
@@ -84,7 +85,7 @@
             android:src="@drawable/outline_send_24"
             android:tint="@color/purple_200"/>
     </FrameLayout>
-    
+
     <EditText
         android:id="@+id/input_message"
         android:layout_width="0dp"

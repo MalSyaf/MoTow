@@ -96,6 +96,20 @@ public class TowerManageActivity extends AppCompatActivity {
                 finish();
             }
         });
+        chatBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getApplicationContext(), ChatActivity.class));
+                finish();
+            }
+        });
+        notifyBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getApplicationContext(), NotifyActivity.class));
+                finish();
+            }
+        });
 
         // Manage interface
         changePfp.setOnClickListener(new View.OnClickListener() {

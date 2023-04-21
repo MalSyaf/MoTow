@@ -107,6 +107,8 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
         pfp = findViewById(R.id.welcome_pfp);
 
         // Nav bar
+        chatBtn = findViewById(R.id.chat_btn);
+        notifybtn = findViewById(R.id.notify_btn);
         manageBtn = findViewById(R.id.manage_btn);
 
         // Tower found container
@@ -146,6 +148,20 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
         });
 
         // Nav bar buttons
+        chatBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getApplicationContext(), ChatActivity.class));
+                finish();
+            }
+        });
+        notifybtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getApplicationContext(), NotifyActivity.class));
+                finish();
+            }
+        });
         manageBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
