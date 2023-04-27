@@ -1,24 +1,25 @@
 package com.example.motow;
 
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Patterns;
+import android.view.View;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.text.TextUtils;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
-
+import com.example.motow.databinding.ActivityLoginBinding;
+import com.example.motow.rider.RiderActivity;
+import com.example.motow.tower.TowerActivity;
+import com.example.motow.utilities.Constants;
+import com.example.motow.utilities.PreferenceManager;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -28,67 +29,103 @@ public class LoginActivity extends AppCompatActivity {
     // Firebase
     private FirebaseAuth fAuth;
     private FirebaseFirestore fStore;
+    private String userId;
 
-    // Interface
-    private EditText loginEmail, loginPassword;
-    private TextView signUpRedirect;
-    private Button buttonLogin;
+    private ActivityLoginBinding binding;
+    private PreferenceManager preferenceManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        binding = ActivityLoginBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         // Firebase
         fAuth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
 
-        // Interface
-        loginEmail = findViewById(R.id.login_email);
-        loginPassword = findViewById(R.id.login_password);
-        buttonLogin = findViewById(R.id.login_button);
-        signUpRedirect = findViewById(R.id.signupRedirectText);
+        preferenceManager = new PreferenceManager(getApplicationContext());
 
-        signUpRedirect.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), SignUpActivity.class);
-                startActivity(intent);
-                finish();
-            }
-        });
-
-        buttonLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String email, password;
-                email = String.valueOf(loginEmail.getText());
-                password = String.valueOf(loginPassword.getText());
-
-                if (TextUtils.isEmpty(email)) {
-                    Toast.makeText(LoginActivity.this, "Enter email", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if (TextUtils.isEmpty(password)) {
-                    Toast.makeText(LoginActivity.this, "Enter password", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                fAuth.signInWithEmailAndPassword(email, password)
-                        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                if (task.isSuccessful()) {
-                                    Toast.makeText(LoginActivity.this, "Login successful.", Toast.LENGTH_SHORT).show();
-                                    checkUserAccessLevel(task.getResult().getUser().getUid());
-                                } else {
-                                    Toast.makeText(LoginActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
-                                }
+        if(preferenceManager.getBoolean(Constants.KEY_IS_SIGNED_IN)) {
+            fStore.collection(Constants.KEY_COLLECTION_USERS).document(Constants.KEY_USER_ID.toString())
+                    .get()
+                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            if(documentSnapshot.getString("isRider") == "1") {
+                                Intent intent = new Intent(getApplicationContext(), RiderActivity.class);
+                                startActivity(intent);
+                                finish();
                             }
-                        });
+                            if(documentSnapshot.getString("isTower") == "1") {
+                                Intent intent = new Intent(getApplicationContext(), TowerActivity.class);
+                                startActivity(intent);
+                                finish();
+                            }
+                        }
+                    });
+        }
+
+        setListeners();
+    }
+
+    private void setListeners() {
+        binding.signupRedirect.setOnClickListener(v ->
+                startActivity(new Intent(getApplicationContext(), SignUpActivity.class)));
+        binding.loginButton.setOnClickListener(v -> {
+            if(isValidSignInDetails()) {
+                signIn();
             }
         });
+    }
 
+    private void loading(Boolean isLoading) {
+        if(isLoading) {
+            binding.loginButton.setVisibility(View.INVISIBLE);
+            binding.progressBar.setVisibility(View.VISIBLE);
+        } else {
+            binding.loginButton.setVisibility(View.VISIBLE);
+            binding.progressBar.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    private void signIn() {
+        loading(true);
+        String email = binding.loginEmail.getText().toString();
+        String password = binding.loginPassword.getText().toString();
+
+        fAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(LoginActivity.this, "Login successful.", Toast.LENGTH_SHORT).show();
+                            checkUserAccessLevel(task.getResult().getUser().getUid());
+                        } else {
+                            loading(false);
+                            Toast.makeText(LoginActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
+
+    private void showToast(String message) {
+        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+    }
+
+    private Boolean isValidSignInDetails() {
+        if(binding.loginEmail.getText().toString().trim().isEmpty()) {
+            showToast("Enter email");
+            return false;
+        } else if (!Patterns.EMAIL_ADDRESS.matcher(binding.loginEmail.getText().toString()).matches()) {
+            showToast("Enter valid email");
+            return false;
+        } else if (binding.loginPassword.getText().toString().trim().isEmpty()) {
+            showToast("Enter password");
+            return false;
+        } else {
+            return true;
+        }
     }
 
     private void checkUserAccessLevel(String uid) {
@@ -97,21 +134,44 @@ public class LoginActivity extends AppCompatActivity {
         df.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
                 // identify the user access level
-                if (documentSnapshot.getString("isAdmin") != null) {
-                    // user is an admin
-                    Intent intent = new Intent(getApplicationContext(), AdminActivity.class);
-                    startActivity(intent);
-                    finish();
-                }
                 if (documentSnapshot.getString("isRider") != null) {
                     // user is a rider
+                    db.collection(Constants.KEY_COLLECTION_USERS)
+                            .whereEqualTo(Constants.KEY_EMAIL, binding.loginEmail.getText().toString())
+                            .whereEqualTo(Constants.KEY_PASSWORD, binding.loginPassword.getText().toString())
+                            .whereEqualTo("isRider", "1")
+                            .get()
+                            .addOnCompleteListener(task -> {
+                                if(task.isSuccessful() && task.getResult() != null && task.getResult().getDocuments().size() > 0) {
+                                    DocumentSnapshot dfSnapshot = task.getResult().getDocuments().get(0);
+                                    preferenceManager.putBoolean(Constants.KEY_IS_SIGNED_IN, true);
+                                    preferenceManager.putString(Constants.KEY_USER_ID, dfSnapshot.getId());
+                                    preferenceManager.putString(Constants.KEY_NAME, dfSnapshot.getString(Constants.KEY_NAME));
+                                    preferenceManager.putString(Constants.KEY_IMAGE, dfSnapshot.getString(Constants.KEY_IMAGE));
+                                }
+                            });
                     Intent intent = new Intent(getApplicationContext(), RiderActivity.class);
                     startActivity(intent);
                     finish();
                 }
                 if (documentSnapshot.getString("isTower") != null) {
                     // user is a rider
+                    db.collection(Constants.KEY_COLLECTION_USERS)
+                            .whereEqualTo(Constants.KEY_EMAIL, binding.loginEmail.getText().toString())
+                            .whereEqualTo(Constants.KEY_PASSWORD, binding.loginPassword.getText().toString())
+                            .whereEqualTo("isTower", "1")
+                            .get()
+                            .addOnCompleteListener(task -> {
+                                if(task.isSuccessful() && task.getResult() != null && task.getResult().getDocuments().size() > 0) {
+                                    DocumentSnapshot dfSnapshot = task.getResult().getDocuments().get(0);
+                                    preferenceManager.putBoolean(Constants.KEY_IS_SIGNED_IN, true);
+                                    preferenceManager.putString(Constants.KEY_USER_ID, dfSnapshot.getId());
+                                    preferenceManager.putString(Constants.KEY_NAME, dfSnapshot.getString(Constants.KEY_NAME));
+                                    preferenceManager.putString(Constants.KEY_IMAGE, dfSnapshot.getString(Constants.KEY_IMAGE));
+                                }
+                            });
                     Intent intent = new Intent(getApplicationContext(), TowerActivity.class);
                     startActivity(intent);
                     finish();

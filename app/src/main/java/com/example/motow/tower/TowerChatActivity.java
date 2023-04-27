@@ -1,4 +1,4 @@
-package com.example.motow;
+package com.example.motow.tower;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,12 +17,12 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.example.motow.chats.Chats;
+import com.example.motow.chats.ChatsAdapter;
+import com.example.motow.R;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -31,6 +31,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
@@ -198,11 +199,11 @@ public class TowerChatActivity extends AppCompatActivity {
                                     SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm:ss", Locale.getDefault());
                                     String time = timeFormat.format(dateAndTime);
 
-                                    HashMap<Object, String> sentMessage = new HashMap<>();
+                                    HashMap<String, Object> sentMessage = new HashMap<>();
                                     sentMessage.put("towerId", userId);
                                     sentMessage.put("riderId", riderId);
                                     sentMessage.put("message", textMessage);
-                                    sentMessage.put("time", time);
+                                    sentMessage.put("timeStamp", FieldValue.serverTimestamp());
 
                                     fStore.collection("Chats")
                                             .add(sentMessage)
@@ -277,7 +278,7 @@ public class TowerChatActivity extends AppCompatActivity {
     }
 
     private void setUpRecyclerView() {
-        Query query = chatRef.whereEqualTo("towerId", userId);
+        Query query = chatRef.whereEqualTo("towerId", userId).orderBy("timeStamp", Query.Direction.ASCENDING);
         FirestoreRecyclerOptions<Chats> options = new FirestoreRecyclerOptions.Builder<Chats>()
                 .setQuery(query, Chats.class)
                 .build();

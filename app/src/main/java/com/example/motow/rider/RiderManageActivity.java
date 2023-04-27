@@ -1,24 +1,25 @@
-package com.example.motow;
+package com.example.motow.rider;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.motow.LoginActivity;
+import com.example.motow.vehicles.ManageVehicleActivity;
+import com.example.motow.NotifyActivity;
+import com.example.motow.R;
+import com.example.motow.SignUpActivity;
+import com.example.motow.UserInfoActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
@@ -27,13 +28,10 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.squareup.picasso.Picasso;
 
 import java.util.HashMap;
 
-import io.grpc.Context;
-
-public class TowerManageActivity extends AppCompatActivity {
+public class RiderManageActivity extends AppCompatActivity {
 
     // Firebase
     private FirebaseAuth fAuth;
@@ -41,13 +39,13 @@ public class TowerManageActivity extends AppCompatActivity {
     private String userId;
 
     // Interface
-    private ImageView pfp, homeBtn, chatBtn, notifyBtn;
-    private TextView towerName, changePfp, personalInfo, manageVehicles, deleteAcc, cancelDelete, logoutBtn;
+    private ImageView homeBtn, chatBtn, notifyBtn;
+    private TextView riderName, personalInfo, manageVehicles, deleteAcc, cancelDelete, logoutBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_tower_manage);
+        setContentView(R.layout.activity_rider_manage);
 
         // Firebase
         fAuth = FirebaseAuth.getInstance();
@@ -60,9 +58,7 @@ public class TowerManageActivity extends AppCompatActivity {
         notifyBtn = findViewById(R.id.notify_btn);
 
         // Interface
-        towerName = findViewById(R.id.tower_name);
-        pfp = findViewById(R.id.pfp);
-        changePfp = findViewById(R.id.change_pfp_btn);
+        riderName = findViewById(R.id.rider_name);
         personalInfo = findViewById(R.id.personal_info);
         manageVehicles = findViewById(R.id.manage_vehicles);
         deleteAcc = findViewById(R.id.delete_account);
@@ -73,8 +69,7 @@ public class TowerManageActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 FirebaseAuth.getInstance().signOut();
-                Intent intent = new Intent(TowerManageActivity.this, LoginActivity.class);
-                startActivity(intent);
+                startActivity(new Intent(getApplicationContext(), LoginActivity.class));
                 finish();
             }
         });
@@ -84,7 +79,7 @@ public class TowerManageActivity extends AppCompatActivity {
         documentReference.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
-                towerName.setText(value.getString("fullName"));
+                riderName.setText(value.getString("fullName"));
             }
         });
 
@@ -92,7 +87,7 @@ public class TowerManageActivity extends AppCompatActivity {
         homeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(getApplicationContext(), TowerActivity.class));
+                startActivity(new Intent(getApplicationContext(), RiderActivity.class));
                 finish();
             }
         });
@@ -112,14 +107,6 @@ public class TowerManageActivity extends AppCompatActivity {
         });
 
         // Manage interface
-        changePfp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Open gallery from phone
-                Intent openGallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(openGallery, 1000);
-            }
-        });
         personalInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -146,24 +133,6 @@ public class TowerManageActivity extends AppCompatActivity {
                 cancelDeletion();
             }
         });
-        logoutBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(getApplicationContext(), LoginActivity.class));
-                finish();
-            }
-        });
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == 1000){
-            if(requestCode == Activity.RESULT_OK){
-                Uri pfpUri = data.getData();
-
-            }
-        }
     }
 
     private void requestDeletion() {
@@ -183,7 +152,7 @@ public class TowerManageActivity extends AppCompatActivity {
                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
-                                Toast.makeText(TowerManageActivity.this, "Request has been sent", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(RiderManageActivity.this, "Request has been sent", Toast.LENGTH_SHORT).show();
                             }
                         });
 
@@ -217,7 +186,7 @@ public class TowerManageActivity extends AppCompatActivity {
                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
-                                Toast.makeText(TowerManageActivity.this, "Account deletion has been canceled", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(RiderManageActivity.this, "Account deletion has been canceled", Toast.LENGTH_SHORT).show();
                             }
                         });
 

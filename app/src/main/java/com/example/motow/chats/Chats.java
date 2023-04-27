@@ -1,4 +1,4 @@
-package com.example.motow;
+package com.example.motow.chats;
 
 public class Chats {
 

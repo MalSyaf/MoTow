@@ -1,4 +1,4 @@
-package com.example.motow;
+package com.example.motow.vehicles;
 
 public class Vehicle {
 

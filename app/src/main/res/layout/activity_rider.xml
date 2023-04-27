@@ -6,17 +6,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".RiderActivity">
+    tools:context=".rider.RiderActivity">
 
-    <fragment
+    <androidx.fragment.app.FragmentContainerView
         android:id="@+id/map"
-        android:name="com.google.android.gms.maps.SupportMapFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".test.MapsActivity"
-        tools:layout="@layout/activity_maps" />
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:name="com.google.android.gms.maps.SupportMapFragment"/>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/request_btn"
         android:layout_width="264dp"
         android:layout_height="wrap_content"
@@ -51,7 +53,7 @@
         app:layout_constraintStart_toStartOf="parent"
         android:visibility="gone"/>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/cancel_btn"
         android:layout_width="264dp"
         android:layout_height="wrap_content"
@@ -72,7 +74,7 @@
         app:layout_constraintStart_toStartOf="parent"
         android:visibility="gone"/>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/payment_btn"
         android:layout_width="264dp"
         android:layout_height="wrap_content"
@@ -108,7 +110,6 @@
         android:layout_marginTop="156dp"
         android:layout_marginBottom="114dp"
         android:visibility="gone">
-
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -118,7 +119,6 @@
             android:text="Select Vehicle"
             android:textSize="16sp"
             android:textStyle="bold" />
-
         <ImageView
             android:id="@+id/back_btn"
             android:layout_width="20dp"
@@ -128,7 +128,6 @@
             android:src="@drawable/baseline_arrow_back_ios_24"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerview"
             android:layout_width="280dp"
@@ -140,8 +139,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
-
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/confirm_btn"
             android:layout_width="264dp"
             android:layout_height="wrap_content"
@@ -174,7 +172,6 @@
         android:layout_marginTop="156dp"
         android:layout_marginBottom="114dp"
         android:visibility="gone">
-
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -184,11 +181,12 @@
             android:text="Assistance Found!"
             android:textSize="16sp"
             android:textStyle="bold" />
-
-        <ImageView
+        <com.makeramen.roundedimageview.RoundedImageView
             android:id="@+id/tower_pfp"
             android:layout_width="100dp"
             android:layout_height="100dp"
+            android:scaleType="centerCrop"
+            app:riv_oval="true"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="60dp"
             android:background="@drawable/default_pfp"/>
@@ -262,16 +260,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="34dp">
-
-        <ImageView
+        <com.makeramen.roundedimageview.RoundedImageView
             android:id="@+id/welcome_pfp"
             android:layout_width="50dp"
             android:layout_height="50dp"
+            android:scaleType="centerCrop"
+            app:riv_oval="true"
             android:layout_alignParentEnd="true"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="50dp"
             android:background="@drawable/default_pfp"/>
-
         <TextView
             android:id="@+id/user_name"
             android:layout_width="158dp"
@@ -299,11 +297,12 @@
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="550dp"
         android:visibility="gone">
-
-        <ImageView
+        <com.makeramen.roundedimageview.RoundedImageView
             android:id="@+id/tower_bar_pfp"
             android:layout_width="50dp"
             android:layout_height="50dp"
+            android:scaleType="centerCrop"
+            app:riv_oval="true"
             android:layout_alignParentEnd="true"
             android:layout_marginTop="6dp"
             android:layout_marginBottom="6dp"
@@ -311,7 +310,6 @@
             android:layout_alignParentTop="true"
             android:layout_alignParentBottom="true"
             android:background="@drawable/default_pfp"/>
-
         <TextView
             android:id="@+id/tower_bar_status"
             android:layout_width="192dp"
@@ -336,7 +334,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
-
         <ImageView
             android:id="@+id/home_btn"
             android:layout_width="40dp"
@@ -349,7 +346,6 @@
             android:layout_marginEnd="290dp"
             android:layout_marginBottom="22dp"
             android:src="@drawable/main" />
-
         <ImageView
             android:id="@+id/chat_btn"
             android:layout_width="25dp"
@@ -364,7 +360,6 @@
             android:layout_marginEnd="212dp"
             android:layout_marginBottom="19dp"
             android:src="@drawable/chat" />
-
         <ImageView
             android:id="@+id/notify_btn"
             android:layout_width="25dp"
@@ -378,7 +373,6 @@
             android:layout_marginTop="16dp"
             android:layout_marginBottom="17dp"
             android:src="@drawable/notifications" />
-
         <ImageView
             android:id="@+id/manage_btn"
             android:layout_width="25dp"

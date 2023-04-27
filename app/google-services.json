@@ -1,13 +1,14 @@
 {
   "project_info": {
     "project_number": "55183023593",
+    "firebase_url": "https://motow-8f47c-default-rtdb.asia-southeast1.firebasedatabase.app",
     "project_id": "motow-8f47c",
     "storage_bucket": "motow-8f47c.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:55183023593:android:ef7ab283818ceeb8537f78",
+        "mobilesdk_app_id": "1:55183023593:android:efefde7fe7e30456537f78",
         "android_client_info": {
           "package_name": "com.example.motow"
         }

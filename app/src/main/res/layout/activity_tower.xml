@@ -6,15 +6,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".TowerActivity">
+    tools:context=".tower.TowerActivity">
 
     <fragment
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".test.MapsActivity"
-        tools:layout="@layout/activity_maps" />
+        android:layout_height="match_parent"/>
 
     <Button
         android:id="@+id/offline_btn"

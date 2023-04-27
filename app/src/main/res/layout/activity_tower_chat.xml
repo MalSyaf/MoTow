@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".TowerChatActivity">
+    tools:context=".tower.TowerChatActivity">
 
     <View
         android:id="@+id/viewBackground"
@@ -47,7 +47,7 @@
         android:id="@+id/call_btn"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:background="@drawable/baseline_phone_24"
+        android:background="@drawable/phone_num"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_margin="26dp"/>
@@ -82,7 +82,6 @@
             android:layout_marginStart="4dp"
             android:layout_marginLeft="4dp"
             android:padding="8dp"
-            android:src="@drawable/outline_send_24"
             android:tint="@color/purple_200"/>
     </FrameLayout>
 
