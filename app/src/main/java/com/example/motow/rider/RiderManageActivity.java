@@ -81,6 +81,7 @@ public class RiderManageActivity extends AppCompatActivity {
         binding.logoutBtn.setOnClickListener(view -> {
             FirebaseAuth.getInstance().signOut();
             startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+            Toast.makeText(this, "Logged out", Toast.LENGTH_SHORT).show();
             finish();
         });
 

@@ -27,7 +27,6 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.HashMap;
@@ -124,13 +123,10 @@ public class UserInfoActivity extends AppCompatActivity {
                                         @Override
                                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                             if(task.isSuccessful()){
-                                                for(QueryDocumentSnapshot document: task.getResult()){
                                                     binding.companyCbox.setChecked(true);
-                                                }
                                             }
                                         }
                                     });
-
                             fStore.collection("Users")
                                     .whereEqualTo("userId", userId)
                                     .whereEqualTo("providerType", "Private")
@@ -139,9 +135,7 @@ public class UserInfoActivity extends AppCompatActivity {
                                         @Override
                                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                             if(task.isSuccessful()){
-                                                for(QueryDocumentSnapshot document: task.getResult()){
                                                     binding.privateCbox.setChecked(true);
-                                                }
                                             }
                                         }
                                     });
@@ -190,8 +184,8 @@ public class UserInfoActivity extends AppCompatActivity {
                                 binding.editPhone.setVisibility(View.GONE);
 
                                 Map<String, Object> updateUser = new HashMap<>();
-                                updateUser.put("fullName", nameFilled);
-                                updateUser.put("phoneNumber", phoneFilled);
+                                updateUser.put("name", nameFilled);
+                                updateUser.put("contact", phoneFilled);
 
                                 fStore.collection("Users")
                                         .document(userId)
@@ -247,8 +241,8 @@ public class UserInfoActivity extends AppCompatActivity {
                                 binding.privateCbox.setVisibility(View.GONE);
 
                                 Map<String, Object> updateUser = new HashMap<>();
-                                updateUser.put("fullName", nameFilled);
-                                updateUser.put("phoneNumber", phoneFilled);
+                                updateUser.put("name", nameFilled);
+                                updateUser.put("contact", phoneFilled);
                                 updateUser.put("companyName", companyNameFilled);
                                 updateUser.put("companyRegNum", regNumFilled);
                                 if(binding.privateCbox.isChecked()){
@@ -275,7 +269,6 @@ public class UserInfoActivity extends AppCompatActivity {
     }
 
     private void loadLayout() {
-        DocumentReference df = fStore.collection("Users").document(userId);
         // extract the data from the document
         fStore.collection("Users")
                 .document(userId)

@@ -1,9 +1,11 @@
 package com.example.motow.vehicles;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -76,10 +78,10 @@ public class ManageVehicleActivity extends AppCompatActivity {
                 }
             });
         });
-     binding.registerVehicle.setOnClickListener(view -> {
-         startActivity(new Intent(getApplicationContext(), RegisterVehicleActivity.class));
-         finish();
-     });
+        binding.registerVehicle.setOnClickListener(view -> {
+            startActivity(new Intent(getApplicationContext(), RegisterVehicleActivity.class));
+            finish();
+        });
     }
 
     private void setUpRecyclerView() {
