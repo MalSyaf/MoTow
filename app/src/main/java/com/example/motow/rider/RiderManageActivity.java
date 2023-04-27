@@ -1,139 +1,158 @@
 package com.example.motow.rider;
 
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.Bundle;
+import android.provider.MediaStore;
+import android.util.Base64;
+import android.view.View;
+import android.widget.Toast;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
-
 import com.example.motow.LoginActivity;
-import com.example.motow.vehicles.ManageVehicleActivity;
 import com.example.motow.NotifyActivity;
-import com.example.motow.R;
-import com.example.motow.SignUpActivity;
 import com.example.motow.UserInfoActivity;
+import com.example.motow.databinding.ActivityRiderManageBinding;
+import com.example.motow.utilities.Constants;
+import com.example.motow.vehicles.ManageVehicleActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.HashMap;
 
 public class RiderManageActivity extends AppCompatActivity {
+
+    private ActivityRiderManageBinding binding;
 
     // Firebase
     private FirebaseAuth fAuth;
     private FirebaseFirestore fStore;
     private String userId;
 
-    // Interface
-    private ImageView homeBtn, chatBtn, notifyBtn;
-    private TextView riderName, personalInfo, manageVehicles, deleteAcc, cancelDelete, logoutBtn;
+    private String encodedImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_rider_manage);
+        binding = ActivityRiderManageBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         // Firebase
         fAuth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
         userId = fAuth.getCurrentUser().getUid();
 
-        // Navbar
-        homeBtn = findViewById(R.id.home_btn);
-        chatBtn = findViewById(R.id.chat_btn);
-        notifyBtn = findViewById(R.id.notify_btn);
+        loadUserDetails();
+        setListeners();
+    }
 
-        // Interface
-        riderName = findViewById(R.id.rider_name);
-        personalInfo = findViewById(R.id.personal_info);
-        manageVehicles = findViewById(R.id.manage_vehicles);
-        deleteAcc = findViewById(R.id.delete_account);
-        cancelDelete = findViewById(R.id.cancel_delete);
-        logoutBtn = findViewById(R.id.logout_btn);
+    private void loadUserDetails() {
+        fStore.collection("Users")
+                .document(userId)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        binding.riderName.setText("Hi, " + documentSnapshot.getString("name") + "!");
+                        byte[] bytes = Base64.decode(documentSnapshot.getString("image"), Base64.DEFAULT);
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        binding.pfp.setImageBitmap(bitmap);
+                    }
+                });
+    }
 
-        logoutBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FirebaseAuth.getInstance().signOut();
-                startActivity(new Intent(getApplicationContext(), LoginActivity.class));
-                finish();
-            }
-        });
-
-        // Display username
-        DocumentReference documentReference = fStore.collection("Users").document(userId);
-        documentReference.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
-                riderName.setText(value.getString("fullName"));
-            }
+    private void setListeners() {
+        binding.logoutBtn.setOnClickListener(view -> {
+            FirebaseAuth.getInstance().signOut();
+            startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+            finish();
         });
 
         // Navbar
-        homeBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(getApplicationContext(), RiderActivity.class));
-                finish();
-            }
+        binding.homeBtn.setOnClickListener(view -> {
+            startActivity(new Intent(getApplicationContext(), RiderActivity.class));
+            finish();
         });
-        chatBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(getApplicationContext(), ChatActivity.class));
-                finish();
-            }
+        binding.chatBtn.setOnClickListener(view -> {
+            startActivity(new Intent(getApplicationContext(), ChatActivity.class));
+            finish();
         });
-        notifyBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(getApplicationContext(), NotifyActivity.class));
-                finish();
-            }
+        binding.notifyBtn.setOnClickListener(view -> {
+            startActivity(new Intent(getApplicationContext(), NotifyActivity.class));
+            finish();
         });
 
         // Manage interface
-        personalInfo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(getApplicationContext(), UserInfoActivity.class));
-                finish();
-            }
+        binding.personalInfo.setOnClickListener(view -> {
+            startActivity(new Intent(getApplicationContext(), UserInfoActivity.class));
+            finish();
         });
-        manageVehicles.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(getApplicationContext(), ManageVehicleActivity.class));
-                finish();
-            }
+        binding.manageVehicles.setOnClickListener(view -> {
+            startActivity(new Intent(getApplicationContext(), ManageVehicleActivity.class));
+            finish();
         });
-        deleteAcc.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                requestDeletion();
-            }
+        binding.deleteAccount.setOnClickListener(view -> {
+            requestDeletion();
         });
-        cancelDelete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                cancelDeletion();
-            }
+        binding.cancelDelete.setOnClickListener(view -> {
+            cancelDeletion();
+        });
+        binding.changePfpBtn.setOnClickListener(view -> {
+            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            pickImage.launch(intent);
         });
     }
+
+    private String encodeImage(Bitmap bitmap) {
+        int previewWidth = 150;
+        int previewHeight = bitmap.getHeight() * previewWidth / bitmap.getWidth();
+        Bitmap previewBitmap = Bitmap.createScaledBitmap(bitmap, previewWidth, previewHeight, false);
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        previewBitmap.compress(Bitmap.CompressFormat.JPEG, 50, byteArrayOutputStream);
+        byte[] bytes = byteArrayOutputStream.toByteArray();
+        return Base64.encodeToString(bytes, Base64.DEFAULT);
+    }
+
+    private final ActivityResultLauncher<Intent> pickImage = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if(result.getResultCode() == RESULT_OK) {
+                    if(result.getData() != null) {
+                        Uri imageUri = result.getData().getData();
+                        try {
+                            InputStream inputStream = getContentResolver().openInputStream(imageUri);
+                            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                            binding.pfp.setImageBitmap(bitmap);
+                            encodedImage = encodeImage(bitmap);
+                            HashMap<String, Object> userInfo = new HashMap<>();
+                            userInfo.put(Constants.KEY_IMAGE, encodedImage);
+                            fStore.collection("Users")
+                                    .document(userId)
+                                    .update(userInfo);
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+    );
 
     private void requestDeletion() {
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
@@ -156,8 +175,8 @@ public class RiderManageActivity extends AppCompatActivity {
                             }
                         });
 
-                deleteAcc.setVisibility(View.GONE);
-                cancelDelete.setVisibility(View.VISIBLE);
+                binding.deleteAccount.setVisibility(View.GONE);
+                binding.cancelDelete.setVisibility(View.VISIBLE);
             }
         });
         alert.setNegativeButton("NO", new DialogInterface.OnClickListener() {
@@ -190,8 +209,8 @@ public class RiderManageActivity extends AppCompatActivity {
                             }
                         });
 
-                deleteAcc.setVisibility(View.VISIBLE);
-                cancelDelete.setVisibility(View.GONE);
+                binding.deleteAccount.setVisibility(View.VISIBLE);
+                binding.cancelDelete.setVisibility(View.GONE);
             }
         });
         alert.setNegativeButton("NO", new DialogInterface.OnClickListener() {

@@ -102,6 +102,13 @@ public class RegisterVehicleActivity extends AppCompatActivity {
                                 fStore.collection("Vehicles")
                                         .document(documentId)
                                         .update(vehicleId);
+
+
+                                Map<String, Object> userCurrentVehicle = new HashMap<>();
+                                userCurrentVehicle.put("currentVehicle", documentId);
+                                fStore.collection("Users")
+                                        .document(userId)
+                                        .update(userCurrentVehicle);
                             }
                         });
             }

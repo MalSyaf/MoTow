@@ -2,7 +2,7 @@ package com.example.motow.vehicles;
 
 public class Vehicle {
 
-    String plateNumber, brand, model, color;
+    public String plateNumber, brand, model, color;
 
     public Vehicle(){
         // Empty constructor needed

@@ -153,7 +153,24 @@
             android:text="CONFIRM"
             android:textColor="@color/white"
             android:textSize="18sp"
-            app:cornerRadius="40dp" />
+            app:cornerRadius="40dp"
+            android:visibility="gone"/>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/no_currentVehicle"
+            android:layout_width="264dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="19dp"
+            android:backgroundTint="@color/purple_200"
+            android:padding="8dp"
+            android:text="REGISTER VEHICLE"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            app:cornerRadius="40dp"
+            android:visibility="gone"/>
     </RelativeLayout>
 
     <!-- Assistance Found Container -->

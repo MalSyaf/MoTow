@@ -4,27 +4,27 @@ import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.motow.R;
+import com.example.motow.utilities.Constants;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.card.MaterialCardView;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class VehicleAdapter extends FirestoreRecyclerAdapter<Vehicle, VehicleAdapter.MyViewHolder> {
 
     public static OnItemClickListener listener;
 
-    /**
-     * Create a new RecyclerView adapter that listens to a Firestore Query.  See {@link
-     * FirestoreRecyclerOptions} for configuration options.
-     *
-     * @param options
-     */
     public VehicleAdapter(@NonNull FirestoreRecyclerOptions<Vehicle> options) {
         super(options);
     }
@@ -50,19 +50,44 @@ public class VehicleAdapter extends FirestoreRecyclerAdapter<Vehicle, VehicleAda
 
     public class MyViewHolder extends RecyclerView.ViewHolder{
 
-        TextView plateNum, brand, model, color;
-        MaterialCardView vehicleContainer;
+        // Firebase
+        private FirebaseAuth fAuth;
+        private FirebaseFirestore fStore;
 
+        // Interface
+        private ImageView vehicleImage;
+        private TextView plateNum, brand, model, color;
+        private MaterialCardView vehicleContainer;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
 
+            // Firebase
+            fAuth = FirebaseAuth.getInstance();
+            fStore = FirebaseFirestore.getInstance();
+
+            // Interface
+            vehicleImage = itemView.findViewById(R.id.vehicleImage);
             plateNum = itemView.findViewById(R.id.display_plate);
             brand = itemView.findViewById(R.id.display_brand);
             model = itemView.findViewById(R.id.display_model);
             color = itemView.findViewById(R.id.display_color);
-
             vehicleContainer = itemView.findViewById(R.id.vehicle_container);
+
+            fStore.collection("Users")
+                    .document(Constants.KEY_USER_ID.toString())
+                    .get()
+                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            if(documentSnapshot.getString("isRider") == "1") {
+                                vehicleImage.setImageResource(R.drawable.main);
+                            }
+                            if(documentSnapshot.getString("isTower") == "1") {
+                                vehicleImage.setImageResource(R.drawable.main);
+                            }
+                        }
+                    });
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

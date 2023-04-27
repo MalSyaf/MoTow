@@ -13,7 +13,6 @@ import android.os.Bundle;
 import android.util.Base64;
 import android.view.View;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -26,6 +25,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.motow.NotifyActivity;
 import com.example.motow.R;
 import com.example.motow.databinding.ActivityRiderBinding;
+import com.example.motow.vehicles.RegisterVehicleActivity;
 import com.example.motow.vehicles.Vehicle;
 import com.example.motow.vehicles.VehicleAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -61,6 +61,8 @@ import java.util.Map;
 
 public class RiderActivity extends FragmentActivity implements OnMapReadyCallback{
 
+    private ActivityRiderBinding binding;
+
     // Google map
     private GoogleMap mMap;
     private Boolean check = false;
@@ -71,16 +73,12 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
     private String userId;
     private CollectionReference vehicleRef;
 
-    private ActivityRiderBinding binding;
-
     // Recycler View
     private RecyclerView recyclerView;
     private VehicleAdapter vehicleAdapter;
 
     // Tower
     private String towerId, tCurrentVehicle;
-    private RelativeLayout towerContainer, towerBar;
-    private TextView towerName, towerType, towerVehicle, towerPlate, towerBarStatus;
     private LatLng towerLocation;
     private Double tLatitude, tLongitude;
 
@@ -103,17 +101,6 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
         vehicleRef = fStore.collection("Vehicles");
 
         supportMapFragment();
-
-        // Tower found container
-        towerContainer = findViewById(R.id.tower_container);
-        towerName = findViewById(R.id.tower_name);
-        towerType = findViewById(R.id.tower_type);
-        towerVehicle = findViewById(R.id.tower_vehicle);
-        towerPlate = findViewById(R.id.tower_plate);
-
-        // Tower bar
-        towerBar = findViewById(R.id.tower_bar);
-        towerBarStatus = findViewById(R.id.tower_bar_status);
 
         // Vehicle list
         selectVehicle = findViewById(R.id.select_vehicle);
@@ -150,10 +137,16 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
         binding.requestBtn.setOnClickListener(view -> {
             binding.requestBtn.setVisibility(View.GONE);
             selectVehicle.setVisibility(View.VISIBLE);
+
+            loadVehicles();
         });
         binding.backBtn.setOnClickListener(view -> {
             selectVehicle.setVisibility(View.GONE);
             binding.requestBtn.setVisibility(View.VISIBLE);
+        });
+        binding.noCurrentVehicle.setOnClickListener(view -> {
+            startActivity(new Intent(getApplicationContext(), RegisterVehicleActivity.class));
+            finish();
         });
         binding.confirmBtn.setOnClickListener(view -> {
             selectVehicle.setVisibility(View.GONE);
@@ -167,19 +160,19 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
             getAssistance();
         });
         binding.okBtn.setOnClickListener(view -> {
-            towerBar.setVisibility(View.VISIBLE);
-            towerContainer.setVisibility(View.GONE);
-            towerBarStatus.setText("Assistance is On The Way!");
+            binding.towerBar.setVisibility(View.VISIBLE);
+            binding.towerContainer.setVisibility(View.GONE);
+            binding.towerBarStatus.setText("Assistance is On The Way!");
         });
         binding.cancelBtn.setOnClickListener(view -> {
             binding.searchText.setVisibility(View.GONE);
             binding.cancelBtn.setVisibility(View.GONE);
             binding.requestBtn.setVisibility(View.VISIBLE);
         });
-        towerBar.setOnClickListener(view -> {
-            towerContainer.setVisibility(View.VISIBLE);
-            towerBar.setVisibility(View.GONE);
-            towerBarStatus.setText("Assistance is on the way!");
+        binding.towerBar.setOnClickListener(view -> {
+            binding.towerContainer.setVisibility(View.VISIBLE);
+            binding.towerBar.setVisibility(View.GONE);
+            binding.towerBarStatus.setText("Assistance is on the way!");
         });
     }
 
@@ -194,6 +187,24 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                         byte[] bytes = Base64.decode(documentSnapshot.getString("image"), Base64.DEFAULT);
                         Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                         binding.welcomePfp.setImageBitmap(bitmap);
+                    }
+                });
+    }
+
+    private void loadVehicles() {
+        fStore.collection("Users")
+                .document(userId)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if(documentSnapshot.getString("currentVehicle") == null) {
+                            binding.confirmBtn.setVisibility(View.GONE);
+                            binding.noCurrentVehicle.setVisibility(View.VISIBLE);
+                        } else {
+                            binding.confirmBtn.setVisibility(View.VISIBLE);
+                            binding.noCurrentVehicle.setVisibility(View.GONE);
+                        }
                     }
                 });
     }
@@ -407,7 +418,7 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                                                                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                                                         if(task.isSuccessful()){
                                                                             for(QueryDocumentSnapshot document: task.getResult()){
-                                                                                towerBarStatus.setText("Vehicle has been towed");
+                                                                                binding.towerBarStatus.setText("Vehicle has been towed");
                                                                             }
                                                                         }
                                                                     }
@@ -427,7 +438,7 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                                                                             for(QueryDocumentSnapshot document: task.getResult()){
                                                                                 binding.paymentBtn.setVisibility(View.VISIBLE);
 
-                                                                                towerBarStatus.setText("Delivered to a workshop");
+                                                                                binding.towerBarStatus.setText("Delivered to a workshop");
                                                                             }
                                                                         }
                                                                     }
@@ -445,7 +456,7 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
     private void displayTowerInfo(String towerId) {
         binding.cancelBtn.setVisibility(View.GONE);
         binding.searchText.setVisibility(View.GONE);
-        towerContainer.setVisibility(View.VISIBLE);
+        binding.towerContainer.setVisibility(View.VISIBLE);
 
         // Display tower's info
         fStore.collection("Users")
@@ -454,8 +465,8 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        towerName.setText(documentSnapshot.getString("fullName"));
-                        towerType.setText(documentSnapshot.getString("providerType"));
+                        binding.towerName.setText(documentSnapshot.getString("fullName"));
+                        binding.towerType.setText(documentSnapshot.getString("providerType"));
 
                         tCurrentVehicle = documentSnapshot.getString("currentVehicle");
 
@@ -466,8 +477,8 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                     @Override
                                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                        towerVehicle.setText(documentSnapshot.getString("brand") + " " + documentSnapshot.getString("model") + " (" + documentSnapshot.getString("color") + ")");
-                                        towerPlate.setText(documentSnapshot.getString("plateNumber"));
+                                        binding.towerVehicle.setText(documentSnapshot.getString("brand") + " " + documentSnapshot.getString("model") + " (" + documentSnapshot.getString("color") + ")");
+                                        binding.towerPlate.setText(documentSnapshot.getString("plateNumber"));
                                     }
                                 });
                     }
