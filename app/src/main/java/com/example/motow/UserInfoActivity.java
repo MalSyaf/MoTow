@@ -241,7 +241,7 @@ public class UserInfoActivity extends AppCompatActivity {
                                 binding.editCompany.setVisibility(View.GONE);
                                 binding.editRegnum.setVisibility(View.GONE);
                                 binding.privateCbox.setVisibility(View.GONE);
-                                binding.privateCbox.setVisibility(View.GONE);
+                                binding.companyCbox.setVisibility(View.GONE);
 
                                 Map<String, Object> updateUser = new HashMap<>();
                                 updateUser.put("name", nameFilled);
