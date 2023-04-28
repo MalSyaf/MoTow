@@ -12,7 +12,6 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Base64;
 import android.view.View;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -82,8 +81,6 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
     private LatLng towerLocation;
     private Double tLatitude, tLongitude;
 
-    // Interface
-    private RelativeLayout selectVehicle;
     public String currentVehicleId, processId;
     private LatLng currentLocation;
     private CircleOptions circleOptions;
@@ -103,7 +100,6 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
         supportMapFragment();
 
         // Vehicle list
-        selectVehicle = findViewById(R.id.select_vehicle);
         setUpRecyclerView();
 
         // Get vehicle id on item clicked for recycler view
@@ -120,7 +116,7 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
 
     private void setListeners() {
         // Nav bar buttons
-        binding.chatBtn.setOnClickListener(v -> {
+        binding.chatButton.setOnClickListener(v -> {
             startActivity(new Intent(getApplicationContext(), ChatActivity.class));
             finish();
         });
@@ -136,12 +132,12 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
         // Buttons listener
         binding.requestBtn.setOnClickListener(view -> {
             binding.requestBtn.setVisibility(View.GONE);
-            selectVehicle.setVisibility(View.VISIBLE);
+            binding.selectVehicle.setVisibility(View.VISIBLE);
 
             loadVehicles();
         });
         binding.backBtn.setOnClickListener(view -> {
-            selectVehicle.setVisibility(View.GONE);
+            binding.selectVehicle.setVisibility(View.GONE);
             binding.requestBtn.setVisibility(View.VISIBLE);
         });
         binding.noCurrentVehicle.setOnClickListener(view -> {
@@ -149,7 +145,7 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
             finish();
         });
         binding.confirmBtn.setOnClickListener(view -> {
-            selectVehicle.setVisibility(View.GONE);
+            binding.selectVehicle.setVisibility(View.GONE);
             binding.cancelBtn.setVisibility(View.VISIBLE);
             binding.searchText.setVisibility(View.VISIBLE);
 

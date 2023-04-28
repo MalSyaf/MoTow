@@ -103,6 +103,8 @@ public class UserInfoActivity extends AppCompatActivity {
         binding.manageInfoBtn.setOnClickListener(view -> {
             interfaceSetup();
 
+            binding.infoTextview.setText("Edit Information");
+
             fStore.collection("Users")
                     .document(userId)
                     .get()
@@ -193,6 +195,7 @@ public class UserInfoActivity extends AppCompatActivity {
                                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                                             @Override
                                             public void onSuccess(Void unused) {
+                                                binding.infoTextview.setText("Personal Information");
                                                 Toast.makeText(UserInfoActivity.this, "Information has been updated", Toast.LENGTH_SHORT).show();
                                             }
                                         });
@@ -258,6 +261,7 @@ public class UserInfoActivity extends AppCompatActivity {
                                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                                             @Override
                                             public void onSuccess(Void unused) {
+                                                binding.infoTextview.setText("Personal Information");
                                                 Toast.makeText(UserInfoActivity.this, "Information has been updated", Toast.LENGTH_SHORT).show();
                                             }
                                         });
@@ -350,12 +354,13 @@ public class UserInfoActivity extends AppCompatActivity {
                                 }
                             }
                         });
+                binding.infoTextview.setText("Personal Information");
             }
         });
         alert.setNegativeButton("NO", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                //
+               //
             }
         });
         alert.create().show();

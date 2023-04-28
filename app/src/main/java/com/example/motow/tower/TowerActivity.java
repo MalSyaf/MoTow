@@ -1,27 +1,27 @@
 package com.example.motow.tower;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.FragmentActivity;
-
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.FragmentActivity;
 
 import com.example.motow.NotifyActivity;
 import com.example.motow.R;
+import com.example.motow.databinding.ActivityTowerBinding;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -34,7 +34,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -47,6 +46,8 @@ import java.util.Map;
 
 public class TowerActivity extends FragmentActivity implements OnMapReadyCallback {
 
+    private ActivityTowerBinding binding;
+
     // Google Map
     private GoogleMap mMap;
     private Boolean check = false;
@@ -57,29 +58,13 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
     private String userId;
     private CollectionReference vehicleRef;
 
-    // Nav bar
-    private ImageView pfp, chatBtn, notifybtn, manageBtn;
-
-    // Rider container
-    private String riderId;
-    private RelativeLayout riderContainer;
-    private TextView riderName, riderVehicle, riderPlate;
-    private Button acceptBtn, rejectBtn;
-
-    // Rider bar
-    private RelativeLayout riderBar;
-    private ImageView riderPfp;
-    private TextView riderBarVehicle, riderBarPlate;
-
-    // Interface
-    private TextView userName;
-    private Button offlineBtn, onlineBtn, pickupBtn, completeBtn;
-    private String currentProcessId, riderCurrentVehicle;
+    private String riderId, currentProcessId, riderCurrentVehicle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_tower);
+        binding = ActivityTowerBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         // Firebase
         fAuth = FirebaseAuth.getInstance();
@@ -87,83 +72,12 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
         userId = fAuth.getCurrentUser().getUid();
         vehicleRef = fStore.collection("Vehicles");
 
-        // Nav bar
-        chatBtn = findViewById(R.id.chat_btn);
-        notifybtn = findViewById(R.id.notify_btn);
-        manageBtn = findViewById(R.id.manage_btn);
+        supportMapFragment();
+        loadUserDetails();
+        setListeners();
+    }
 
-        // Rider container
-        riderContainer = findViewById(R.id.rider_container);
-        riderName = findViewById(R.id.rider_name);
-        riderVehicle = findViewById(R.id.rider_vehicle);
-        riderPlate = findViewById(R.id.rider_plate);
-        acceptBtn = findViewById(R.id.accept_btn);
-        rejectBtn = findViewById(R.id.reject_btn);
-
-        // Rider bar
-        riderBar = findViewById(R.id.rider_bar);
-        riderPfp = findViewById(R.id.rider_bar_pfp);
-        riderBarVehicle = findViewById(R.id.rider_bar_vehicle);
-        riderBarPlate = findViewById(R.id.rider_bar_plate);
-
-        // Interface
-        pfp = findViewById(R.id.welcome_pfp);
-        userName = findViewById(R.id.user_name);
-        offlineBtn = findViewById(R.id.offline_btn);
-        onlineBtn = findViewById(R.id.online_btn);
-        pickupBtn = findViewById(R.id.pickup_btn);
-        completeBtn = findViewById(R.id.complete_btn);
-
-
-        // Navbar buttons
-        chatBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(getApplicationContext(), TowerChatActivity.class));
-                finish();
-            }
-        });
-        notifybtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(getApplicationContext(), NotifyActivity.class));
-                finish();
-            }
-        });
-        manageBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(getApplicationContext(), TowerManageActivity.class));
-                finish();
-            }
-        });
-
-        // Button listeners
-        offlineBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                changeStatusToOnline();
-                getAssistance(userId);
-            }
-        });
-        onlineBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                offlineBtn.setVisibility(View.VISIBLE);
-                onlineBtn.setVisibility(View.GONE);
-                changeStatusToOffline();
-            }
-        });
-
-        // Set username
-        DocumentReference documentReference = fStore.collection("Users").document(userId);
-        documentReference.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
-                userName.setText("Hi, " + value.getString("fullName") + "!");
-            }
-        });
-
+    private void supportMapFragment() {
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -200,6 +114,48 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
             public void onStatusChanged(String provider, int status, Bundle extras) {
                 //
             }
+        });
+    }
+
+    private void loadUserDetails() {
+        fStore.collection("Users")
+                .document(userId)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        binding.userName.setText("Hi, " + documentSnapshot.getString("name") + "!");
+                        byte[] bytes = Base64.decode(documentSnapshot.getString("image"), Base64.DEFAULT);
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        binding.welcomePfp.setImageBitmap(bitmap);
+                    }
+                });
+    }
+
+    private void setListeners() {
+        // Navbar buttons
+        binding.chatButton.setOnClickListener(view -> {
+            startActivity(new Intent(getApplicationContext(), TowerChatActivity.class));
+            finish();
+        });
+        binding.notifyBtn.setOnClickListener(view -> {
+            startActivity(new Intent(getApplicationContext(), NotifyActivity.class));
+            finish();
+        });
+        binding.manageBtn.setOnClickListener(view -> {
+            startActivity(new Intent(getApplicationContext(), TowerManageActivity.class));
+            finish();
+        });
+
+        // Button listeners
+        binding.offlineBtn.setOnClickListener(view -> {
+            changeStatusToOnline();
+            getAssistance(userId);
+        });
+        binding.onlineBtn.setOnClickListener(view -> {
+            binding.offlineBtn.setVisibility(View.VISIBLE);
+            binding.onlineBtn.setVisibility(View.GONE);
+            changeStatusToOffline();
         });
     }
 
@@ -262,8 +218,8 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                             if(task.isSuccessful()){
                                                 for(QueryDocumentSnapshot document: task.getResult()){
-                                                    riderContainer.setVisibility(View.VISIBLE);
-                                                    onlineBtn.setVisibility(View.GONE);
+                                                    binding.riderContainer.setVisibility(View.VISIBLE);
+                                                    binding.onlineBtn.setVisibility(View.GONE);
 
                                                     currentProcessId = document.getId();
 
@@ -273,7 +229,7 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                                                             .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                                                 @Override
                                                                 public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                                                    riderName.setText(documentSnapshot.getString("fullName"));
+                                                                    binding.riderName.setText(documentSnapshot.getString("fullName"));
                                                                     riderCurrentVehicle = documentSnapshot.getString("currentVehicle");
                                                                     fStore.collection("Vehicles")
                                                                             .document(riderCurrentVehicle)
@@ -281,18 +237,18 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                                                                     .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                                                     @Override
                                                                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                                                            riderVehicle.setText(documentSnapshot.getString("brand") + " " + documentSnapshot.getString("model") + " (" + documentSnapshot.getString("color") + ")");
-                                                                            riderPlate.setText(documentSnapshot.getString("plateNumber"));
+                                                                            binding.riderVehicle.setText(documentSnapshot.getString("brand") + " " + documentSnapshot.getString("model") + " (" + documentSnapshot.getString("color") + ")");
+                                                                            binding.riderPlate.setText(documentSnapshot.getString("plateNumber"));
                                                                         }
                                                                     });
                                                                 }
                                                             });
-                                                    acceptBtn.setOnClickListener(new View.OnClickListener() {
+                                                    binding.acceptBtn.setOnClickListener(new View.OnClickListener() {
                                                         @Override
                                                         public void onClick(View view) {
-                                                            riderContainer.setVisibility(View.GONE);
-                                                            riderBar.setVisibility(View.VISIBLE);
-                                                            pickupBtn.setVisibility(View.VISIBLE);
+                                                            binding.riderContainer.setVisibility(View.GONE);
+                                                            binding.riderBar.setVisibility(View.VISIBLE);
+                                                            binding.pickupBtn.setVisibility(View.VISIBLE);
 
                                                             HashMap<String, Object> informRider = new HashMap<>();
                                                             informRider.put("towerId", userId);
@@ -334,8 +290,8 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                                                                     .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                                                         @Override
                                                                         public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                                                            riderBarVehicle.setText(documentSnapshot.getString("brand") + " " + documentSnapshot.getString("model") + " (" + documentSnapshot.getString("color") + ")");
-                                                                            riderBarPlate.setText(documentSnapshot.getString("plateNumber"));
+                                                                            binding.riderBarVehicle.setText(documentSnapshot.getString("brand") + " " + documentSnapshot.getString("model") + " (" + documentSnapshot.getString("color") + ")");
+                                                                            binding.riderBarPlate.setText(documentSnapshot.getString("plateNumber"));
                                                                         }
                                                                     });
 
@@ -362,11 +318,11 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                                                         }
                                                     });
 
-                                                    rejectBtn.setOnClickListener(new View.OnClickListener() {
+                                                    binding.rejectBtn.setOnClickListener(new View.OnClickListener() {
                                                         @Override
                                                         public void onClick(View view) {
-                                                            riderContainer.setVisibility(View.GONE);
-                                                            offlineBtn.setVisibility(View.VISIBLE);
+                                                            binding.riderContainer.setVisibility(View.GONE);
+                                                            binding.offlineBtn.setVisibility(View.VISIBLE);
 
                                                             HashMap<String, Object> updateStatus = new HashMap<>();
                                                             updateStatus.put("processStatus", "rejected");
@@ -396,11 +352,11 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                                                         }
                                                     });
 
-                                                    pickupBtn.setOnClickListener(new View.OnClickListener() {
+                                                    binding.pickupBtn.setOnClickListener(new View.OnClickListener() {
                                                         @Override
                                                         public void onClick(View view) {
-                                                            pickupBtn.setVisibility(View.GONE);
-                                                            completeBtn.setVisibility(View.VISIBLE);
+                                                            binding.pickupBtn.setVisibility(View.GONE);
+                                                            binding.completeBtn.setVisibility(View.VISIBLE);
 
                                                             HashMap<String, Object> updateStatus = new HashMap<>();
                                                             updateStatus.put("processStatus", "towed");
@@ -417,12 +373,12 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                                                         }
                                                     });
 
-                                                    completeBtn.setOnClickListener(new View.OnClickListener() {
+                                                    binding.completeBtn.setOnClickListener(new View.OnClickListener() {
                                                         @Override
                                                         public void onClick(View view) {
-                                                            riderBar.setVisibility(View.GONE);
-                                                            completeBtn.setVisibility(View.GONE);
-                                                            onlineBtn.setVisibility(View.VISIBLE);
+                                                            binding.riderBar.setVisibility(View.GONE);
+                                                            binding.completeBtn.setVisibility(View.GONE);
+                                                            binding.onlineBtn.setVisibility(View.VISIBLE);
 
                                                             HashMap<String, Object> userStatus = new HashMap<>();
                                                             userStatus.put("status", "online");
@@ -477,8 +433,8 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void unused) {
-                                            offlineBtn.setVisibility(View.INVISIBLE);
-                                            onlineBtn.setVisibility(View.VISIBLE);
+                                            binding.offlineBtn.setVisibility(View.INVISIBLE);
+                                            binding.onlineBtn.setVisibility(View.VISIBLE);
                                             Toast.makeText(TowerActivity.this, "You are online!", Toast.LENGTH_SHORT).show();
                                         }
                                     });

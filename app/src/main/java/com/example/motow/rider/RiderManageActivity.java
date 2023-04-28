@@ -69,7 +69,7 @@ public class RiderManageActivity extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        binding.riderName.setText("Hi, " + documentSnapshot.getString("name") + "!");
+                        binding.riderName.setText(documentSnapshot.getString("name"));
                         byte[] bytes = Base64.decode(documentSnapshot.getString("image"), Base64.DEFAULT);
                         Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                         binding.pfp.setImageBitmap(bitmap);
@@ -88,10 +88,6 @@ public class RiderManageActivity extends AppCompatActivity {
         // Navbar
         binding.homeBtn.setOnClickListener(view -> {
             startActivity(new Intent(getApplicationContext(), RiderActivity.class));
-            finish();
-        });
-        binding.chatBtn.setOnClickListener(view -> {
-            startActivity(new Intent(getApplicationContext(), ChatActivity.class));
             finish();
         });
         binding.notifyBtn.setOnClickListener(view -> {
