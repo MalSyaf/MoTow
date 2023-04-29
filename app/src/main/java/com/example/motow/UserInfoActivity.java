@@ -117,6 +117,24 @@ public class UserInfoActivity extends AppCompatActivity {
                             binding.editCompany.setText(documentSnapshot.getString("companyName"));
                             binding.editRegnum.setText(documentSnapshot.getString("companyRegNum"));
 
+                            if(documentSnapshot.getString("isPrivate") != null) {
+                                binding.privateCbox.setChecked(true);
+                            }
+                            if(documentSnapshot.getString("isCompany") != null) {
+                                binding.companyCbox.setChecked(true);
+                            }
+                            /*fStore.collection("Users")
+                                    .whereEqualTo("userId", userId)
+                                    .whereEqualTo("providerType", "Private")
+                                    .get()
+                                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                            if(task.isSuccessful()){
+                                                binding.privateCbox.setChecked(true);
+                                            }
+                                        }
+                                    });
                             fStore.collection("Users")
                                     .whereEqualTo("userId", userId)
                                     .whereEqualTo("providerType", "Company")
@@ -125,22 +143,10 @@ public class UserInfoActivity extends AppCompatActivity {
                                         @Override
                                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                             if(task.isSuccessful()){
-                                                    binding.companyCbox.setChecked(true);
+                                                binding.companyCbox.setChecked(true);
                                             }
                                         }
-                                    });
-                            fStore.collection("Users")
-                                    .whereEqualTo("userId", userId)
-                                    .whereEqualTo("providerType", "Private")
-                                    .get()
-                                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                            if(task.isSuccessful()){
-                                                    binding.privateCbox.setChecked(true);
-                                            }
-                                        }
-                                    });
+                                    });*/
                         }
                     });
         });
@@ -250,9 +256,13 @@ public class UserInfoActivity extends AppCompatActivity {
                                 updateUser.put("companyRegNum", regNumFilled);
                                 if(binding.privateCbox.isChecked()){
                                     updateUser.put("providerType", "Private");
+                                    updateUser.put("isPrivate", "1");
+                                    updateUser.put("isCompany", null);
                                 }
                                 if(binding.companyCbox.isChecked()){
                                     updateUser.put("providerType", "Company");
+                                    updateUser.put("isPrivate", null);
+                                    updateUser.put("isCompany", "1");
                                 }
 
                                 fStore.collection("Users")

@@ -229,7 +229,11 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                                                             .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                                                 @Override
                                                                 public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                                                    binding.riderName.setText(documentSnapshot.getString("fullName"));
+                                                                    binding.riderName.setText(documentSnapshot.getString("name"));
+                                                                    byte[] bytes = Base64.decode(documentSnapshot.getString("image"), Base64.DEFAULT);
+                                                                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                                                                    binding.riderBarPfp.setImageBitmap(bitmap);
+
                                                                     riderCurrentVehicle = documentSnapshot.getString("currentVehicle");
                                                                     fStore.collection("Vehicles")
                                                                             .document(riderCurrentVehicle)

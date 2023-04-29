@@ -461,8 +461,12 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        binding.towerName.setText(documentSnapshot.getString("fullName"));
-                        binding.towerType.setText(documentSnapshot.getString("providerType"));
+                        binding.towerName.setText(documentSnapshot.getString("name"));
+                        binding.towerType.setText(documentSnapshot.getString("companyName"));
+                        byte[] bytes = Base64.decode(documentSnapshot.getString("image"), Base64.DEFAULT);
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        binding.towerBarPfp.setImageBitmap(bitmap);
+                        binding.towerPfp.setImageBitmap(bitmap);
 
                         tCurrentVehicle = documentSnapshot.getString("currentVehicle");
 

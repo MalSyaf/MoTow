@@ -65,6 +65,7 @@ public class VehicleAdapter extends FirestoreRecyclerAdapter<Vehicle, VehicleAda
             // Firebase
             fAuth = FirebaseAuth.getInstance();
             fStore = FirebaseFirestore.getInstance();
+            String userId = fAuth.getCurrentUser().getUid();
 
             // Interface
             vehicleImage = itemView.findViewById(R.id.vehicleImage);
@@ -75,15 +76,15 @@ public class VehicleAdapter extends FirestoreRecyclerAdapter<Vehicle, VehicleAda
             vehicleContainer = itemView.findViewById(R.id.vehicle_container);
 
             fStore.collection("Users")
-                    .document(Constants.KEY_USER_ID.toString())
+                    .document(userId)
                     .get()
                     .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                         @Override
                         public void onSuccess(DocumentSnapshot documentSnapshot) {
-                            if(documentSnapshot.getString("isRider") == "1") {
-                                vehicleImage.setImageResource(R.drawable.main);
+                            if(documentSnapshot.getString("isRider") != null) {
+                                vehicleImage.setImageResource(R.drawable.sportbike);
                             }
-                            if(documentSnapshot.getString("isTower") == "1") {
+                            if(documentSnapshot.getString("isTower") != null) {
                                 vehicleImage.setImageResource(R.drawable.main);
                             }
                         }
