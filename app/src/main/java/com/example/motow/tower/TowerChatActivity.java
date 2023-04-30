@@ -53,9 +53,6 @@ public class TowerChatActivity extends AppCompatActivity {
     private String userId;
     private CollectionReference chatRef;
 
-    // Navbar
-    private ImageView homeBtn, notiBtn, manageBtn;
-
     // Recycler View
     private RecyclerView recyclerView;
     private ChatsAdapter chatsAdapter;
@@ -80,17 +77,12 @@ public class TowerChatActivity extends AppCompatActivity {
         userId = fAuth.getCurrentUser().getUid();
         chatRef = fStore.collection("Chats");
 
-        // Navbar
-        homeBtn = findViewById(R.id.home_btn);
-        notiBtn = findViewById(R.id.notify_btn);
-        manageBtn = findViewById(R.id.manage_btn);
-
         // Interface
         inputMessage = findViewById(R.id.input_message);
         sendBtn = findViewById(R.id.layout_send);
         callBtn = findViewById(R.id.call_btn);
 
-        setUpRecyclerView();
+        //setUpRecyclerView();
 
         callBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -277,7 +269,7 @@ public class TowerChatActivity extends AppCompatActivity {
         }
     }
 
-    private void setUpRecyclerView() {
+    /*private void setUpRecyclerView() {
         Query query = chatRef.whereEqualTo("towerId", userId).orderBy("timeStamp", Query.Direction.ASCENDING);
         FirestoreRecyclerOptions<Chats> options = new FirestoreRecyclerOptions.Builder<Chats>()
                 .setQuery(query, Chats.class)
@@ -301,5 +293,5 @@ public class TowerChatActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         chatsAdapter.stopListening();
-    }
+    }*/
 }

@@ -97,6 +97,20 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
 
+    <TextView
+        android:id="@+id/waiting"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        app:layout_constraintBottom_toTopOf="@+id/rider_bar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:text="Waiting for payment"
+        android:textColor="@color/black"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        android:visibility="gone"/>
+
     <!--Welcome Bar-->
     <RelativeLayout
         android:id="@+id/welcome_bar"
@@ -134,7 +148,7 @@
             android:translationZ="90dp" />
     </RelativeLayout>
 
-    <!-- Assistance Found Container -->
+    <!-- Assistance Needed Container -->
     <RelativeLayout
         android:id="@+id/rider_container"
         android:layout_width="291dp"
@@ -151,6 +165,7 @@
         android:layout_marginBottom="114dp"
         android:visibility="gone">
         <TextView
+            android:id="@+id/textStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
@@ -198,7 +213,7 @@
             android:text="Vehicle"
             android:textSize="16sp"
             android:textStyle="bold" />
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/accept_btn"
             android:layout_width="264dp"
             android:layout_height="wrap_content"
@@ -213,7 +228,7 @@
             android:textColor="@color/white"
             android:textSize="18sp"
             app:cornerRadius="40dp" />
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/reject_btn"
             android:layout_width="264dp"
             android:layout_height="wrap_content"
@@ -228,6 +243,38 @@
             android:textColor="@color/white"
             android:textSize="18sp"
             app:cornerRadius="40dp" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/ok_btn"
+            android:layout_width="264dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginTop="320dp"
+            android:backgroundTint="@color/purple_200"
+            android:padding="8dp"
+            android:text="OK"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            app:cornerRadius="40dp"
+            android:visibility="gone"/>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/done_btn"
+            android:layout_width="264dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginTop="320dp"
+            android:backgroundTint="@color/purple_200"
+            android:padding="8dp"
+            android:text="OK"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            app:cornerRadius="40dp"
+            android:visibility="gone"/>
     </RelativeLayout>
 
     <!-- Rider Bar -->

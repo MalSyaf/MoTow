@@ -22,10 +22,12 @@ import androidx.fragment.app.FragmentActivity;
 import com.example.motow.NotifyActivity;
 import com.example.motow.R;
 import com.example.motow.databinding.ActivityTowerBinding;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -72,6 +74,23 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
         userId = fAuth.getCurrentUser().getUid();
         vehicleRef = fStore.collection("Vehicles");
 
+        fStore.collection("Processes")
+                .whereEqualTo("towerId", userId)
+                .whereEqualTo("processStatus", "requesting")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(task.isSuccessful()){
+                            for(QueryDocumentSnapshot document: task.getResult()){
+                                fStore.collection("Processes")
+                                        .document(document.getId())
+                                        .delete();
+                            }
+                        }
+                    }
+                });
+
         supportMapFragment();
         loadUserDetails();
         setListeners();
@@ -97,9 +116,6 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
 
                     // Update current coordinate in database
                     updateCurrentLocation(latitude, longitude);
-
-                    LatLng currentLocation = new LatLng(latitude, longitude);
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 12f));
                 }
             }
             @Override
@@ -157,6 +173,52 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
             binding.onlineBtn.setVisibility(View.GONE);
             changeStatusToOffline();
         });
+        binding.doneBtn.setOnClickListener(view -> {
+            binding.doneBtn.setVisibility(View.GONE);
+            binding.onlineBtn.setVisibility(View.VISIBLE);
+            binding.acceptBtn.setVisibility(View.VISIBLE);
+            binding.rejectBtn.setVisibility(View.VISIBLE);
+            binding.riderContainer.setVisibility(View.GONE);
+            binding.textStatus.setText("Assistance Needed!");
+            fStore.collection("Processes")
+                    .whereEqualTo("towerId", userId)
+                    .whereEqualTo("processStatus", "requesting")
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if(task.isSuccessful()){
+                                for(QueryDocumentSnapshot document: task.getResult()){
+                                    fStore.collection("Processes")
+                                            .document(document.getId())
+                                            .delete();
+                                }
+                            }
+                        }
+                    });
+        });
+
+        binding.okBtn.setOnClickListener(view -> {
+            binding.riderContainer.setVisibility(View.GONE);
+        });
+        binding.riderBar.setOnClickListener(view -> {
+            binding.riderContainer.setVisibility(View.VISIBLE);
+            binding.okBtn.setVisibility(View.VISIBLE);
+            binding.acceptBtn.setVisibility(View.GONE);
+            binding.rejectBtn.setVisibility(View.GONE);
+            fStore.collection("Users")
+                    .document(riderId)
+                    .get()
+                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            LatLng firstCamera = new LatLng(documentSnapshot.getDouble("latitude"),documentSnapshot.getDouble("longitude"));
+
+                            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(firstCamera, 15);
+                            mMap.animateCamera(cameraUpdate);
+                        }
+                    });
+        });
     }
 
     @Override
@@ -175,6 +237,18 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
             return;
         }
         mMap.setMyLocationEnabled(true);
+        fStore.collection("Users")
+                .document(userId)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        LatLng firstCamera = new LatLng(documentSnapshot.getDouble("latitude"),documentSnapshot.getDouble("longitude"));
+
+                        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(firstCamera, 15);
+                        mMap.moveCamera(cameraUpdate);
+                    }
+                });
     }
 
     private void updateCurrentLocation(double latitude, double longitude) {
@@ -207,6 +281,24 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                             riderId = null;
                             riderId = documentSnapshot.getString("riderId");
 
+                            fStore.collection("Processes")
+                                    .whereEqualTo("riderId", riderId)
+                                    .whereEqualTo("towerId", userId)
+                                    .whereEqualTo("processStatus", "paid")
+                                    .whereEqualTo("processId", currentProcessId)
+                                    .get()
+                                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                            if(task.isSuccessful()){
+                                                for(QueryDocumentSnapshot document: task.getResult()){
+                                                    binding.completeBtn.setVisibility(View.VISIBLE);
+                                                    binding.waiting.setVisibility(View.GONE);
+                                                }
+                                            }
+                                        }
+                                    });
+
                             // Find request
                             fStore.collection("Processes")
                                     .whereEqualTo("towerId", userId)
@@ -232,6 +324,7 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                                                                     binding.riderName.setText(documentSnapshot.getString("name"));
                                                                     byte[] bytes = Base64.decode(documentSnapshot.getString("image"), Base64.DEFAULT);
                                                                     Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                                                                    binding.riderPfp.setImageBitmap(bitmap);
                                                                     binding.riderBarPfp.setImageBitmap(bitmap);
 
                                                                     riderCurrentVehicle = documentSnapshot.getString("currentVehicle");
@@ -253,6 +346,22 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                                                             binding.riderContainer.setVisibility(View.GONE);
                                                             binding.riderBar.setVisibility(View.VISIBLE);
                                                             binding.pickupBtn.setVisibility(View.VISIBLE);
+                                                            binding.okBtn.setVisibility(View.VISIBLE);
+                                                            binding.acceptBtn.setVisibility(View.GONE);
+                                                            binding.rejectBtn.setVisibility(View.GONE);
+
+                                                            fStore.collection("Users")
+                                                                    .document(riderId)
+                                                                    .get()
+                                                                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                                                        @Override
+                                                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                                                            LatLng firstCamera = new LatLng(documentSnapshot.getDouble("latitude"),documentSnapshot.getDouble("longitude"));
+
+                                                                            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(firstCamera, 15);
+                                                                            mMap.animateCamera(cameraUpdate);
+                                                                        }
+                                                                    });
 
                                                             HashMap<String, Object> informRider = new HashMap<>();
                                                             informRider.put("towerId", userId);
@@ -360,7 +469,6 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                                                         @Override
                                                         public void onClick(View view) {
                                                             binding.pickupBtn.setVisibility(View.GONE);
-                                                            binding.completeBtn.setVisibility(View.VISIBLE);
 
                                                             HashMap<String, Object> updateStatus = new HashMap<>();
                                                             updateStatus.put("processStatus", "towed");
@@ -371,6 +479,7 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                                                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                                         @Override
                                                                         public void onSuccess(Void unused) {
+                                                                            binding.waiting.setVisibility(View.VISIBLE);
                                                                             Toast.makeText(TowerActivity.this, "Vehicle has been towed", Toast.LENGTH_SHORT).show();
                                                                         }
                                                                     });
@@ -382,7 +491,9 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                                                         public void onClick(View view) {
                                                             binding.riderBar.setVisibility(View.GONE);
                                                             binding.completeBtn.setVisibility(View.GONE);
-                                                            binding.onlineBtn.setVisibility(View.VISIBLE);
+                                                            binding.textStatus.setText("Thank you for the assistance");
+                                                            binding.okBtn.setVisibility(View.GONE);
+                                                            binding.doneBtn.setVisibility(View.VISIBLE);
 
                                                             HashMap<String, Object> userStatus = new HashMap<>();
                                                             userStatus.put("status", "online");

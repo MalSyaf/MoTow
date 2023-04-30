@@ -1,5 +1,6 @@
 package com.example.motow.chats;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,66 +10,93 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.motow.R;
-import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
-import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
+import com.example.motow.databinding.ActivityChatBinding;
+import com.example.motow.databinding.ActivityTowerChatBinding;
+import com.example.motow.databinding.ItemContainerSentMessageBinding;
+import com.example.motow.databinding.ItemLayoutReceiveMessageBinding;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
+import java.util.ArrayList;
 
-public class ChatsAdapter extends FirestoreRecyclerAdapter<Chats, ChatsAdapter.ChatHolder> {
+public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.MyViewHolder> {
 
-    public ChatsAdapter(@NonNull FirestoreRecyclerOptions<Chats> options) {
-        super(options);
-    }
+    private Context context;
+    private ArrayList<Chats> chatsArrayList;
+    private final String senderId;
 
-    @Override
-    protected void onBindViewHolder(@NonNull ChatHolder holder, int position, @NonNull Chats model) {
-        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        FirebaseFirestore fStore = FirebaseFirestore.getInstance();
+    public static final int VIEW_TYPE_SENT = 1;
+    public static final int VIEW_TYPE_RECEIVED = 2;
 
-        fStore.collection("Users")
-                        .document(userId)
-                                .get()
-                                        .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                            @Override
-                                            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                                String name = documentSnapshot.getString("fullName");
-                                                holder.textViewName.setText(name);
-                                            }
-                                        });
-
-        Date dateAndTime = Calendar.getInstance().getTime();
-        SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm:ss", Locale.getDefault());
-        String time = timeFormat.format(dateAndTime);
-
-        holder.textViewMessage.setText(model.message);
-        holder.textViewTime.setText(time);
+    public ChatsAdapter(Context context, ArrayList<Chats> chatsArrayList, String senderId) {
+        this.context = context;
+        this.chatsArrayList = chatsArrayList;
+        this.senderId = senderId;
     }
 
     @NonNull
     @Override
-    public ChatHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_container_sent_message, parent, false);
-        return new ChatHolder(v) ;
+    public ChatsAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+
+        View v = LayoutInflater.from(context).inflate(R.layout.item_container_sent_message, parent, false);
+
+        return null;
     }
 
-    class ChatHolder extends RecyclerView.ViewHolder {
+    @Override
+    public void onBindViewHolder(@NonNull ChatsAdapter.MyViewHolder holder, int position) {
+        Chats chats = chatsArrayList.get(position);
 
-        TextView textViewName;
-        TextView textViewMessage;
-        TextView textViewTime;
+        holder.message.setText(chats.message);
+        holder.dateTime.setText(chats.dateTime);
+    }
 
-        public ChatHolder(View itemView) {
+    @Override
+    public int getItemCount() {
+        return chatsArrayList.size();
+    }
+
+
+    @Override
+    public int getItemViewType(int position) {
+        if(chatsArrayList.get(position).equals(senderId)) {
+            return VIEW_TYPE_SENT;
+        } else {
+            return VIEW_TYPE_RECEIVED;
+        }
+    }
+
+    public class MyViewHolder extends RecyclerView.ViewHolder {
+
+        TextView message, dateTime;
+        public MyViewHolder(@NonNull View itemView) {
             super(itemView);
-            textViewName = itemView.findViewById(R.id.name);
-            textViewMessage = itemView.findViewById(R.id.text_message);
-            textViewTime = itemView.findViewById(R.id.time);
+            message = itemView.findViewById(R.id.textMessage);
+            dateTime = itemView.findViewById(R.id.textDateTime);
+        }
+
+        class ReceivedMessageViewHolder extends RecyclerView.ViewHolder {
+            private final ItemLayoutReceiveMessageBinding binding;
+
+            ReceivedMessageViewHolder(ItemLayoutReceiveMessageBinding itemLayoutReceiveMessageBinding) {
+                super(itemLayoutReceiveMessageBinding.getRoot());
+                binding = itemLayoutReceiveMessageBinding;
+            }
+            void setData(Chats chatMessage) {
+                binding.textMessage.setText(chatMessage.message);
+                binding.textDateTime.setText(chatMessage.dateTime);
+            }
+        }
+
+        class SentMessageViewHolder extends RecyclerView.ViewHolder {
+            private final ItemContainerSentMessageBinding binding;
+
+            SentMessageViewHolder(ItemContainerSentMessageBinding itemContainerSentMessageBinding) {
+                super(itemContainerSentMessageBinding.getRoot());
+                binding = itemContainerSentMessageBinding;
+            }
+            void setData(Chats chatMessage) {
+                binding.textMessage.setText(chatMessage.message);
+                binding.textDateTime.setText(chatMessage.dateTime);
+            }
         }
     }
 }

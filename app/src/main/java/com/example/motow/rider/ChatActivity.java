@@ -1,5 +1,10 @@
 package com.example.motow.rider;
 
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -8,27 +13,15 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.net.Uri;
-import android.os.Bundle;
-import android.text.TextUtils;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.Toast;
-
 import com.example.motow.chats.Chats;
 import com.example.motow.chats.ChatsAdapter;
-import com.example.motow.R;
-import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.example.motow.databinding.ActivityChatBinding;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -37,14 +30,18 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import org.checkerframework.checker.units.qual.A;
+
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 public class ChatActivity extends AppCompatActivity {
+
+    private ActivityChatBinding binding;
 
     // Firebase
     private FirebaseAuth fAuth;
@@ -52,52 +49,24 @@ public class ChatActivity extends AppCompatActivity {
     private String userId;
     private CollectionReference chatRef;
 
-    // Navbar
-    private ImageView homeBtn, notiBtn, manageBtn;
-
     // Recycler View
-    private RecyclerView recyclerView;
+    private ArrayList<Chats> chatsArrayList;
     private ChatsAdapter chatsAdapter;
 
-    // Interface
-    private EditText inputMessage;
-    private FrameLayout sendBtn;
-    private ImageView callBtn;
-
-    private String towerId, riderId, towerPhone, riderPhone, number;
+    private String towerId, riderId, number;
     private static final int REQUEST_CALL = 1;
-    public String chatId;
-    int flag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chat);
+        binding = ActivityChatBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         // Firebase
         fAuth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
         userId = fAuth.getCurrentUser().getUid();
         chatRef = fStore.collection("Chats");
-
-        // Navbar
-        homeBtn = findViewById(R.id.home_btn);
-        notiBtn = findViewById(R.id.notify_btn);
-        manageBtn = findViewById(R.id.manage_btn);
-
-        // Interface
-        inputMessage = findViewById(R.id.input_message);
-        sendBtn = findViewById(R.id.layout_send);
-        callBtn = findViewById(R.id.call_btn);
-
-        setUpRecyclerView();
-
-        callBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                makePhoneCall();
-            }
-        });
 
         fStore.collection("Users")
                 .document(userId)
@@ -120,6 +89,16 @@ public class ChatActivity extends AppCompatActivity {
                                                             if(task.isSuccessful()){
                                                                 for(QueryDocumentSnapshot document: task.getResult()){
                                                                     towerId = document.getString("towerId");
+                                                                    // Display username
+                                                                    fStore.collection("Users")
+                                                                            .document(towerId)
+                                                                            .get()
+                                                                            .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                                                                @Override
+                                                                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                                                                    binding.name.setText(documentSnapshot.getString("name"));
+                                                                                }
+                                                                            });
                                                                 }
                                                             }
                                                         }
@@ -152,81 +131,113 @@ public class ChatActivity extends AppCompatActivity {
                     }
                 });
 
-        flag = 0;
+        binding.chatRecycler.setHasFixedSize(true);
+        binding.chatRecycler.setLayoutManager(new LinearLayoutManager(this));
+        chatsArrayList = new ArrayList<>();
+        chatsAdapter = new ChatsAdapter(ChatActivity.this, chatsArrayList, userId);
+        setListeners();
+        eventChangeListener();
+        //init();
+        //listenMessages();
+    }
 
-        sendBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String textMessage = inputMessage.getText().toString();
-
-                if(TextUtils.isEmpty(textMessage)) {
-                    Toast.makeText(ChatActivity.this, "Type a message", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                fStore.collection("Users")
-                        .document(userId)
-                        .get()
-                        .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                            @Override
-                            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                if(documentSnapshot.getString("isRider") != null) {
-
-
-                                    Date dateAndTime = Calendar.getInstance().getTime();
-                                    SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm:ss", Locale.getDefault());
-                                    String time = timeFormat.format(dateAndTime);
-
-                                    HashMap<Object, String> sentMessage = new HashMap<>();
-                                    sentMessage.put("riderId", userId);
-                                    sentMessage.put("towerId", towerId);
-                                    sentMessage.put("message", textMessage);
-                                    sentMessage.put("time", time);
-                                    sentMessage.put("flag", Integer.toString(flag));
-
-
-                                    fStore.collection("Chats")
-                                            .add(sentMessage)
-                                            .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                                                @Override
-                                                public void onSuccess(DocumentReference documentReference) {
-                                                    flag++;
-                                                }
-                                            });
-
-
-                                }
-                                if(documentSnapshot.getString("isTower") != null) {
-                                    Date dateAndTime = Calendar.getInstance().getTime();
-                                    SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm:ss", Locale.getDefault());
-                                    String time = timeFormat.format(dateAndTime);
-
-                                    HashMap<Object, String> sentMessage = new HashMap<>();
-                                    sentMessage.put("towerId", userId);
-                                    sentMessage.put("riderId", riderId);
-                                    sentMessage.put("message", textMessage);
-                                    sentMessage.put("time", time);
-
-                                    fStore.collection("Chats")
-                                            .add(sentMessage)
-                                            .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                                                @Override
-                                                public void onSuccess(DocumentReference documentReference) {
-                                                    chatId = documentReference.getId();
-                                                    Map<String, Object> updateProcessId = new HashMap<>();
-                                                    updateProcessId.put("processId", chatId);
-                                                    fStore.collection("Processes")
-                                                            .document(chatId)
-                                                            .update(updateProcessId);
-                                                }
-                                            });
-                                }
+    private void eventChangeListener() {
+        fStore.collection("Chats")
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                        if(error != null) {
+                            return;
+                        }
+                        for(DocumentChange dc : value.getDocumentChanges()) {
+                            if(dc.getType() == DocumentChange.Type.ADDED) {
+                                chatsArrayList.add(dc.getDocument().toObject(Chats.class));
                             }
-                        });
-                inputMessage.setText(null);
-            }
+
+                            chatsAdapter.notifyDataSetChanged();
+                        }
+                    }
+                });
+    }
+
+    /*private void init() {
+        chatMessages = new ArrayList<>();
+        chatsAdapter = new ChatsAdapter(
+                chatMessages,
+                userId
+        );
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        binding.chatRecycler.setAdapter(chatsAdapter);
+        binding.chatRecycler.setLayoutManager(layoutManager);
+    }*/
+
+    private void setListeners() {
+        binding.backBtn.setOnClickListener(view -> {
+            startActivity(new Intent(getApplicationContext(), RiderActivity.class));
+        });
+
+        binding.callBtn.setOnClickListener(view -> {
+            makePhoneCall();
+        });
+
+        binding.layoutSend.setOnClickListener(view -> {
+            sendMessage();
         });
     }
+
+    private String getReadableDateTime(Date date) {
+        return new SimpleDateFormat("MMMM dd, yyyy - hh:mm a", Locale.getDefault()).format(date);
+    }
+
+    private void sendMessage() {
+        HashMap<String, Object> message = new HashMap<>();
+        message.put("senderId", userId);
+        message.put("receiverId", towerId);
+        message.put("message", binding.inputMessage.getText().toString());
+        message.put("timeStamp", new Date());
+        fStore.collection("Chats")
+                .add(message);
+        binding.inputMessage.setText(null);
+    }
+
+    /*private void listenMessages() {
+        fStore.collection("Chats")
+                .whereEqualTo("senderId", userId)
+                .whereEqualTo("receiverId", towerId)
+                .addSnapshotListener(eventListener);
+        fStore.collection("Chats")
+                .whereEqualTo("senderId", towerId)
+                .whereEqualTo("receiverId", userId)
+                .addSnapshotListener(eventListener);
+    }*/
+
+    /*private final EventListener<QuerySnapshot> eventListener = (value, error) -> {
+        if(error != null) {
+            return;
+        }
+        if(value != null) {
+            int count = chatMessages.size();
+            for(DocumentChange documentChange : value.getDocumentChanges()) {
+                if(documentChange.getType() == DocumentChange.Type.ADDED) {
+                    ChatMessage chatMessage = new ChatMessage();
+                    chatMessage.senderId = documentChange.getDocument().getString("senderId");
+                    chatMessage.receiverId = documentChange.getDocument().getString("receiverId");
+                    chatMessage.message = documentChange.getDocument().getString("message");
+                    chatMessage.dateTime = getReadableDateTime(documentChange.getDocument().getDate("timeStamp"));
+                    chatMessage.dateObject = documentChange.getDocument().getDate("timeStamp");
+                    chatMessages.add(chatMessage);
+                }
+            }
+            Collections.sort(chatMessages, (obj1, obj2) -> obj1.dateObject.compareTo(obj2.dateObject));
+            if(count == 0) {
+                chatsAdapter.notifyDataSetChanged();
+            } else {
+                chatsAdapter.notifyItemRangeInserted(chatMessages.size(), chatMessages.size());
+                binding.chatRecycler.smoothScrollToPosition(chatMessages.size() - 1);
+            }
+            binding.chatRecycler.setVisibility(View.VISIBLE);
+        }
+    };*/
 
     private void makePhoneCall() {
         if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
@@ -245,7 +256,7 @@ public class ChatActivity extends AppCompatActivity {
                                         .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                             @Override
                                             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                                number = documentSnapshot.getString("phoneNumber");
+                                                number = documentSnapshot.getString("contact");
                                                 String dial = "tel:" + number;
                                                 startActivity(new Intent(Intent.ACTION_CALL, Uri.parse(dial)));
                                             }
@@ -258,7 +269,7 @@ public class ChatActivity extends AppCompatActivity {
                                         .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                             @Override
                                             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                                number = documentSnapshot.getString("phoneNumber");
+                                                number = documentSnapshot.getString("contact");
                                                 String dial = "tel:" + number;
                                                 startActivity(new Intent(Intent.ACTION_CALL, Uri.parse(dial)));
                                             }
@@ -279,30 +290,4 @@ public class ChatActivity extends AppCompatActivity {
         }
     }
 
-    private void setUpRecyclerView() {
-        Query query = chatRef.whereEqualTo("riderId", userId);
-        FirestoreRecyclerOptions<Chats> options = new FirestoreRecyclerOptions.Builder<Chats>()
-                .setQuery(query, Chats.class)
-                .build();
-
-        chatsAdapter = new ChatsAdapter(options);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        RecyclerView recyclerView = findViewById(R.id.chat_recycler);
-        recyclerView.setHasFixedSize(true);
-        layoutManager.setReverseLayout(true);
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(chatsAdapter);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        chatsAdapter.startListening();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        chatsAdapter.stopListening();
-    }
 }

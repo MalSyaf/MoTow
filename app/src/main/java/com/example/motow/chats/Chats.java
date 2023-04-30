@@ -1,25 +1,54 @@
 package com.example.motow.chats;
 
+import java.util.Date;
+
 public class Chats {
 
-    String message, time, name;
+    String message, dateTime, name, senderId, receiverId;
+    Date dateObject;
 
     public Chats() {
         // Empty constructor needed
     }
 
-    public Chats(String message, String time, String name) {
+    public Chats(String message, String dateTime, String name, String senderId, String receiverId) {
         this.message = message;
-        this.time = time;
+        this.dateTime = dateTime;
         this.name = name;
+        this.senderId = senderId;
+        this.receiverId = receiverId;
     }
 
-    public String getTime() {
-        return time;
+    public String getDateTime() {
+        return dateTime;
     }
 
-    public void setTime(String time) {
-        this.time = time;
+    public void setDateTime(String dateTime) {
+        this.dateTime = dateTime;
+    }
+
+    public String getSenderId() {
+        return senderId;
+    }
+
+    public void setSenderId(String senderId) {
+        this.senderId = senderId;
+    }
+
+    public String getReceiverId() {
+        return receiverId;
+    }
+
+    public void setReceiverId(String receiverId) {
+        this.receiverId = receiverId;
+    }
+
+    public Date getDateObject() {
+        return dateObject;
+    }
+
+    public void setDateObject(Date dateObject) {
+        this.dateObject = dateObject;
     }
 
     public String getName() {
