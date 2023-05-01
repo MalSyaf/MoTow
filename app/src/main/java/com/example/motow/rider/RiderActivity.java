@@ -1,7 +1,10 @@
 package com.example.motow.rider;
 
+import static com.example.motow.utilities.App.CHANNEL_1_ID;
+
 import android.Manifest;
 import android.app.ActivityManager;
+import android.app.Notification;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -20,8 +23,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -30,6 +36,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.motow.R;
+import com.example.motow.chats.Chats;
+import com.example.motow.chats.ChatsAdapter;
 import com.example.motow.databinding.ActivityRiderBinding;
 import com.example.motow.utilities.ForegroundService;
 import com.example.motow.vehicles.ManageVehicleActivity;
@@ -43,24 +51,29 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.stripe.android.PaymentConfiguration;
 import com.stripe.android.paymentsheet.PaymentSheet;
 import com.stripe.android.paymentsheet.PaymentSheetResult;
 
+import org.checkerframework.checker.units.qual.C;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
-import io.reactivex.rxjava3.schedulers.SchedulerRunnableIntrospection;
 
 public class RiderActivity extends FragmentActivity implements OnMapReadyCallback{
 
@@ -73,11 +86,19 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
     // Firebase
     private FirebaseFirestore fStore;
     private String userId;
+    private Timestamp timestamp;
 
     // Stripe
     private PaymentSheet paymentSheet;
     private String paymentIntentClientSecret;
     private PaymentSheet.CustomerConfiguration configuration;
+
+    // Notification
+    private NotificationManagerCompat notificationManager;
+
+    // Chats
+    private ChatsAdapter chatsAdapter;
+    private ArrayList<Chats> mChats;
 
     // Tower
     private String towerId, tCurrentVehicle;
@@ -94,7 +115,7 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         binding = ActivityRiderBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        if(!foreGroundServiceRunning()) {
+        if (!foreGroundServiceRunning()) {
             Intent serviceIntent = new Intent(this, ForegroundService.class);
             startForegroundService(serviceIntent);
         }
@@ -104,47 +125,18 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
         fStore = FirebaseFirestore.getInstance();
         userId = fAuth.getUid();
 
+        // Notification
+        notificationManager = NotificationManagerCompat.from(this);
+
         // Stripe
         paymentSheet = new PaymentSheet(this, this::onPaymentSheetResult);
-
-        fStore.collection("Processes")
-                .whereEqualTo("riderId", userId)
-                .whereEqualTo("towerId", towerId)
-                .whereEqualTo("processStatus", "rejected")
-                .whereEqualTo("processId", processId)
-                .get()
-                .addOnCompleteListener(task -> {
-                    if(task.isSuccessful()){
-                        for(QueryDocumentSnapshot document: task.getResult()){
-                            fStore.collection("Processes")
-                                    .document(document.getId())
-                                    .delete();
-                            getAssistance();
-                        }
-                    }
-                });
-
-        fStore.collection("Processes")
-                .whereEqualTo("riderId", userId)
-                .whereEqualTo("towerId", towerId)
-                .whereEqualTo("processStatus", "requesting")
-                .whereEqualTo("processId", processId)
-                .get()
-                .addOnCompleteListener(task -> {
-                    if(task.isSuccessful()){
-                        for(QueryDocumentSnapshot document: task.getResult()){
-                            fStore.collection("Processes")
-                                    .document(document.getId())
-                                    .delete();
-                        }
-                    }
-                });
 
         supportMapFragment();
         loadUserDetails();
         setListeners();
         fetchApi();
         checkProcessStatus();
+        setChatRecycler();
     }
 
     public boolean foreGroundServiceRunning() {
@@ -241,7 +233,7 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
 
     private void setListeners() {
         // Navbar listener
-        binding.manageBtn.setOnClickListener(v -> {
+        binding.manageBtn.setOnClickListener(v ->
             fStore.collection("Users")
                     .document(userId)
                     .get()
@@ -255,8 +247,7 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                             startActivity(new Intent(getApplicationContext(), RiderManageActivity.class));
                             finish();
                         }
-                    });
-        });
+                    }));
 
         // Chat listener
         binding.chatButton.setOnClickListener(v -> {
@@ -272,6 +263,14 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
         });
         binding.callBtn.setOnClickListener(v ->
             makePhoneCall());
+        binding.sendBtn.setOnClickListener(v -> {
+            if(binding.inputMessage.getText().toString().isEmpty()) {
+                Toast.makeText(this, "Type a message", Toast.LENGTH_SHORT).show();
+            } else {
+                sendMessage();
+            }
+            binding.inputMessage.setText("");
+        });
 
         // Buttons listener
         binding.requestBtn.setOnClickListener(view -> {
@@ -327,6 +326,7 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
         binding.okCompleteBtn.setOnClickListener(view -> {
             binding.requestBtn.setVisibility(View.VISIBLE);
             binding.completionContainer.setVisibility(View.GONE);
+            towerId = null;
             deleteRequests();
             changeRiderStatus();
         });
@@ -365,6 +365,31 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                 });
     }
 
+    private void setChatRecycler() {
+        mChats = new ArrayList<>();
+        binding.chatRecycler.setHasFixedSize(true);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
+        linearLayoutManager.setStackFromEnd(true);
+        binding.chatRecycler.setLayoutManager(linearLayoutManager);
+
+        chatsAdapter = new ChatsAdapter(this, mChats);
+        binding.chatRecycler.setAdapter(chatsAdapter);
+
+        fStore.collection("Chats").orderBy("timeStamp", Query.Direction.DESCENDING)
+                .addSnapshotListener((value, error) ->
+                        fStore.collection("Chats")
+                                .get()
+                                .addOnSuccessListener(queryDocumentSnapshots -> {
+                                    List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
+                                    for(DocumentSnapshot d:list)
+                                    {
+                                        Chats obj = d.toObject(Chats.class);
+                                        mChats.add(obj);
+                                    }
+                                    chatsAdapter.notifyDataSetChanged();
+                                }));
+    }
+
     private void changeRiderStatus() {
         HashMap<String, Object> status = new HashMap<>();
         status.put("status", null);
@@ -374,49 +399,115 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
     }
 
     private void changeTowerStatus() {
-        // Check process towed
         fStore.collection("Processes")
-                .whereEqualTo("riderId", userId)
-                .whereEqualTo("towerId", towerId)
-                .whereEqualTo("processStatus", "towed")
-                .get()
-                .addOnCompleteListener(task -> {
-                    if(task.isSuccessful()){
-                        for(QueryDocumentSnapshot document: task.getResult()){
-                            binding.towerBarStatus.setText("Vehicle has been towed");
-                        }
-                    }
-                });
+                .addSnapshotListener((value, error) -> {
+                    // Check process towed
+                    fStore.collection("Processes")
+                            .whereEqualTo("riderId", userId)
+                            .whereEqualTo("towerId", towerId)
+                            .whereEqualTo("processStatus", "towed")
+                            .get()
+                            .addOnCompleteListener(task -> {
+                                if(task.isSuccessful()){
+                                    for(QueryDocumentSnapshot document: task.getResult()){
+                                        binding.towerBarStatus.setText("Vehicle has been towed");
+                                    }
+                                }
+                            });
 
-        // Check process paid
-        fStore.collection("Processes")
-                .whereEqualTo("riderId", userId)
-                .whereEqualTo("towerId", towerId)
-                .whereEqualTo("processId", processId)
-                .whereEqualTo("processStatus", "paid")
-                .get()
-                .addOnCompleteListener(task -> {
-                    if(task.isSuccessful()){
-                        for(QueryDocumentSnapshot document: task.getResult()){
-                            binding.towerBarStatus.setText("Confirming payment");
-                        }
-                    }
-                });
+                    // Check process paid
+                    fStore.collection("Processes")
+                            .whereEqualTo("riderId", userId)
+                            .whereEqualTo("towerId", towerId)
+                            .whereEqualTo("processId", processId)
+                            .whereEqualTo("processStatus", "paid")
+                            .get()
+                            .addOnCompleteListener(task -> {
+                                if(task.isSuccessful()){
+                                    for(QueryDocumentSnapshot document: task.getResult()){
+                                        binding.towerBarStatus.setText("Confirming payment");
+                                    }
+                                }
+                            });
 
-        // Check process ongoing
-        fStore.collection("Processes")
-                .whereEqualTo("riderId", userId)
-                .whereEqualTo("towerId", towerId)
-                .whereEqualTo("processStatus", "ongoing")
-                .whereEqualTo("processId", processId)
-                .get()
-                .addOnCompleteListener(task -> {
-                    if(task.isSuccessful()){
-                        for(QueryDocumentSnapshot document: task.getResult()){
-                            binding.towerBarStatus.setText("Assistance is on the way");
-                        }
-                    }
+                    // Check process ongoing
+                    fStore.collection("Processes")
+                            .whereEqualTo("riderId", userId)
+                            .whereEqualTo("towerId", towerId)
+                            .whereEqualTo("processStatus", "ongoing")
+                            .whereEqualTo("processId", processId)
+                            .get()
+                            .addOnCompleteListener(task -> {
+                                if(task.isSuccessful()){
+                                    for(QueryDocumentSnapshot document: task.getResult()){
+                                        binding.towerBarStatus.setText("Assistance is on the way");
+                                    }
+                                }
+                            });
                 });
+    }
+
+    private void notificationAssistanceOtw() {
+        Notification notification = new NotificationCompat.Builder(this, CHANNEL_1_ID)
+                .setSmallIcon(R.drawable.logo)
+                .setContentTitle("MoTow")
+                .setContentText("Assistance is on the way")
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .build();
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        notificationManager.notify(1, notification);
+    }
+
+    private void notificationConfirmation() {
+        Notification notification = new NotificationCompat.Builder(this, CHANNEL_1_ID)
+                .setSmallIcon(R.drawable.logo)
+                .setContentTitle("MoTow")
+                .setContentText("Your payment is being confirmed")
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .build();
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        notificationManager.notify(1, notification);
+    }
+
+    private void notificationTowed() {
+        Notification notification = new NotificationCompat.Builder(this, CHANNEL_1_ID)
+                .setSmallIcon(R.drawable.logo)
+                .setContentTitle("MoTow")
+                .setContentText("Your vehicle has been towed")
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .build();
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        notificationManager.notify(1, notification);
     }
 
     public void fetchApi() {
@@ -479,6 +570,7 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                                                         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(firstCamera, 15);
                                                         mMap.animateCamera(cameraUpdate);
                                                     });
+                                            notificationAssistanceOtw();
                                         }
                                     }
                                 });
@@ -494,6 +586,7 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                                         for(QueryDocumentSnapshot document: task.getResult()){
                                             binding.paymentBtn.setVisibility(View.VISIBLE);
                                             binding.towerBarStatus.setText("Vehicle has been towed");
+                                            notificationTowed();
                                         }
                                     }
                                 });
@@ -535,6 +628,7 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                                     if(task.isSuccessful()){
                                         for(QueryDocumentSnapshot document: task.getResult()){
                                             binding.towerBarStatus.setText("Confirming payment");
+                                            notificationConfirmation();
                                         }
                                     }
                                 });
@@ -546,9 +640,8 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
         fStore.collection("Users")
                 .document(towerId)
                 .get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    binding.chatName.setText(documentSnapshot.getString("name"));
-                });
+                .addOnSuccessListener(documentSnapshot ->
+                    binding.chatName.setText(documentSnapshot.getString("name")));
     }
 
     private void makePhoneCall() {
@@ -564,6 +657,19 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                         startActivity(new Intent(Intent.ACTION_CALL, Uri.parse(dial)));
                     });
         }
+    }
+
+    private void sendMessage() {
+        Date currentDate = new Date();
+        Timestamp timestamp = new Timestamp(currentDate);
+
+        HashMap<String, Object> sendMessage = new HashMap<>();
+        sendMessage.put("senderId", userId);
+        sendMessage.put("receiverId", towerId);
+        sendMessage.put("message", binding.inputMessage.getText().toString());
+        sendMessage.put("timeStamp", timestamp);
+        fStore.collection("Chats")
+                .add(sendMessage);
     }
 
     private void loadCurrentVehicle() {
@@ -639,17 +745,21 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                                                     double tCurrentLongitude = value1.getDouble("longitude");
                                                     towerLocation = new LatLng(tCurrentLatitude, tCurrentLongitude);
                                                 });
-                                        // Update rider's status
-                                        HashMap<String, Object> status = new HashMap<>();
-                                        status.put("status", "inassistance");
-                                        fStore.collection("Users")
-                                                .document(userId)
-                                                .update(status);
-                                        // Create processes
-                                        createProcess(towerId);
                                     }
                                 }
                             }));
+
+        if(towerId != null) {
+            // Update rider's status
+            HashMap<String, Object> status = new HashMap<>();
+            status.put("status", "inassistance");
+            fStore.collection("Users")
+                    .document(userId)
+                    .update(status);
+
+            // Create processes
+            createProcess(towerId);
+        }
     }
 
     private void loadCompletion() {

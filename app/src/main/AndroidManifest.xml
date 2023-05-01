@@ -25,10 +25,6 @@
             android:exported="false"
             android:windowSoftInputMode="adjustResize"/>
         <activity
-            android:name=".rider.ChatActivity"
-            android:exported="false"
-            android:windowSoftInputMode="adjustResize"/>
-        <activity
             android:name=".UserInfoActivity"
             android:exported="false" />
         <activity

@@ -47,6 +47,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -363,6 +364,7 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                                             for (QueryDocumentSnapshot document : task.getResult()) {
                                                 binding.completeBtn.setVisibility(View.VISIBLE);
                                                 binding.waitingText.setVisibility(View.GONE);
+                                                notificationPaid();
                                             }
                                         }
                                     });
@@ -380,6 +382,8 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                                                 for (QueryDocumentSnapshot document : task.getResult()) {
                                                     binding.riderContainer.setVisibility(View.VISIBLE);
                                                     binding.onlineBtn.setVisibility(View.GONE);
+
+                                                    notificationAssistanceNeeded();
 
                                                     currentProcessId = document.getId();
 
@@ -401,7 +405,6 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                                                                             binding.riderVehicle.setText(documentSnapshot1.getString("brand") + " " + documentSnapshot1.getString("model") + " (" + documentSnapshot1.getString("color") + ")");
                                                                             binding.riderPlate.setText(documentSnapshot1.getString("plateNumber"));
                                                                         });
-                                                                receiveNotification();
                                                             });
 
                                                     binding.acceptBtn.setOnClickListener(v -> {
@@ -426,6 +429,7 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                                                         informRider.put("towerId", userId);
                                                         informRider.put("riderId", riderId);
                                                         informRider.put("message", "I'm on my way!");
+                                                        informRider.put("timeStamp", FieldValue.serverTimestamp());
                                                         fStore.collection("Chats")
                                                                 .add(informRider);
 
@@ -507,6 +511,7 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                                                         binding.completeBtn.setVisibility(View.GONE);
                                                         binding.textStatus.setText("Thank you for the assistance");
                                                         binding.okBtn.setVisibility(View.GONE);
+                                                        binding.riderContainer.setVisibility(View.VISIBLE);
                                                         binding.doneBtn.setVisibility(View.VISIBLE);
                                                         binding.chatBtn.setVisibility(View.GONE);
 
@@ -536,39 +541,48 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                 });
     }
 
-    private void receiveNotification() {
-        fStore.collection("Processes")
-                .addSnapshotListener((value, error) -> {
-                    fStore.collection("Processes")
-                            .whereEqualTo("riderId", riderId)
-                            .whereEqualTo("towerId", userId)
-                            .whereEqualTo("processStatus", "requesting")
-                            .whereEqualTo("processId", currentProcessId)
-                            .get()
-                            .addOnCompleteListener(task -> {
-                                if(task.isSuccessful()) {
-                                    Notification notification = new NotificationCompat.Builder(this, CHANNEL_1_ID)
-                                            .setSmallIcon(R.drawable.logo)
-                                            .setContentTitle("MoTow")
-                                            .setContentText("Assistance Needed!")
-                                            .setPriority(NotificationCompat.PRIORITY_HIGH)
-                                            .build();
+    private void notificationPaid() {
+        Notification notification = new NotificationCompat.Builder(this, CHANNEL_1_ID)
+                .setSmallIcon(R.drawable.logo)
+                .setContentTitle("MoTow")
+                .setContentText("Rider has paid please check for confirmation")
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .build();
 
-                                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                                        // TODO: Consider calling
-                                        //    ActivityCompat#requestPermissions
-                                        // here to request the missing permissions, and then overriding
-                                        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                                        //                                          int[] grantResults)
-                                        // to handle the case where the user grants the permission. See the documentation
-                                        // for ActivityCompat#requestPermissions for more details.
-                                        return;
-                                    }
-                                    notificationManager.notify(1, notification);
-                                }
-                            });
-                });
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        notificationManager.notify(1, notification);
     }
+
+    private void notificationAssistanceNeeded() {
+        Notification notification = new NotificationCompat.Builder(this, CHANNEL_1_ID)
+                .setSmallIcon(R.drawable.logo)
+                .setContentTitle("MoTow")
+                .setContentText("Assistance Needed!")
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .build();
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        notificationManager.notify(1, notification);
+    }
+
     private void changeStatusToOnline() {
         fStore.collection("Users")
                 .document(userId)

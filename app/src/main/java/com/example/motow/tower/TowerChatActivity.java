@@ -69,7 +69,7 @@ public class TowerChatActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chat);
+        setContentView(R.layout.activity_tower_chat);
 
         // Firebase
         fAuth = FirebaseAuth.getInstance();
