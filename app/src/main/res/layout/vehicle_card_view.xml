@@ -28,7 +28,7 @@
                 android:layout_width="100dp"
                 android:layout_height="55dp"
                 android:src="@drawable/sportbike"
-                android:layout_marginLeft="20dp"
+                android:layout_marginLeft="10dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"/>
@@ -85,8 +85,6 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:layout_marginTop="5dp"
-                android:layout_marginRight="40dp"
-                android:layout_marginLeft="15dp"
                 android:text="Plate"
                 android:textSize="13sp"
                 app:layout_constraintTop_toTopOf="parent"
@@ -97,8 +95,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:layout_marginRight="40dp"
-                android:layout_marginLeft="30dp"
                 android:text="Brand"
                 android:textSize="13sp"
                 app:layout_constraintTop_toBottomOf="@id/display_plate"
@@ -109,8 +105,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:layout_marginRight="40dp"
-                android:layout_marginLeft="15dp"
                 android:text="Model"
                 android:textSize="13sp"
                 app:layout_constraintTop_toBottomOf="@id/display_brand"
@@ -121,8 +115,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:layout_marginRight="40dp"
-                android:layout_marginLeft="15dp"
                 android:text="Color"
                 android:textSize="13sp"
                 app:layout_constraintTop_toBottomOf="@id/display_model"
@@ -130,4 +122,6 @@
                 app:layout_constraintEnd_toEndOf="parent"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

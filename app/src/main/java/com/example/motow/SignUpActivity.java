@@ -127,6 +127,7 @@ public class SignUpActivity extends AppCompatActivity {
                                 userInfo.put("currentVehicle", null);
                                 userInfo.put("longitude", null);
                                 userInfo.put("latitude", null);
+                                userInfo.put("status", null);
 
                                 Intent intent = new Intent(getApplicationContext(), RiderActivity.class);
                                 startActivity(intent);

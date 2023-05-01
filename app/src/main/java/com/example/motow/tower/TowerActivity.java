@@ -1,7 +1,10 @@
 package com.example.motow.tower;
 
+import static com.example.motow.utilities.App.CHANNEL_1_ID;
+
 import android.Manifest;
 import android.app.ActivityManager;
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
@@ -64,6 +67,9 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
     private FirebaseFirestore fStore;
     private String userId;
 
+    // Notification
+    private NotificationManagerCompat notificationManager;
+
     private String riderId, currentProcessId, riderCurrentVehicle;
     private static final int REQUEST_CALL = 1;
 
@@ -81,6 +87,9 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
         FirebaseAuth fAuth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
         userId = fAuth.getUid();
+
+        // Notification
+        notificationManager = NotificationManagerCompat.from(this);
 
         supportMapFragment();
         loadUserDetails();
@@ -176,6 +185,19 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
     private void deleteRequests() {
         fStore.collection("Processes")
                 .whereEqualTo("towerId", userId)
+                .whereEqualTo("processStatus", "rejected")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            fStore.collection("Processes")
+                                    .document(document.getId())
+                                    .delete();
+                        }
+                    }
+                });
+        fStore.collection("Processes")
+                .whereEqualTo("towerId", userId)
                 .whereEqualTo("processStatus", "requesting")
                 .get()
                 .addOnCompleteListener(task -> {
@@ -223,10 +245,15 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
         // Chat listeners
         binding.chatBtn.setOnClickListener(view -> {
             binding.chatLayout.setVisibility(View.VISIBLE);
+            binding.riderBar.setVisibility(View.GONE);
+            binding.chatBtn.setVisibility(View.GONE);
             loadReceiverName();
         });
-        binding.chatBackBtn.setOnClickListener(view ->
-            binding.chatLayout.setVisibility(View.INVISIBLE));
+        binding.chatBackBtn.setOnClickListener(view -> {
+            binding.chatLayout.setVisibility(View.INVISIBLE);
+            binding.riderBar.setVisibility(View.VISIBLE);
+            binding.chatBtn.setVisibility(View.VISIBLE);
+        });
         binding.callBtn.setOnClickListener(view ->
             makePhoneCall());
 
@@ -250,10 +277,13 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
             deleteRequests();
         });
 
-        binding.okBtn.setOnClickListener(view ->
-            binding.riderContainer.setVisibility(View.GONE));
+        binding.okBtn.setOnClickListener(view -> {
+            binding.riderContainer.setVisibility(View.GONE);
+            binding.riderBar.setVisibility(View.VISIBLE);
+        });
         binding.riderBar.setOnClickListener(view -> {
             binding.riderContainer.setVisibility(View.VISIBLE);
+            binding.riderBar.setVisibility(View.GONE);
             binding.okBtn.setVisibility(View.VISIBLE);
             binding.acceptBtn.setVisibility(View.GONE);
             binding.rejectBtn.setVisibility(View.GONE);
@@ -322,8 +352,6 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                             riderId = null;
                             riderId = documentSnapshot.getString("riderId");
 
-                            binding.chatBtn.setVisibility(View.VISIBLE);
-
                             fStore.collection("Processes")
                                     .whereEqualTo("riderId", riderId)
                                     .whereEqualTo("towerId", userId)
@@ -373,25 +401,7 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                                                                             binding.riderVehicle.setText(documentSnapshot1.getString("brand") + " " + documentSnapshot1.getString("model") + " (" + documentSnapshot1.getString("color") + ")");
                                                                             binding.riderPlate.setText(documentSnapshot1.getString("plateNumber"));
                                                                         });
-
-                                                                NotificationCompat.Builder builder = new NotificationCompat.Builder(TowerActivity.this, "notify");
-                                                                builder.setContentTitle("Assistance Needed!");
-                                                                builder.setContentText("Respond to Rider Now");
-                                                                builder.setSmallIcon(R.drawable.logo);
-                                                                builder.setAutoCancel(true);
-
-                                                                NotificationManagerCompat managerCompat = NotificationManagerCompat.from(TowerActivity.this);
-                                                                if (ActivityCompat.checkSelfPermission(TowerActivity.this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                                                                    // TODO: Consider calling
-                                                                    //    ActivityCompat#requestPermissions
-                                                                    // here to request the missing permissions, and then overriding
-                                                                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                                                                    //                                          int[] grantResults)
-                                                                    // to handle the case where the user grants the permission. See the documentation
-                                                                    // for ActivityCompat#requestPermissions for more details.
-                                                                    return;
-                                                                }
-                                                                managerCompat.notify(1, builder.build());
+                                                                receiveNotification();
                                                             });
 
                                                     binding.acceptBtn.setOnClickListener(v -> {
@@ -401,12 +411,13 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                                                         binding.okBtn.setVisibility(View.VISIBLE);
                                                         binding.acceptBtn.setVisibility(View.GONE);
                                                         binding.rejectBtn.setVisibility(View.GONE);
+                                                        binding.chatBtn.setVisibility(View.VISIBLE);
 
                                                         fStore.collection("Users")
                                                                 .document(riderId)
                                                                 .get()
                                                                 .addOnSuccessListener(documentSnapshot1 -> {
-                                                                    LatLng firstCamera = new LatLng(documentSnapshot.getDouble("latitude"),documentSnapshot.getDouble("longitude"));
+                                                                    LatLng firstCamera = new LatLng(documentSnapshot1.getDouble("latitude"),documentSnapshot1.getDouble("longitude"));
                                                                     CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(firstCamera, 15);
                                                                     mMap.animateCamera(cameraUpdate);
                                                                 });
@@ -436,19 +447,19 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                                                                 .document(riderCurrentVehicle)
                                                                 .get()
                                                                 .addOnSuccessListener(documentSnapshot1 -> {
-                                                                    binding.riderBarVehicle.setText(documentSnapshot.getString("brand") + " " + documentSnapshot.getString("model") + " (" + documentSnapshot.getString("color") + ")");
-                                                                    binding.riderBarPlate.setText(documentSnapshot.getString("plateNumber"));
+                                                                    binding.riderBarVehicle.setText(documentSnapshot1.getString("brand") + " " + documentSnapshot1.getString("model") + " (" + documentSnapshot1.getString("color") + ")");
+                                                                    binding.riderBarPlate.setText(documentSnapshot1.getString("plateNumber"));
                                                                 });
 
                                                         fStore.collection("Users")
                                                                 .document(riderId)
                                                                 .get()
                                                                 .addOnSuccessListener(documentSnapshot1 -> {
-                                                                    double riderLatitude = documentSnapshot.getDouble("latitude");
-                                                                    double riderLongitude = documentSnapshot.getDouble("longitude");
+                                                                    double riderLatitude = documentSnapshot1.getDouble("latitude");
+                                                                    double riderLongitude = documentSnapshot1.getDouble("longitude");
                                                                     LatLng riderLocation = new LatLng(riderLatitude, riderLongitude);
 
-                                                                    mMap.addMarker(new MarkerOptions().position(riderLocation).title(documentSnapshot.getString("fullName")));
+                                                                    mMap.addMarker(new MarkerOptions().position(riderLocation).title(documentSnapshot1.getString("fullName")));
 
                                                                     Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("google.navigation:q=" + riderLatitude + "," + riderLongitude));
                                                                     intent.setPackage("com.google.android.apps.maps");
@@ -497,6 +508,10 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                                                         binding.textStatus.setText("Thank you for the assistance");
                                                         binding.okBtn.setVisibility(View.GONE);
                                                         binding.doneBtn.setVisibility(View.VISIBLE);
+                                                        binding.chatBtn.setVisibility(View.GONE);
+
+                                                        riderId = null;
+                                                        mMap.clear();
 
                                                         HashMap<String, Object> userStatus = new HashMap<>();
                                                         userStatus.put("status", "online");
@@ -521,6 +536,39 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                 });
     }
 
+    private void receiveNotification() {
+        fStore.collection("Processes")
+                .addSnapshotListener((value, error) -> {
+                    fStore.collection("Processes")
+                            .whereEqualTo("riderId", riderId)
+                            .whereEqualTo("towerId", userId)
+                            .whereEqualTo("processStatus", "requesting")
+                            .whereEqualTo("processId", currentProcessId)
+                            .get()
+                            .addOnCompleteListener(task -> {
+                                if(task.isSuccessful()) {
+                                    Notification notification = new NotificationCompat.Builder(this, CHANNEL_1_ID)
+                                            .setSmallIcon(R.drawable.logo)
+                                            .setContentTitle("MoTow")
+                                            .setContentText("Assistance Needed!")
+                                            .setPriority(NotificationCompat.PRIORITY_HIGH)
+                                            .build();
+
+                                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                                        // TODO: Consider calling
+                                        //    ActivityCompat#requestPermissions
+                                        // here to request the missing permissions, and then overriding
+                                        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                        //                                          int[] grantResults)
+                                        // to handle the case where the user grants the permission. See the documentation
+                                        // for ActivityCompat#requestPermissions for more details.
+                                        return;
+                                    }
+                                    notificationManager.notify(1, notification);
+                                }
+                            });
+                });
+    }
     private void changeStatusToOnline() {
         fStore.collection("Users")
                 .document(userId)
