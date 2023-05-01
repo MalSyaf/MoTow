@@ -1,6 +1,8 @@
 package com.example.motow.rider;
 
 import android.Manifest;
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -27,9 +29,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.motow.NotifyActivity;
 import com.example.motow.R;
 import com.example.motow.databinding.ActivityRiderBinding;
+import com.example.motow.utilities.ForegroundService;
 import com.example.motow.vehicles.RegisterVehicleActivity;
 import com.example.motow.vehicles.Vehicle;
 import com.example.motow.vehicles.VehicleAdapter;
@@ -58,10 +60,8 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.stripe.android.PaymentConfiguration;
-import com.stripe.android.googlepaylauncher.StripeGooglePayActivity;
 import com.stripe.android.paymentsheet.PaymentSheet;
 import com.stripe.android.paymentsheet.PaymentSheetResult;
-import com.stripe.android.paymentsheet.PaymentSheetResultCallback;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -110,6 +110,10 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         binding = ActivityRiderBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        if(!foreGroundServiceRunning()) {
+            Intent serviceIntent = new Intent(this, ForegroundService.class);
+            startForegroundService(serviceIntent);
+        }
 
         // Firebase
         fAuth = FirebaseAuth.getInstance();
@@ -170,6 +174,16 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
         loadUserDetails();
         setListeners();
         fetchApi();
+    }
+
+    public boolean foreGroundServiceRunning() {
+        ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for(ActivityManager.RunningServiceInfo service: activityManager.getRunningServices(Integer.MAX_VALUE)) {
+            if(ForegroundService.class.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void checkProcessStatus() {
@@ -276,10 +290,6 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
         // Nav bar buttons
         binding.chatButton.setOnClickListener(v -> {
             startActivity(new Intent(getApplicationContext(), ChatActivity.class));
-            finish();
-        });
-        binding.notifyBtn.setOnClickListener(v -> {
-            startActivity(new Intent(getApplicationContext(), NotifyActivity.class));
             finish();
         });
         binding.manageBtn.setOnClickListener(v -> {

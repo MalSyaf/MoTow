@@ -18,7 +18,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.motow.LoginActivity;
-import com.example.motow.NotifyActivity;
 import com.example.motow.UserInfoActivity;
 import com.example.motow.databinding.ActivityRiderManageBinding;
 import com.example.motow.utilities.Constants;
@@ -88,10 +87,6 @@ public class RiderManageActivity extends AppCompatActivity {
         // Navbar
         binding.homeBtn.setOnClickListener(view -> {
             startActivity(new Intent(getApplicationContext(), RiderActivity.class));
-            finish();
-        });
-        binding.notifyBtn.setOnClickListener(view -> {
-            startActivity(new Intent(getApplicationContext(), NotifyActivity.class));
             finish();
         });
 

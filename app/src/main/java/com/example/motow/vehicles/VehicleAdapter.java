@@ -35,11 +35,7 @@ public class VehicleAdapter extends FirestoreRecyclerAdapter<Vehicle, VehicleAda
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.vehicle_card_view, parent, false);
         return new MyViewHolder(v);
     }
-
-    public void deleteItem(int position) {
-        getSnapshots().getSnapshot(position).getReference().delete();
-    }
-
+    
     @Override
     protected void onBindViewHolder(@NonNull MyViewHolder holder, int position, @NonNull Vehicle model) {
         holder.plateNum.setText(model.plateNumber);
