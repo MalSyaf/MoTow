@@ -18,6 +18,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Base64;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -27,6 +28,7 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -41,6 +43,9 @@ import com.example.motow.databinding.ActivityRiderBinding;
 import com.example.motow.utilities.ForegroundService;
 import com.example.motow.vehicles.ManageVehicleActivity;
 import com.example.motow.vehicles.RegisterVehicleActivity;
+import com.example.motow.vehicles.Vehicle;
+import com.example.motow.vehicles.VehicleAdapter;
+import com.example.motow.vehicles.VehicleListener;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -74,7 +79,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public class RiderActivity extends FragmentActivity implements OnMapReadyCallback{
+public class RiderActivity extends FragmentActivity implements OnMapReadyCallback, VehicleListener {
 
     private ActivityRiderBinding binding;
 
@@ -93,6 +98,10 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
 
     // Notification
     private NotificationManagerCompat notificationManager;
+
+    // Recycler view
+    ArrayList<Vehicle> vehicleArrayList;
+    VehicleAdapter vehicleAdapter;
 
     // Chats
     private List<Chats> chatMessages;
@@ -138,6 +147,8 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
         setListeners();
         fetchApi();
         checkProcessStatus();
+        setUpRecyclerView();
+        eventChangeListener();
     }
 
     public boolean foreGroundServiceRunning() {
@@ -286,13 +297,6 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
         binding.noVehicleBtn.setOnClickListener(view -> {
             startActivity(new Intent(getApplicationContext(), RegisterVehicleActivity.class));
             finish();
-        });
-        binding.confirmBtn.setOnClickListener(view -> {
-            binding.selectVehicle.setVisibility(View.GONE);
-            binding.cancelBtn.setVisibility(View.VISIBLE);
-            binding.searchText.setVisibility(View.VISIBLE);
-            // Find tower
-            getAssistance();
         });
         binding.okBtn.setOnClickListener(view -> {
             binding.towerBar.setVisibility(View.VISIBLE);
@@ -865,5 +869,49 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                         binding.waiting.setVisibility(View.VISIBLE);
                     });
         }
+    }
+
+    private void setUpRecyclerView() {
+        binding.vehicleRecycler.setHasFixedSize(true);
+        binding.vehicleRecycler.setLayoutManager(new LinearLayoutManager(this));
+        vehicleArrayList = new ArrayList<Vehicle>();
+        vehicleAdapter = new VehicleAdapter(vehicleArrayList, this);
+        binding.vehicleRecycler.setAdapter(vehicleAdapter);
+    }
+
+    private void eventChangeListener() {
+        fStore.collection("Vehicles").whereEqualTo("ownerId", userId)
+                .addSnapshotListener((value, error) -> {
+                    if(value.isEmpty()) {
+                        binding.noVehicleText.setVisibility(View.VISIBLE);
+                        binding.noVehicleBtn.setVisibility(View.VISIBLE);
+                    }
+                    if(error != null) {
+                        return;
+                    }
+                    for(DocumentChange dc : value.getDocumentChanges()) {
+                        if(dc.getType() == DocumentChange.Type.ADDED) {
+                            vehicleArrayList.add(dc.getDocument().toObject(Vehicle.class));
+                        }
+                    }
+                    vehicleAdapter.notifyDataSetChanged();
+                });
+    }
+
+    @Override
+    public void onVehicleClicked(Vehicle vehicle) {
+        binding.confirmBtn.setOnClickListener(view -> {
+            binding.selectVehicle.setVisibility(View.GONE);
+            binding.cancelBtn.setVisibility(View.VISIBLE);
+            binding.searchText.setVisibility(View.VISIBLE);
+            // Update current vehicle
+            HashMap<String, Object> updateVehicle = new HashMap<>();
+            updateVehicle.put("currentVehicle", vehicle.vehicleId);
+            fStore.collection("Users")
+                    .document(userId)
+                    .update(updateVehicle);
+            // Find tower
+            getAssistance();
+        });
     }
 }

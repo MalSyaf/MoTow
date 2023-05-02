@@ -80,15 +80,16 @@ public class ManageVehicleActivity extends AppCompatActivity implements VehicleL
     }
 
     private void setUpRecyclerView() {
+        loading(true);
         binding.recyclerView.setHasFixedSize(true);
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
         vehicleArrayList = new ArrayList<Vehicle>();
-        vehicleAdapter = new VehicleAdapter(ManageVehicleActivity.this, vehicleArrayList, this);
+        vehicleAdapter = new VehicleAdapter(vehicleArrayList, this);
         binding.recyclerView.setAdapter(vehicleAdapter);
+        loading(false);
     }
 
     private void eventChangeListener() {
-        loading(true);
         fStore.collection("Vehicles").whereEqualTo("ownerId", userId)
                 .addSnapshotListener((value, error) -> {
                     if(value.isEmpty()) {
@@ -104,7 +105,6 @@ public class ManageVehicleActivity extends AppCompatActivity implements VehicleL
                         }
                     }
                     vehicleAdapter.notifyDataSetChanged();
-                    loading(false);
                 });
     }
 

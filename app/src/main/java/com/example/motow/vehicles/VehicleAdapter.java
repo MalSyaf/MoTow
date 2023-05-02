@@ -1,6 +1,5 @@
 package com.example.motow.vehicles;
 
-import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -17,12 +16,10 @@ import java.util.List;
 
 public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.VehicleViewHolder> {
 
-    private final Context context;
     private final List<Vehicle> vehicles;
     private final VehicleListener vehicleListener;
 
-    public VehicleAdapter(Context context, List<Vehicle> vehicles, VehicleListener vehicleListener) {
-        this.context = context;
+    public VehicleAdapter(List<Vehicle> vehicles, VehicleListener vehicleListener) {
         this.vehicles = vehicles;
         this.vehicleListener = vehicleListener;
     }
@@ -60,7 +57,7 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.VehicleV
         void setVehicleData(Vehicle vehicle) {
             FirebaseAuth fAuth = FirebaseAuth.getInstance();
             FirebaseFirestore fStore = FirebaseFirestore.getInstance();
-            String userId = fAuth.getCurrentUser().getUid();
+            String userId = fAuth.getUid();
 
             binding.displayPlate.setText(vehicle.plateNumber);
             binding.displayBrand.setText(vehicle.brand);
