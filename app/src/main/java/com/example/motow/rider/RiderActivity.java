@@ -255,8 +255,8 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
             binding.chatLayout.setVisibility(View.VISIBLE);
             binding.chatButton.setVisibility(View.GONE);
             binding.towerBar.setVisibility(View.GONE);
-            loadReceiverName();
             listenMessages();
+            loadReceiverName();
         });
         binding.chatBackBtn.setOnClickListener(v -> {
             binding.chatLayout.setVisibility(View.GONE);
