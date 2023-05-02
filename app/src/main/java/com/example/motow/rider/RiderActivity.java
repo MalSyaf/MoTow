@@ -279,11 +279,11 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
             binding.selectVehicle.setVisibility(View.VISIBLE);
             loadCurrentVehicle();
         });
-        binding.backBtn.setOnClickListener(view -> {
+        binding.vehicleBackBtn.setOnClickListener(view -> {
             binding.selectVehicle.setVisibility(View.GONE);
             binding.requestBtn.setVisibility(View.VISIBLE);
         });
-        binding.noCurrentVehicle.setOnClickListener(view -> {
+        binding.noVehicleBtn.setOnClickListener(view -> {
             startActivity(new Intent(getApplicationContext(), RegisterVehicleActivity.class));
             finish();
         });
@@ -331,7 +331,7 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
             deleteRequests();
             changeRiderStatus();
         });
-        binding.changeVehicle.setOnClickListener(v -> {
+        binding.addVehicle.setOnClickListener(v -> {
             startActivity(new Intent(getApplicationContext(), ManageVehicleActivity.class));
             finish();
         });
@@ -696,8 +696,6 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                 .addOnSuccessListener(documentSnapshot -> {
                     if(documentSnapshot.getString("currentVehicle") != null) {
                         binding.confirmBtn.setVisibility(View.VISIBLE);
-                        binding.changeVehicle.setVisibility(View.VISIBLE);
-                        binding.noCurrentVehicle.setVisibility(View.GONE);
 
                         String defaultVehicle = documentSnapshot.getString("currentVehicle");
 
@@ -705,16 +703,16 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                                 .document(defaultVehicle)
                                 .get()
                                 .addOnSuccessListener(documentSnapshot1 -> {
-                                    binding.displayPlate.setText(documentSnapshot1.getString("plateNumber"));
+                                    /*binding.displayPlate.setText(documentSnapshot1.getString("plateNumber"));
                                     binding.displayBrand.setText(documentSnapshot1.getString("brand"));
                                     binding.displayModel.setText(documentSnapshot1.getString("model"));
-                                    binding.displayColor.setText(documentSnapshot1.getString("color"));
+                                    binding.displayColor.setText(documentSnapshot1.getString("color"));*/
                                 });
                     } else {
-                        binding.confirmBtn.setVisibility(View.GONE);
+                        /*binding.confirmBtn.setVisibility(View.GONE);
                         binding.changeVehicle.setVisibility(View.GONE);
                         binding.vehicleContainer.setVisibility(View.GONE);
-                        binding.noCurrentVehicle.setVisibility(View.VISIBLE);
+                        binding.noCurrentVehicle.setVisibility(View.VISIBLE);*/
                     }
                 });
     }

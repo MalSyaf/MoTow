@@ -1,110 +1,86 @@
 package com.example.motow.vehicles;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.motow.R;
-import com.example.motow.utilities.Constants;
-import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
-import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.material.card.MaterialCardView;
+import com.example.motow.databinding.VehicleCardViewBinding;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-public class VehicleAdapter extends FirestoreRecyclerAdapter<Vehicle, VehicleAdapter.MyViewHolder> {
+import java.util.List;
 
-    public static OnItemClickListener listener;
+public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.VehicleViewHolder> {
 
-    public VehicleAdapter(@NonNull FirestoreRecyclerOptions<Vehicle> options) {
-        super(options);
+    private final Context context;
+    private final List<Vehicle> vehicles;
+    private final VehicleListener vehicleListener;
+
+    public VehicleAdapter(Context context, List<Vehicle> vehicles, VehicleListener vehicleListener) {
+        this.context = context;
+        this.vehicles = vehicles;
+        this.vehicleListener = vehicleListener;
     }
 
     @NonNull
     @Override
-    public VehicleAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.vehicle_card_view, parent, false);
-        return new MyViewHolder(v);
+    public VehicleViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        VehicleCardViewBinding vehicleCardViewBinding = VehicleCardViewBinding.inflate(
+                LayoutInflater.from(parent.getContext()),
+                parent,
+                false
+        );
+        return new VehicleViewHolder(vehicleCardViewBinding);
     }
-    
+
     @Override
-    protected void onBindViewHolder(@NonNull MyViewHolder holder, int position, @NonNull Vehicle model) {
-        holder.plateNum.setText(model.plateNumber);
-        holder.brand.setText(model.brand);
-        holder.model.setText(model.model);
-        holder.color.setText(model.color);
+    public void onBindViewHolder(@NonNull VehicleViewHolder holder, int position) {
+        holder.setVehicleData(vehicles.get(position));
     }
 
-    public class MyViewHolder extends RecyclerView.ViewHolder{
+    @Override
+    public int getItemCount() {
+        return vehicles.size();
+    }
 
-        // Firebase
-        private FirebaseAuth fAuth;
-        private FirebaseFirestore fStore;
+    class VehicleViewHolder extends RecyclerView.ViewHolder {
 
-        // Interface
-        private ImageView vehicleImage;
-        private TextView plateNum, brand, model, color;
-        private MaterialCardView vehicleContainer;
+        VehicleCardViewBinding binding;
 
-        public MyViewHolder(@NonNull View itemView) {
-            super(itemView);
+        public VehicleViewHolder(VehicleCardViewBinding vehicleCardViewBinding) {
+            super(vehicleCardViewBinding.getRoot());
+            binding = vehicleCardViewBinding;
+        }
 
-            // Firebase
-            fAuth = FirebaseAuth.getInstance();
-            fStore = FirebaseFirestore.getInstance();
+        void setVehicleData(Vehicle vehicle) {
+            FirebaseAuth fAuth = FirebaseAuth.getInstance();
+            FirebaseFirestore fStore = FirebaseFirestore.getInstance();
             String userId = fAuth.getCurrentUser().getUid();
 
-            // Interface
-            vehicleImage = itemView.findViewById(R.id.vehicleImage);
-            plateNum = itemView.findViewById(R.id.display_plate);
-            brand = itemView.findViewById(R.id.display_brand);
-            model = itemView.findViewById(R.id.display_model);
-            color = itemView.findViewById(R.id.display_color);
-            vehicleContainer = itemView.findViewById(R.id.vehicle_container);
-
+            binding.displayPlate.setText(vehicle.plateNumber);
+            binding.displayBrand.setText(vehicle.brand);
+            binding.displayModel.setText(vehicle.model);
+            binding.displayColor.setText(vehicle.color);
             fStore.collection("Users")
                     .document(userId)
                     .get()
-                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                        @Override
-                        public void onSuccess(DocumentSnapshot documentSnapshot) {
-                            if(documentSnapshot.getString("isRider") != null) {
-                                vehicleImage.setImageResource(R.drawable.sportbike);
-                            }
-                            if(documentSnapshot.getString("isTower") != null) {
-                                vehicleImage.setImageResource(R.drawable.main);
-                            }
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.getString("isRider") != null) {
+                            binding.vehicleImage.setImageResource(R.drawable.sportbike);
+                        }
+                        if (documentSnapshot.getString("isTower") != null) {
+                            binding.vehicleImage.setImageResource(R.drawable.main);
                         }
                     });
-
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    int position = getAdapterPosition();
-                    if(position!=RecyclerView.NO_POSITION && listener != null){
-                        listener.onItemClick(getSnapshots().getSnapshot(position), position);
-                        vehicleContainer.setStrokeWidth(4);
-                        vehicleContainer.setStrokeColor(Color.BLACK);
-                    }
-                }
+            binding.getRoot().setOnClickListener(v -> {
+                    vehicleListener.onVehicleClicked(vehicle);
+                    binding.vehicleContainer.setCardBackgroundColor(Color.parseColor("#89CFF0"));
             });
         }
-    }
-
-    public interface OnItemClickListener {
-        void onItemClick(DocumentSnapshot documentSnapshot, int position);
-    }
-
-    public void setOnItemClickListener(OnItemClickListener listener) {
-        this.listener = listener;
     }
 }

@@ -114,7 +114,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/select_vehicle"
         android:layout_width="298dp"
-        android:layout_height="300dp"
+        android:layout_height="450dp"
         android:background="@drawable/welcome_bar"
         android:elevation="50dp"
         app:layout_constraintBottom_toTopOf="@+id/navbar"
@@ -125,177 +125,88 @@
         android:layout_marginBottom="114dp"
         android:visibility="gone">
         <TextView
+            android:id="@+id/selectVehicleText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:textAlignment="center"
             android:layout_centerHorizontal="true"
-            android:text="Default Vehicle"
+            android:text="Select Vehicle"
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
         <ImageView
-            android:id="@+id/back_btn"
+            android:id="@+id/vehicleBackBtn"
             android:layout_width="20dp"
             android:layout_height="20dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginLeft="20dp"
             android:src="@drawable/baseline_arrow_back_ios_24"
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/vehicle_container"
-            android:layout_width="245dp"
-            android:layout_height="81dp"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/selectVehicleText"/>
+        <ImageView
+            android:id="@+id/addVehicle"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/add_vehicle"
+            android:layout_marginTop="15dp"
+            android:layout_marginStart="25dp"
+            android:layout_marginEnd="20dp"
+            app:layout_constraintStart_toEndOf="@id/selectVehicleText"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/vehicleRecycler"
+            android:layout_width="match_parent"
+            android:layout_height="320dp"
+            android:clipToPadding="false"
+            android:orientation="vertical"
+            android:overScrollMode="never"
+            android:layout_marginTop="10dp"
+            android:padding="20dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/selectVehicleText"/>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/confirmBtn"
+            android:layout_width="264dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/vehicleRecycler"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginBottom="80dp"
-            app:strokeWidth="1dp"
-            app:strokeColor="@color/grey_btn"
-            app:cardCornerRadius="10dp">
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-                <ImageView
-                    android:id="@+id/vehicleImage"
-                    android:layout_width="100dp"
-                    android:layout_height="55dp"
-                    android:src="@drawable/sportbike"
-                    android:layout_marginLeft="10dp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"/>
-                <TextView
-                    android:id="@+id/plateNumber"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Plate:"
-                    android:textSize="13sp"
-                    android:textStyle="bold"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginRight="60dp"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/vehicleImage"
-                    app:layout_constraintEnd_toEndOf="parent"/>
-                <TextView
-                    android:id="@+id/brand"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Brand:"
-                    android:textSize="13sp"
-                    android:textStyle="bold"
-                    android:layout_marginRight="60dp"
-                    app:layout_constraintTop_toBottomOf="@id/plateNumber"
-                    app:layout_constraintStart_toEndOf="@id/vehicleImage"
-                    app:layout_constraintEnd_toEndOf="parent"/>
-                <TextView
-                    android:id="@+id/model"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Model:"
-                    android:textSize="13sp"
-                    android:textStyle="bold"
-                    android:layout_marginRight="60dp"
-                    app:layout_constraintTop_toBottomOf="@id/brand"
-                    app:layout_constraintStart_toEndOf="@id/vehicleImage"
-                    app:layout_constraintEnd_toEndOf="parent"/>
-                <TextView
-                    android:id="@+id/color"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Color:"
-                    android:textSize="13sp"
-                    android:textStyle="bold"
-                    android:layout_marginRight="60dp"
-                    app:layout_constraintTop_toBottomOf="@id/model"
-                    app:layout_constraintStart_toEndOf="@id/vehicleImage"
-                    app:layout_constraintEnd_toEndOf="parent"/>
-
-                <!--Vehicle Info-->
-                <TextView
-                    android:id="@+id/display_plate"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:layout_marginTop="5dp"
-                    android:text="Plate"
-                    android:textSize="13sp"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/plateNumber"
-                    app:layout_constraintEnd_toEndOf="parent"/>
-                <TextView
-                    android:id="@+id/display_brand"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="Brand"
-                    android:textSize="13sp"
-                    app:layout_constraintTop_toBottomOf="@id/display_plate"
-                    app:layout_constraintStart_toEndOf="@id/brand"
-                    app:layout_constraintEnd_toEndOf="parent"/>
-                <TextView
-                    android:id="@+id/display_model"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="Model"
-                    android:textSize="13sp"
-                    app:layout_constraintTop_toBottomOf="@id/display_brand"
-                    app:layout_constraintStart_toEndOf="@id/model"
-                    app:layout_constraintEnd_toEndOf="parent"/>
-                <TextView
-                    android:id="@+id/display_color"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="Color"
-                    android:textSize="13sp"
-                    app:layout_constraintTop_toBottomOf="@id/display_model"
-                    app:layout_constraintStart_toEndOf="@id/color"
-                    app:layout_constraintEnd_toEndOf="parent"/>
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </com.google.android.material.card.MaterialCardView>
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/confirm_btn"
-            android:layout_width="264dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/vehicle_container"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="25dp"
-            android:backgroundTint="@color/green_btn"
+            android:backgroundTint="@color/purple_200"
             android:padding="8dp"
             android:text="CONFIRM"
             android:textColor="@color/white"
             android:textSize="18sp"
-            app:cornerRadius="40dp"
-            android:visibility="gone"/>
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/changeVehicle"
-            android:layout_width="264dp"
+            app:cornerRadius="40dp"/>
+        <TextView
+            android:id="@+id/noVehicleText"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/confirm_btn"
+            android:textAlignment="center"
+            android:layout_centerHorizontal="true"
+            android:text="(No vehicle registered)"
+            android:textSize="16sp"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:backgroundTint="@color/purple_200"
-            android:padding="8dp"
-            android:text="CHANGE VEHICLE"
-            android:textColor="@color/white"
-            android:textSize="18sp"
-            app:cornerRadius="40dp"
+            app:layout_constraintBottom_toTopOf="@id/noVehicleBtn"
             android:visibility="gone"/>
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/no_currentVehicle"
+            android:id="@+id/noVehicleBtn"
             android:layout_width="264dp"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/vehicle_container"
+            app:layout_constraintTop_toBottomOf="@id/vehicleRecycler"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="50dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             android:backgroundTint="@color/purple_200"
             android:padding="8dp"
             android:text="REGISTER VEHICLE"
