@@ -32,6 +32,8 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import com.example.motow.R;
+import com.example.motow.chats.Chats;
+import com.example.motow.chats.ChatsAdapter;
 import com.example.motow.databinding.ActivityTowerBinding;
 import com.example.motow.utilities.ForegroundService;
 import com.google.android.gms.maps.CameraUpdate;
@@ -46,6 +48,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -53,7 +56,13 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class TowerActivity extends FragmentActivity implements OnMapReadyCallback {
@@ -67,6 +76,10 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
     // Firebase
     private FirebaseFirestore fStore;
     private String userId;
+
+    // Chats
+    private List<Chats> chatMessages;
+    private ChatsAdapter chatsAdapter;
 
     // Notification
     private NotificationManagerCompat notificationManager;
@@ -91,6 +104,10 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
 
         // Notification
         notificationManager = NotificationManagerCompat.from(this);
+
+        chatMessages = new ArrayList<>();
+        chatsAdapter = new ChatsAdapter(chatMessages, userId);
+        binding.chatRecycler.setAdapter(chatsAdapter);
 
         supportMapFragment();
         loadUserDetails();
@@ -246,9 +263,10 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
         // Chat listeners
         binding.chatBtn.setOnClickListener(view -> {
             binding.chatLayout.setVisibility(View.VISIBLE);
-            binding.riderBar.setVisibility(View.GONE);
             binding.chatBtn.setVisibility(View.GONE);
+            binding.riderBar.setVisibility(View.GONE);
             loadReceiverName();
+            listenMessages();
         });
         binding.chatBackBtn.setOnClickListener(view -> {
             binding.chatLayout.setVisibility(View.INVISIBLE);
@@ -257,6 +275,13 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
         });
         binding.callBtn.setOnClickListener(view ->
             makePhoneCall());
+        binding.sendBtn.setOnClickListener(v -> {
+            if(binding.inputMessage.getText().toString().isEmpty()) {
+                Toast.makeText(this, "Type a message", Toast.LENGTH_SHORT).show();
+            } else {
+                sendMessage();
+            }
+        });
 
         // Button listeners
         binding.offlineBtn.setOnClickListener(view -> {
@@ -426,10 +451,10 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                                                                 });
 
                                                         HashMap<String, Object> informRider = new HashMap<>();
-                                                        informRider.put("towerId", userId);
-                                                        informRider.put("riderId", riderId);
+                                                        informRider.put("senderId", userId);
+                                                        informRider.put("receiverId", riderId);
                                                         informRider.put("message", "I'm on my way!");
-                                                        informRider.put("timeStamp", FieldValue.serverTimestamp());
+                                                        informRider.put("timestamp", new Date());
                                                         fStore.collection("Chats")
                                                                 .add(informRider);
 
@@ -581,6 +606,60 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
             return;
         }
         notificationManager.notify(1, notification);
+    }
+
+    private void sendMessage() {
+        HashMap<String, Object> sendMessage = new HashMap<>();
+        sendMessage.put("senderId", userId);
+        sendMessage.put("receiverId", riderId);
+        sendMessage.put("message", binding.inputMessage.getText().toString());
+        sendMessage.put("timestamp", new Date());
+        fStore.collection("Chats")
+                .add(sendMessage);
+        binding.inputMessage.setText("");
+    }
+
+    private void listenMessages() {
+        fStore.collection("Chats")
+                .whereEqualTo("senderId", userId)
+                .whereEqualTo("receiverId", riderId)
+                .addSnapshotListener(eventListener);
+        fStore.collection("Chats")
+                .whereEqualTo("senderId", riderId)
+                .whereEqualTo("receiverId", userId)
+                .addSnapshotListener(eventListener);
+    }
+
+    private final EventListener<QuerySnapshot> eventListener = (value, error) -> {
+        if(error != null) {
+            return;
+        }
+        if(value != null) {
+            int count = chatMessages.size();
+            for(DocumentChange documentChange : value.getDocumentChanges()) {
+                if(documentChange.getType() == DocumentChange.Type.ADDED) {
+                    Chats chatMessage = new Chats();
+                    chatMessage.sender = documentChange.getDocument().getString("senderId");
+                    chatMessage.receiver = documentChange.getDocument().getString("receiverId");
+                    chatMessage.message = documentChange.getDocument().getString("message");
+                    chatMessage.dateTime = getReadableDateTime(documentChange.getDocument().getDate("timestamp"));
+                    chatMessage.dateObject = documentChange.getDocument().getDate("timestamp");
+                    chatMessages.add(chatMessage);
+                }
+            }
+            Collections.sort(chatMessages, (obj1, obj2) -> obj1.dateObject.compareTo(obj2.dateObject));
+            if(count == 0) {
+                chatsAdapter.notifyDataSetChanged();
+            } else {
+                chatsAdapter.notifyItemRangeInserted(chatMessages.size(), chatMessages.size());
+                binding.chatRecycler.smoothScrollToPosition(chatMessages.size() - 1);
+            }
+            binding.chatRecycler.setVisibility(View.VISIBLE);
+        }
+    };
+
+    private String getReadableDateTime(Date date) {
+        return new SimpleDateFormat("MMMM dd, yyyy - hh:mm a", Locale.getDefault()).format(date);
     }
 
     private void changeStatusToOnline() {

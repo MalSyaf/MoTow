@@ -27,7 +27,6 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -53,22 +52,22 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.stripe.android.PaymentConfiguration;
 import com.stripe.android.paymentsheet.PaymentSheet;
 import com.stripe.android.paymentsheet.PaymentSheetResult;
 
-import org.checkerframework.checker.units.qual.C;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -86,7 +85,6 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
     // Firebase
     private FirebaseFirestore fStore;
     private String userId;
-    private Timestamp timestamp;
 
     // Stripe
     private PaymentSheet paymentSheet;
@@ -97,8 +95,8 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
     private NotificationManagerCompat notificationManager;
 
     // Chats
+    private List<Chats> chatMessages;
     private ChatsAdapter chatsAdapter;
-    private ArrayList<Chats> mChats;
 
     // Tower
     private String towerId, tCurrentVehicle;
@@ -131,12 +129,15 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
         // Stripe
         paymentSheet = new PaymentSheet(this, this::onPaymentSheetResult);
 
+        chatMessages = new ArrayList<>();
+        chatsAdapter = new ChatsAdapter(chatMessages, userId);
+        binding.chatRecycler.setAdapter(chatsAdapter);
+
         supportMapFragment();
         loadUserDetails();
         setListeners();
         fetchApi();
         checkProcessStatus();
-        setChatRecycler();
     }
 
     public boolean foreGroundServiceRunning() {
@@ -255,6 +256,7 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
             binding.chatButton.setVisibility(View.GONE);
             binding.towerBar.setVisibility(View.GONE);
             loadReceiverName();
+            listenMessages();
         });
         binding.chatBackBtn.setOnClickListener(v -> {
             binding.chatLayout.setVisibility(View.GONE);
@@ -269,7 +271,6 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
             } else {
                 sendMessage();
             }
-            binding.inputMessage.setText("");
         });
 
         // Buttons listener
@@ -363,31 +364,6 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                         }
                     }
                 });
-    }
-
-    private void setChatRecycler() {
-        mChats = new ArrayList<>();
-        binding.chatRecycler.setHasFixedSize(true);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
-        linearLayoutManager.setStackFromEnd(true);
-        binding.chatRecycler.setLayoutManager(linearLayoutManager);
-
-        chatsAdapter = new ChatsAdapter(this, mChats);
-        binding.chatRecycler.setAdapter(chatsAdapter);
-
-        fStore.collection("Chats").orderBy("timeStamp", Query.Direction.DESCENDING)
-                .addSnapshotListener((value, error) ->
-                        fStore.collection("Chats")
-                                .get()
-                                .addOnSuccessListener(queryDocumentSnapshots -> {
-                                    List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
-                                    for(DocumentSnapshot d:list)
-                                    {
-                                        Chats obj = d.toObject(Chats.class);
-                                        mChats.add(obj);
-                                    }
-                                    chatsAdapter.notifyDataSetChanged();
-                                }));
     }
 
     private void changeRiderStatus() {
@@ -660,16 +636,57 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
     }
 
     private void sendMessage() {
-        Date currentDate = new Date();
-        Timestamp timestamp = new Timestamp(currentDate);
-
         HashMap<String, Object> sendMessage = new HashMap<>();
         sendMessage.put("senderId", userId);
         sendMessage.put("receiverId", towerId);
         sendMessage.put("message", binding.inputMessage.getText().toString());
-        sendMessage.put("timeStamp", timestamp);
+        sendMessage.put("timestamp", new Date());
         fStore.collection("Chats")
                 .add(sendMessage);
+        binding.inputMessage.setText("");
+    }
+
+    private void listenMessages() {
+        fStore.collection("Chats")
+                .whereEqualTo("senderId", userId)
+                .whereEqualTo("receiverId", towerId)
+                .addSnapshotListener(eventListener);
+        fStore.collection("Chats")
+                .whereEqualTo("senderId", towerId)
+                .whereEqualTo("receiverId", userId)
+                .addSnapshotListener(eventListener);
+    }
+
+    private final EventListener<QuerySnapshot> eventListener = (value, error) -> {
+        if(error != null) {
+            return;
+        }
+        if(value != null) {
+            int count = chatMessages.size();
+            for(DocumentChange documentChange : value.getDocumentChanges()) {
+                if(documentChange.getType() == DocumentChange.Type.ADDED) {
+                    Chats chatMessage = new Chats();
+                    chatMessage.sender = documentChange.getDocument().getString("senderId");
+                    chatMessage.receiver = documentChange.getDocument().getString("receiverId");
+                    chatMessage.message = documentChange.getDocument().getString("message");
+                    chatMessage.dateTime = getReadableDateTime(documentChange.getDocument().getDate("timestamp"));
+                    chatMessage.dateObject = documentChange.getDocument().getDate("timestamp");
+                    chatMessages.add(chatMessage);
+                }
+            }
+            Collections.sort(chatMessages, (obj1, obj2) -> obj1.dateObject.compareTo(obj2.dateObject));
+            if(count == 0) {
+                chatsAdapter.notifyDataSetChanged();
+            } else {
+                chatsAdapter.notifyItemRangeInserted(chatMessages.size(), chatMessages.size());
+                binding.chatRecycler.smoothScrollToPosition(chatMessages.size() - 1);
+            }
+            binding.chatRecycler.setVisibility(View.VISIBLE);
+        }
+    };
+
+    private String getReadableDateTime(Date date) {
+        return new SimpleDateFormat("MMMM dd, yyyy - hh:mm a", Locale.getDefault()).format(date);
     }
 
     private void loadCurrentVehicle() {
