@@ -1,5 +1,6 @@
 package com.example.motow;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -36,7 +37,6 @@ public class SignUpActivity extends AppCompatActivity {
     private FirebaseFirestore fStore;
 
     private ActivitySignUpBinding binding;
-    //private PreferenceManager preferenceManager;
     private String encodedImage, icImage;
 
     @Override
@@ -48,8 +48,6 @@ public class SignUpActivity extends AppCompatActivity {
         // Firebase
         fAuth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
-
-        //preferenceManager = new PreferenceManager(getApplicationContext());
         
         setListeners();
     }
@@ -87,15 +85,10 @@ public class SignUpActivity extends AppCompatActivity {
                         HashMap<String, Object> userInfo = new HashMap<>();
 
                         if(binding.radioRider.isChecked()){
-                                /*preferenceManager.putBoolean(Constants.KEY_IS_SIGNED_IN, true);
-                                preferenceManager.putString(Constants.KEY_USER_ID, fAuth.getCurrentUser().getUid());
-                                preferenceManager.putString(Constants.KEY_NAME, binding.userName.getText().toString());
-                                preferenceManager.putString(Constants.KEY_IMAGE, encodedImage);*/
                             userInfo.put("userId", fAuth.getCurrentUser().getUid());
                             userInfo.put("isRider","1");
                             userInfo.put("name", binding.fullName.getText().toString());
                             userInfo.put("email", binding.email.getText().toString());
-                            //userInfo.put(Constants.KEY_PASSWORD, binding.password.getText().toString());
                             userInfo.put("contact", binding.contact.getText().toString());
                             userInfo.put("image", encodedImage);
                             userInfo.put("ic", icImage);
@@ -108,15 +101,10 @@ public class SignUpActivity extends AppCompatActivity {
                             startActivity(intent);
                         }
                         if(binding.radioTower.isChecked()){
-                                /*preferenceManager.putBoolean(Constants.KEY_IS_SIGNED_IN, true);
-                                preferenceManager.putString(Constants.KEY_USER_ID, fAuth.getCurrentUser().getUid());
-                                preferenceManager.putString(Constants.KEY_NAME, binding.userName.getText().toString());
-                                preferenceManager.putString(Constants.KEY_IMAGE, encodedImage);*/
                             userInfo.put("userId", fAuth.getCurrentUser().getUid());
                             userInfo.put("isTower", "1");
                             userInfo.put("name", binding.fullName.getText().toString());
                             userInfo.put("email", binding.email.getText().toString());
-                            //userInfo.put(Constants.KEY_PASSWORD, binding.signupPassword.getText().toString());
                             userInfo.put("contact", binding.contact.getText().toString());
                             userInfo.put("image", encodedImage);
                             userInfo.put("ic", icImage);
@@ -172,6 +160,7 @@ public class SignUpActivity extends AppCompatActivity {
             }
     );
 
+    @SuppressLint("SetTextI18n")
     private final ActivityResultLauncher<Intent> pickIcImage = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {

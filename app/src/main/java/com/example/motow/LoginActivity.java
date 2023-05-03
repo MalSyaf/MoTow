@@ -6,7 +6,6 @@ import android.util.Patterns;
 import android.view.View;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.motow.databinding.ActivityLoginBinding;
@@ -14,22 +13,18 @@ import com.example.motow.rider.RiderActivity;
 import com.example.motow.tower.TowerActivity;
 import com.example.motow.utilities.Constants;
 import com.example.motow.utilities.PreferenceManager;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.Objects;
 
 public class LoginActivity extends AppCompatActivity {
 
     // Firebase
     private FirebaseAuth fAuth;
     private FirebaseFirestore fStore;
-    private String userId;
 
     private ActivityLoginBinding binding;
     private PreferenceManager preferenceManager;
@@ -45,26 +40,6 @@ public class LoginActivity extends AppCompatActivity {
         fStore = FirebaseFirestore.getInstance();
 
         preferenceManager = new PreferenceManager(getApplicationContext());
-
-        if(preferenceManager.getBoolean(Constants.KEY_IS_SIGNED_IN)) {
-            fStore.collection(Constants.KEY_COLLECTION_USERS).document(Constants.KEY_USER_ID.toString())
-                    .get()
-                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                        @Override
-                        public void onSuccess(DocumentSnapshot documentSnapshot) {
-                            if(documentSnapshot.getString("isRider") == "1") {
-                                Intent intent = new Intent(getApplicationContext(), RiderActivity.class);
-                                startActivity(intent);
-                                finish();
-                            }
-                            if(documentSnapshot.getString("isTower") == "1") {
-                                Intent intent = new Intent(getApplicationContext(), TowerActivity.class);
-                                startActivity(intent);
-                                finish();
-                            }
-                        }
-                    });
-        }
 
         setListeners();
     }
@@ -95,16 +70,13 @@ public class LoginActivity extends AppCompatActivity {
         String password = binding.loginPassword.getText().toString();
 
         fAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            Toast.makeText(LoginActivity.this, "Login successful.", Toast.LENGTH_SHORT).show();
-                            checkUserAccessLevel(task.getResult().getUser().getUid());
-                        } else {
-                            loading(false);
-                            Toast.makeText(LoginActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
-                        }
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(LoginActivity.this, "Login successful.", Toast.LENGTH_SHORT).show();
+                        checkUserAccessLevel(Objects.requireNonNull(task.getResult().getUser()).getUid());
+                    } else {
+                        loading(false);
+                        Toast.makeText(LoginActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -131,51 +103,48 @@ public class LoginActivity extends AppCompatActivity {
     private void checkUserAccessLevel(String uid) {
         DocumentReference df = fStore.collection("Users").document(uid);
         // extract the data from the document
-        df.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                FirebaseFirestore db = FirebaseFirestore.getInstance();
-                // identify the user access level
-                if (documentSnapshot.getString("isRider") != null) {
-                    // user is a rider
-                    db.collection(Constants.KEY_COLLECTION_USERS)
-                            .whereEqualTo(Constants.KEY_EMAIL, binding.loginEmail.getText().toString())
-                            .whereEqualTo(Constants.KEY_PASSWORD, binding.loginPassword.getText().toString())
-                            .whereEqualTo("isRider", "1")
-                            .get()
-                            .addOnCompleteListener(task -> {
-                                if(task.isSuccessful() && task.getResult() != null && task.getResult().getDocuments().size() > 0) {
-                                    DocumentSnapshot dfSnapshot = task.getResult().getDocuments().get(0);
-                                    preferenceManager.putBoolean(Constants.KEY_IS_SIGNED_IN, true);
-                                    preferenceManager.putString(Constants.KEY_USER_ID, dfSnapshot.getId());
-                                    preferenceManager.putString(Constants.KEY_NAME, dfSnapshot.getString(Constants.KEY_NAME));
-                                    preferenceManager.putString(Constants.KEY_IMAGE, dfSnapshot.getString(Constants.KEY_IMAGE));
-                                }
-                            });
-                    Intent intent = new Intent(getApplicationContext(), RiderActivity.class);
-                    startActivity(intent);
-                    finish();
-                }
-                if (documentSnapshot.getString("isTower") != null) {
-                    // user is a rider
-                    db.collection(Constants.KEY_COLLECTION_USERS)
-                            .whereEqualTo(Constants.KEY_EMAIL, binding.loginEmail.getText().toString())
-                            .whereEqualTo(Constants.KEY_PASSWORD, binding.loginPassword.getText().toString())
-                            .whereEqualTo("isTower", "1")
-                            .get()
-                            .addOnCompleteListener(task -> {
-                                if(task.isSuccessful() && task.getResult() != null && task.getResult().getDocuments().size() > 0) {
-                                    DocumentSnapshot dfSnapshot = task.getResult().getDocuments().get(0);
-                                    preferenceManager.putBoolean(Constants.KEY_IS_SIGNED_IN, true);
-                                    preferenceManager.putString(Constants.KEY_USER_ID, dfSnapshot.getId());
-                                    preferenceManager.putString(Constants.KEY_NAME, dfSnapshot.getString(Constants.KEY_NAME));
-                                    preferenceManager.putString(Constants.KEY_IMAGE, dfSnapshot.getString(Constants.KEY_IMAGE));
-                                }
-                            });
-                    Intent intent = new Intent(getApplicationContext(), TowerActivity.class);
-                    startActivity(intent);
-                    finish();
-                }
+        df.get().addOnSuccessListener(documentSnapshot -> {
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            // identify the user access level
+            if (documentSnapshot.getString("isRider") != null) {
+                // user is a rider
+                db.collection(Constants.KEY_COLLECTION_USERS)
+                        .whereEqualTo(Constants.KEY_EMAIL, binding.loginEmail.getText().toString())
+                        .whereEqualTo(Constants.KEY_PASSWORD, binding.loginPassword.getText().toString())
+                        .whereEqualTo("isRider", "1")
+                        .get()
+                        .addOnCompleteListener(task -> {
+                            if(task.isSuccessful() && task.getResult() != null && task.getResult().getDocuments().size() > 0) {
+                                DocumentSnapshot dfSnapshot = task.getResult().getDocuments().get(0);
+                                preferenceManager.putBoolean(Constants.KEY_IS_SIGNED_IN, true);
+                                preferenceManager.putString(Constants.KEY_USER_ID, dfSnapshot.getId());
+                                preferenceManager.putString(Constants.KEY_NAME, dfSnapshot.getString(Constants.KEY_NAME));
+                                preferenceManager.putString(Constants.KEY_IMAGE, dfSnapshot.getString(Constants.KEY_IMAGE));
+                            }
+                        });
+                Intent intent = new Intent(getApplicationContext(), RiderActivity.class);
+                startActivity(intent);
+                finish();
+            }
+            if (documentSnapshot.getString("isTower") != null) {
+                // user is a rider
+                db.collection(Constants.KEY_COLLECTION_USERS)
+                        .whereEqualTo(Constants.KEY_EMAIL, binding.loginEmail.getText().toString())
+                        .whereEqualTo(Constants.KEY_PASSWORD, binding.loginPassword.getText().toString())
+                        .whereEqualTo("isTower", "1")
+                        .get()
+                        .addOnCompleteListener(task -> {
+                            if(task.isSuccessful() && task.getResult() != null && task.getResult().getDocuments().size() > 0) {
+                                DocumentSnapshot dfSnapshot = task.getResult().getDocuments().get(0);
+                                preferenceManager.putBoolean(Constants.KEY_IS_SIGNED_IN, true);
+                                preferenceManager.putString(Constants.KEY_USER_ID, dfSnapshot.getId());
+                                preferenceManager.putString(Constants.KEY_NAME, dfSnapshot.getString(Constants.KEY_NAME));
+                                preferenceManager.putString(Constants.KEY_IMAGE, dfSnapshot.getString(Constants.KEY_IMAGE));
+                            }
+                        });
+                Intent intent = new Intent(getApplicationContext(), TowerActivity.class);
+                startActivity(intent);
+                finish();
             }
         });
     }
@@ -186,25 +155,19 @@ public class LoginActivity extends AppCompatActivity {
         // Check if user is signed in (non-null) and update UI accordingly.
         if(FirebaseAuth.getInstance().getCurrentUser() != null){
             DocumentReference df = FirebaseFirestore.getInstance().collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid());
-            df.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                @Override
-                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                    if(documentSnapshot.getString("isRider") != null){
-                        startActivity(new Intent(getApplicationContext(), RiderActivity.class));
-                        finish();
-                    }
-                    if(documentSnapshot.getString("isTower") != null){
-                        startActivity(new Intent(getApplicationContext(), TowerActivity.class));
-                        finish();
-                    }
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    FirebaseAuth.getInstance().signOut();
-                    startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+            df.get().addOnSuccessListener(documentSnapshot -> {
+                if(documentSnapshot.getString("isRider") != null){
+                    startActivity(new Intent(getApplicationContext(), RiderActivity.class));
                     finish();
                 }
+                if(documentSnapshot.getString("isTower") != null){
+                    startActivity(new Intent(getApplicationContext(), TowerActivity.class));
+                    finish();
+                }
+            }).addOnFailureListener(e -> {
+                FirebaseAuth.getInstance().signOut();
+                startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+                finish();
             });
         }
     }

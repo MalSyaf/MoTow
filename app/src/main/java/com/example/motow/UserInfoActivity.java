@@ -1,5 +1,6 @@
 package com.example.motow;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -49,13 +50,14 @@ public class UserInfoActivity extends AppCompatActivity {
         // Firebase
         FirebaseAuth fAuth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
-        userId = fAuth.getCurrentUser().getUid();
+        userId = fAuth.getUid();
 
         setListeners();
         loadLayout();
         displayUserInfo();
     }
 
+    @SuppressLint("SetTextI18n")
     private void setListeners() {
         binding.backBtn.setOnClickListener(v ->
             fStore.collection("Users")
@@ -79,8 +81,6 @@ public class UserInfoActivity extends AppCompatActivity {
 
         binding.manageInfoBtn.setOnClickListener(v -> {
             interfaceSetup();
-
-            binding.infoTextview.setText("Edit Information");
 
             fStore.collection("Users")
                     .document(userId)
@@ -254,6 +254,7 @@ public class UserInfoActivity extends AppCompatActivity {
     private void displayUserInfo() {
         DocumentReference documentReference = fStore.collection("Users").document(userId);
         documentReference.addSnapshotListener(this, (value, error) -> {
+            assert value != null;
             binding.name.setText(value.getString("name"));
             binding.email.setText(value.getString("email"));
             binding.phoneNo.setText(value.getString("contact"));
@@ -264,6 +265,7 @@ public class UserInfoActivity extends AppCompatActivity {
         });
     }
 
+    @SuppressLint("SetTextI18n")
     private void showAlertDialog() {
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
         alert.setTitle("Are you sure?");
@@ -311,7 +313,9 @@ public class UserInfoActivity extends AppCompatActivity {
         closeKeyboard();
     }
 
+    @SuppressLint("SetTextI18n")
     private void interfaceSetup() {
+        binding.infoTextview.setText("Edit Information");
         binding.backBtn.setVisibility(View.GONE);
         binding.manageInfoBtn.setVisibility(View.GONE);
         binding.nameLayout.setVisibility(View.GONE);
@@ -369,6 +373,7 @@ public class UserInfoActivity extends AppCompatActivity {
         return Base64.encodeToString(bytes, Base64.DEFAULT);
     }
 
+    @SuppressLint("SetTextI18n")
     private final ActivityResultLauncher<Intent> pickPermitImage = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
