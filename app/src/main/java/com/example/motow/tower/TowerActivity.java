@@ -260,7 +260,6 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                             finish();
                         }
                     }));
-
         // Chat listeners
         binding.chatBtn.setOnClickListener(view -> {
             binding.chatLayout.setVisibility(View.VISIBLE);

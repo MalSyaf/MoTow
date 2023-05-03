@@ -58,6 +58,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.DocumentId;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -288,7 +290,6 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
         binding.requestBtn.setOnClickListener(view -> {
             binding.requestBtn.setVisibility(View.GONE);
             binding.selectVehicle.setVisibility(View.VISIBLE);
-            loadCurrentVehicle();
         });
         binding.vehicleBackBtn.setOnClickListener(view -> {
             binding.selectVehicle.setVisibility(View.GONE);
@@ -551,6 +552,12 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                                                         mMap.animateCamera(cameraUpdate);
                                                     });
                                             notificationAssistanceOtw();
+                                            // Update rider's status
+                                            HashMap<String, Object> status = new HashMap<>();
+                                            status.put("status", "inassistance");
+                                            fStore.collection("Users")
+                                                    .document(userId)
+                                                    .update(status);
                                         }
                                     }
                                 });
@@ -693,34 +700,6 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
         return new SimpleDateFormat("MMMM dd, yyyy - hh:mm a", Locale.getDefault()).format(date);
     }
 
-    private void loadCurrentVehicle() {
-        fStore.collection("Users")
-                .document(userId)
-                .get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if(documentSnapshot.getString("currentVehicle") != null) {
-                        binding.confirmBtn.setVisibility(View.VISIBLE);
-
-                        String defaultVehicle = documentSnapshot.getString("currentVehicle");
-
-                        fStore.collection("Vehicles")
-                                .document(defaultVehicle)
-                                .get()
-                                .addOnSuccessListener(documentSnapshot1 -> {
-                                    /*binding.displayPlate.setText(documentSnapshot1.getString("plateNumber"));
-                                    binding.displayBrand.setText(documentSnapshot1.getString("brand"));
-                                    binding.displayModel.setText(documentSnapshot1.getString("model"));
-                                    binding.displayColor.setText(documentSnapshot1.getString("color"));*/
-                                });
-                    } else {
-                        /*binding.confirmBtn.setVisibility(View.GONE);
-                        binding.changeVehicle.setVisibility(View.GONE);
-                        binding.vehicleContainer.setVisibility(View.GONE);
-                        binding.noCurrentVehicle.setVisibility(View.VISIBLE);*/
-                    }
-                });
-    }
-
     private void updateCurrentLocation(double latitude, double longitude) {
         Map<String, Object> infoUpdate = new HashMap<>();
         infoUpdate.put("latitude", latitude);
@@ -767,18 +746,43 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                                     }
                                 }
                             }));
+        createProcess(towerId);
+    }
 
+    // Create process table
+    private void createProcess(String towerId) {
         if(towerId != null) {
-            // Update rider's status
-            HashMap<String, Object> status = new HashMap<>();
-            status.put("status", "inassistance");
-            fStore.collection("Users")
-                    .document(userId)
-                    .update(status);
-
-            // Create processes
-            createProcess(towerId);
+            Map<String, Object> process = new HashMap<>();
+            process.put("riderId", userId);
+            process.put("towerId", towerId);
+            process.put("processStatus", "requesting");
+            process.put("timestamp", new Date());
+            // Add process table in database
+            fStore.collection("Processes")
+                    .add(process)
+                    .addOnSuccessListener(documentReference -> {
+                        processId = documentReference.getId();
+                        Map<String, Object> updateProcessId = new HashMap<>();
+                        updateProcessId.put("processId", processId);
+                        fStore.collection("Processes")
+                                .document(processId)
+                                .update(updateProcessId);
+                    });
         }
+
+        fStore.collection("Processes")
+                .whereEqualTo("riderId", userId)
+                .whereEqualTo("towerId", towerId)
+                .whereEqualTo("processStatus", "requesting")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if(task.isSuccessful()) {
+                        for (QueryDocumentSnapshot dc : task.getResult()) {
+                            String processId = dc.getId();
+
+                        }
+                    }
+                });
     }
 
     private void loadCompletion() {
@@ -820,33 +824,6 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                                 binding.towerVehicle.setText(documentSnapshot1.getString("brand") + " " + documentSnapshot1.getString("model") + " (" + documentSnapshot1.getString("color") + ")");
                                 binding.towerPlate.setText(documentSnapshot1.getString("plateNumber"));
                             });
-                });
-    }
-
-    // Create process table
-    private void createProcess(String towerId) {
-        Date dateAndTime = Calendar.getInstance().getTime();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-        SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm:ss", Locale.getDefault());
-        String date = dateFormat.format(dateAndTime);
-        String time = timeFormat.format(dateAndTime);
-
-        Map<String, Object> process = new HashMap<>();
-        process.put("riderId", userId);
-        process.put("towerId", towerId);
-        process.put("processStatus", "requesting");
-        process.put("date", date);
-        process.put("time", time);
-        // Add process table in database
-        fStore.collection("Processes")
-                .add(process)
-                .addOnSuccessListener(documentReference -> {
-                    processId = documentReference.getId();
-                    Map<String, Object> updateProcessId = new HashMap<>();
-                    updateProcessId.put("processId", processId);
-                    fStore.collection("Processes")
-                            .document(processId)
-                            .update(updateProcessId);
                 });
     }
 

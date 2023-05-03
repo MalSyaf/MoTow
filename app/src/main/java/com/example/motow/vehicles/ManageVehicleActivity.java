@@ -73,7 +73,7 @@ public class ManageVehicleActivity extends AppCompatActivity implements VehicleL
                 }
             });
         });
-        binding.registerVehicle.setOnClickListener(view -> {
+        binding.registerVehicle.setOnClickListener(v -> {
             startActivity(new Intent(getApplicationContext(), RegisterVehicleActivity.class));
             finish();
         });

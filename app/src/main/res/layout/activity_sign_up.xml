@@ -10,7 +10,6 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
         <FrameLayout
             android:id="@+id/layoutImage"
             android:layout_width="wrap_content"
@@ -19,20 +18,18 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent">
-
             <com.makeramen.roundedimageview.RoundedImageView
-                android:id="@+id/imageProfile"
+                android:id="@+id/profileImage"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:background="@drawable/edit_text_borders"
-                android:scaleType="centerCrop"
-                app:riv_oval="true"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
+                app:layout_constraintTop_toTopOf="parent"
+                android:scaleType="centerCrop"
+                app:riv_oval="true"/>
             <TextView
-                android:id="@+id/addPfp"
+                android:id="@+id/pfpText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -41,112 +38,128 @@
         </FrameLayout>
 
         <EditText
-            android:id="@+id/icNum"
-            android:background="@drawable/edit_text_borders"
+            android:id="@+id/fullName"
             android:layout_width="350dp"
             android:layout_height="60dp"
-            android:layout_marginTop="20dp"
-            android:padding="8dp"
-            android:hint="Identification No."
-            android:drawableLeft="@drawable/ic_num"
-            android:drawablePadding="8dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/layoutImage" />
-
-        <EditText
-            android:id="@+id/userName"
-            android:layout_width="350dp"
-            android:layout_height="60dp"
-            android:background="@drawable/edit_text_borders"
+            app:layout_constraintTop_toBottomOf="@id/layoutImage"
             android:layout_marginTop="15dp"
+            android:background="@drawable/edit_text_borders"
             android:padding="8dp"
-            android:hint="Full Name"
             android:drawableLeft="@drawable/user_name"
             android:drawablePadding="8dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/icNum" />
+            android:hint="Full Name"/>
 
         <EditText
-            android:id="@+id/signupEmail"
+            android:id="@+id/email"
             android:layout_width="350dp"
             android:layout_height="60dp"
-            android:background="@drawable/edit_text_borders"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/fullName"
             android:layout_marginTop="15dp"
+            android:background="@drawable/edit_text_borders"
             android:padding="8dp"
-            android:hint="Email"
             android:drawableLeft="@drawable/login_email"
             android:drawablePadding="8dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/userName"/>
+            android:hint="Email"/>
 
         <EditText
-            android:id="@+id/signupPassword"
+            android:id="@+id/password"
             android:layout_width="350dp"
             android:layout_height="60dp"
-            android:background="@drawable/edit_text_borders"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/email"
             android:layout_marginTop="15dp"
+            android:background="@drawable/edit_text_borders"
             android:padding="8dp"
-            android:hint="Confirm Password"
             android:inputType="textPassword"
             android:drawableLeft="@drawable/login_pass"
             android:drawablePadding="8dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/signupEmail"/>
+            android:hint="Confirm Password"/>
 
         <EditText
-            android:id="@+id/signupPassword2"
+            android:id="@+id/confirmPassword"
             android:layout_width="350dp"
             android:layout_height="60dp"
-            android:background="@drawable/edit_text_borders"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/password"
             android:layout_marginTop="15dp"
+            android:background="@drawable/edit_text_borders"
             android:padding="8dp"
-            android:hint="Password"
             android:inputType="textPassword"
             android:drawableLeft="@drawable/login_pass"
             android:drawablePadding="8dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/signupPassword"/>
+            android:hint="Password"/>
 
         <EditText
-            android:id="@+id/signupContact"
+            android:id="@+id/contact"
             android:layout_width="350dp"
             android:layout_height="60dp"
-            android:background="@drawable/edit_text_borders"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/confirmPassword"
             android:layout_marginTop="15dp"
+            android:background="@drawable/edit_text_borders"
             android:padding="8dp"
-            android:hint="Phone Number"
             android:drawableLeft="@drawable/phone_num"
             android:drawablePadding="8dp"
+            android:hint="Phone Number"/>
+
+        <RadioGroup
+            android:id="@+id/accType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/layoutIc"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/signupPassword2"/>
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+            <RadioButton
+                android:id="@+id/radioTower"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:text="Register as tower"/>
+            <RadioButton
+                android:id="@+id/radioRider"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:text="Register as rider" />
+        </RadioGroup>
 
-        <CheckBox
-            android:id="@+id/riderCbox"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="15dp"
-            android:text="Register as Rider"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layoutIc"
+            android:layout_width="350dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/contact"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/towerCbox"
-            app:layout_constraintTop_toBottomOf="@id/signupContact"/>
-
-        <CheckBox
-            android:id="@+id/towerCbox"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginTop="15dp"
-            android:layout_marginRight="20dp"
-            android:text="Register as Tower"
-            app:layout_constraintStart_toEndOf="@id/riderCbox"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/signupContact"/>
+            android:layout_marginTop="20dp">
+            <Button
+                android:id="@+id/insertIc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/textIc"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:backgroundTint="@color/grey_btn"
+                android:text="Identification"/>
+            <TextView
+                android:id="@+id/textIc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginLeft="20dp"
+                android:text="MyKad/Passport:"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <FrameLayout
             android:id="@+id/signupLayout"
@@ -155,8 +168,7 @@
             android:animateLayoutChanges="true"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/towerCbox">
-
+            app:layout_constraintTop_toBottomOf="@id/accType">
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/signupButton"
                 android:layout_width="350dp"
@@ -167,7 +179,6 @@
                 android:textSize="18sp"
                 app:cornerRadius="30dp"
                 android:layout_gravity="center"/>
-
             <ProgressBar
                 android:id="@+id/progressBar"
                 android:layout_width="25dp"
