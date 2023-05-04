@@ -110,12 +110,12 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
     private ChatsAdapter chatsAdapter;
 
     // Tower
-    private String towerId, tCurrentVehicle;
+    private String towerId, tCurrentVehicle, towerVehicle;
     private LatLng towerLocation;
     private Double tLatitude, tLongitude;
 
     private static final int REQUEST_CALL = 1;
-    public String processId;
+    public String processId, riderVehicle;
     private LatLng currentLocation;
     private CircleOptions circleOptions;
 
@@ -323,12 +323,6 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                         mMap.animateCamera(cameraUpdate);
                     });
         });
-        binding.paymentBtn.setOnClickListener(view -> {
-            if(paymentIntentClientSecret != null) {
-                paymentSheet.presentWithPaymentIntent(paymentIntentClientSecret,
-                        new PaymentSheet.Configuration("MoTow", configuration));
-            }
-        });
         binding.okCompleteBtn.setOnClickListener(view -> {
             binding.requestBtn.setVisibility(View.VISIBLE);
             binding.completionContainer.setVisibility(View.GONE);
@@ -339,6 +333,26 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
         binding.addVehicle.setOnClickListener(v -> {
             startActivity(new Intent(getApplicationContext(), ManageVehicleActivity.class));
             finish();
+        });
+
+        // Payment Listeners
+        binding.paymentBtn.setOnClickListener(v ->
+            binding.selectPayMethod.setVisibility(View.VISIBLE));
+        binding.payMethodBack.setOnClickListener(v ->
+            binding.selectPayMethod.setVisibility(View.GONE));
+        // Payment Method 1
+        binding.cashQr.setOnClickListener(v -> {
+            binding.donePayment.setVisibility(View.VISIBLE);
+        });
+        binding.donePayment.setOnClickListener(v -> {
+            updatePayment();
+        });
+        // Payment Method 2
+        binding.card.setOnClickListener(v -> {
+            if(paymentIntentClientSecret != null) {
+                paymentSheet.presentWithPaymentIntent(paymentIntentClientSecret,
+                        new PaymentSheet.Configuration("MoTow", configuration));
+            }
         });
     }
 
@@ -734,6 +748,7 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                                         // Inside the radius
                                         towerId = null;
                                         towerId = document.getString("userId");
+                                        towerVehicle = document.getString("currentVehicle");
                                         // Add tower's marker
                                         fStore.collection("Users")
                                                 .document(towerId)
@@ -746,27 +761,35 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                                     }
                                 }
                             }));
-        createProcess(towerId);
+        createProcess(towerId, towerVehicle);
     }
 
-    // Create process table
-    private void createProcess(String towerId) {
+    private void createProcess(String towerId, String towerVehicle) {
         if(towerId != null) {
-            Map<String, Object> process = new HashMap<>();
-            process.put("riderId", userId);
-            process.put("towerId", towerId);
-            process.put("processStatus", "requesting");
-            process.put("timestamp", new Date());
-            // Add process table in database
-            fStore.collection("Processes")
-                    .add(process)
-                    .addOnSuccessListener(documentReference -> {
-                        processId = documentReference.getId();
-                        Map<String, Object> updateProcessId = new HashMap<>();
-                        updateProcessId.put("processId", processId);
+
+            fStore.collection("Users")
+                    .document(userId)
+                    .get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        riderVehicle = documentSnapshot.getString("currentVehicle");
+                        Map<String, Object> process = new HashMap<>();
+                        process.put("riderId", userId);
+                        process.put("riderVehicle", riderVehicle);
+                        process.put("towerId", towerId);
+                        process.put("towerVehicle", towerVehicle);
+                        process.put("processStatus", "requesting");
+                        process.put("timestamp", new Date());
+                        // Add process document in database
                         fStore.collection("Processes")
-                                .document(processId)
-                                .update(updateProcessId);
+                                .add(process)
+                                .addOnSuccessListener(documentReference -> {
+                                    processId = documentReference.getId();
+                                    Map<String, Object> updateProcessId = new HashMap<>();
+                                    updateProcessId.put("processId", processId);
+                                    fStore.collection("Processes")
+                                            .document(processId)
+                                            .update(updateProcessId);
+                                });
                     });
         }
 
@@ -827,6 +850,28 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                 });
     }
 
+    private void updatePayment() {
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle("Cash or QR");
+        alert.setMessage("Cash/QR payment is successful?");
+        alert.setPositiveButton("YES", (dialogInterface, i) -> {
+            HashMap<String, Object> updateStatus = new HashMap<>();
+            updateStatus.put("processStatus", "paid");
+            fStore.collection("Processes")
+                    .document(processId)
+                    .update(updateStatus)
+                    .addOnSuccessListener(unused -> {
+                        Toast.makeText(this, "Payment success", Toast.LENGTH_SHORT).show();
+                        binding.selectPayMethod.setVisibility(View.GONE);
+                        binding.paymentBtn.setVisibility(View.GONE);
+                        binding.waiting.setVisibility(View.VISIBLE);
+                    });
+        }).setNegativeButton("No", (dialogInterface, i) -> {
+            binding.donePayment.setVisibility(View.GONE);
+        });
+        alert.create().show();
+    }
+
     private void onPaymentSheetResult(final PaymentSheetResult paymentSheetResult) {
         if(paymentSheetResult instanceof PaymentSheetResult.Canceled) {
             Toast.makeText(this, "Payment has been canceled", Toast.LENGTH_SHORT).show();
@@ -842,6 +887,7 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                     .update(updateStatus)
                     .addOnSuccessListener(unused -> {
                         Toast.makeText(this, "Payment success", Toast.LENGTH_SHORT).show();
+                        binding.selectPayMethod.setVisibility(View.GONE);
                         binding.paymentBtn.setVisibility(View.GONE);
                         binding.waiting.setVisibility(View.VISIBLE);
                     });

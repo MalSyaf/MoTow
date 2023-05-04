@@ -18,6 +18,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:name="com.google.android.gms.maps.SupportMapFragment"/>
 
+    <!-- Start of Buttons -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/request_btn"
         android:layout_width="264dp"
@@ -110,6 +111,102 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/chatButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/chat"
+        android:backgroundTint="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="250dp"
+        android:layout_marginRight="20dp"
+        android:visibility="gone"/>
+    <!-- End of Buttons -->
+
+    <!-- Start of Bars -->
+    <!-- Welcome Bar -->
+    <RelativeLayout
+        android:id="@+id/welcome_bar"
+        android:layout_width="313dp"
+        android:layout_height="70dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerInParent="true"
+        android:background="@drawable/welcome_bar"
+        android:elevation="50dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="34dp">
+        <com.makeramen.roundedimageview.RoundedImageView
+            android:id="@+id/welcome_pfp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:scaleType="centerCrop"
+            app:riv_oval="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="50dp"
+            android:background="@drawable/default_pfp"/>
+        <TextView
+            android:id="@+id/user_name"
+            android:layout_width="158dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="46dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:translationZ="90dp" />
+    </RelativeLayout>
+    <!-- Welcome Bar -->
+
+    <!-- Tower Bar -->
+    <RelativeLayout
+        android:id="@+id/tower_bar"
+        android:layout_width="291dp"
+        android:layout_height="62dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerInParent="true"
+        android:background="@drawable/welcome_bar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/navbar"
+        android:layout_marginTop="550dp"
+        android:visibility="gone">
+        <com.makeramen.roundedimageview.RoundedImageView
+            android:id="@+id/tower_bar_pfp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:scaleType="centerCrop"
+            app:riv_oval="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="6dp"
+            android:layout_marginEnd="21dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentBottom="true"
+            android:background="@drawable/default_pfp"/>
+        <TextView
+            android:id="@+id/tower_bar_status"
+            android:layout_width="192dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="24dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:translationZ="90dp" />
+    </RelativeLayout>
+    <!-- Tower Bar -->
+    <!-- End of Bars -->
+
+    <!-- Starting of Containers-->
     <!-- Select Vehicle Container -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/select_vehicle"
@@ -215,85 +312,9 @@
             app:cornerRadius="40dp"
             android:visibility="gone"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
+    <!-- Select Vehicle Container -->
 
-    <!-- Completion Container -->
-    <RelativeLayout
-        android:id="@+id/completionContainer"
-        android:layout_width="291dp"
-        android:layout_height="397dp"
-        android:layout_alignParentTop="true"
-        android:layout_centerInParent="true"
-        android:background="@drawable/welcome_bar"
-        android:elevation="50dp"
-        app:layout_constraintBottom_toBottomOf="@+id/navbar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="156dp"
-        android:layout_marginBottom="114dp"
-        android:visibility="gone">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:textAlignment="center"
-            android:layout_centerHorizontal="true"
-            android:text="Assistance Completed!"
-            android:textSize="16sp"
-            android:textStyle="bold" />
-        <com.makeramen.roundedimageview.RoundedImageView
-            android:id="@+id/towerPfpComplete"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:scaleType="centerCrop"
-            app:riv_oval="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="60dp"
-            android:background="@drawable/default_pfp"/>
-        <TextView
-            android:id="@+id/towerNameComplete"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="178dp"
-            android:textAlignment="center"
-            android:layout_centerHorizontal="true"
-            android:text="Name"
-            android:textSize="16sp"
-            android:textStyle="bold" />
-        <TextView
-            android:id="@+id/text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="230dp"
-            android:textAlignment="center"
-            android:layout_centerHorizontal="true"
-            android:text="Thank you for using MoTow"
-            android:textSize="16sp"
-            android:textStyle="bold" />
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/baseline_check_circle_24"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="270dp"/>
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/okCompleteBtn"
-            android:layout_width="264dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginStart="5dp"
-            android:layout_marginEnd="5dp"
-            android:layout_marginTop="330dp"
-            android:backgroundTint="@color/purple_200"
-            android:padding="8dp"
-            android:text="OK"
-            android:textColor="@color/white"
-            android:textSize="18sp"
-            app:cornerRadius="40dp" />
-    </RelativeLayout>
-
-    <!-- Completion Container -->
+    <!-- Tower Container -->
     <RelativeLayout
         android:id="@+id/tower_container"
         android:layout_width="291dp"
@@ -383,96 +404,206 @@
             android:textSize="18sp"
             app:cornerRadius="40dp" />
     </RelativeLayout>
+    <!-- Tower Container -->
 
-    <!-- Welcome Bar -->
+    <!-- Payment Method Containers -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/selectPayMethod"
+        android:layout_width="298dp"
+        android:layout_height="250dp"
+        android:background="@drawable/welcome_bar"
+        android:elevation="50dp"
+        app:layout_constraintBottom_toTopOf="@+id/navbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/welcome_bar"
+        android:layout_marginTop="100dp"
+        android:layout_marginBottom="114dp"
+        android:visibility="gone">
+        <TextView
+            android:id="@+id/paymentMethodText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:textAlignment="center"
+            android:layout_centerHorizontal="true"
+            android:text="Payment Methods"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+        <ImageView
+            android:id="@+id/payMethodBack"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/baseline_arrow_back_ios_24"
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/paymentMethodText"/>
+        <!-- Method 1 -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cashQr"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/paymentMethodText"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_margin="30dp"
+            android:background="@drawable/bottom_nav_base">
+            <ImageView
+                android:id="@+id/method1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:padding="8dp"
+                android:src="@drawable/qr_code" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toEndOf="@+id/method1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:text="Cash or QR"
+                android:textStyle="bold"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <!-- Method 1 -->
+        <!-- Method 2 -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/cashQr"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="30dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/bottom_nav_base">
+            <ImageView
+                android:id="@+id/method2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:padding="8dp"
+                android:src="@drawable/credit_card" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toEndOf="@+id/method2"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:text="Credit Card"
+                android:textStyle="bold"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <!-- Method 2 -->
+        <!-- Done Payment Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/donePayment"
+            android:layout_width="264dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/card"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:backgroundTint="@color/purple_200"
+            android:padding="8dp"
+            android:text="Done"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            app:cornerRadius="40dp"
+            android:visibility="gone"/>
+        <!-- Done Payment Button -->
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    <!-- Payment Method Containers -->
+
+    <!-- Completion Container -->
     <RelativeLayout
-        android:id="@+id/welcome_bar"
-        android:layout_width="313dp"
-        android:layout_height="70dp"
+        android:id="@+id/completionContainer"
+        android:layout_width="291dp"
+        android:layout_height="397dp"
         android:layout_alignParentTop="true"
         android:layout_centerInParent="true"
         android:background="@drawable/welcome_bar"
         android:elevation="50dp"
+        app:layout_constraintBottom_toBottomOf="@+id/navbar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="34dp">
-        <com.makeramen.roundedimageview.RoundedImageView
-            android:id="@+id/welcome_pfp"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:scaleType="centerCrop"
-            app:riv_oval="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="50dp"
-            android:background="@drawable/default_pfp"/>
-        <TextView
-            android:id="@+id/user_name"
-            android:layout_width="158dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="46dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="20dp"
-            android:textAlignment="center"
-            android:textColor="@color/black"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:translationZ="90dp" />
-    </RelativeLayout>
-
-    <!-- Tower Bar -->
-    <RelativeLayout
-        android:id="@+id/tower_bar"
-        android:layout_width="291dp"
-        android:layout_height="62dp"
-        android:layout_alignParentTop="true"
-        android:layout_centerInParent="true"
-        android:background="@drawable/welcome_bar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/navbar"
-        android:layout_marginTop="550dp"
+        android:layout_marginTop="156dp"
+        android:layout_marginBottom="114dp"
         android:visibility="gone">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:textAlignment="center"
+            android:layout_centerHorizontal="true"
+            android:text="Assistance Completed!"
+            android:textSize="16sp"
+            android:textStyle="bold" />
         <com.makeramen.roundedimageview.RoundedImageView
-            android:id="@+id/tower_bar_pfp"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:id="@+id/towerPfpComplete"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
             android:scaleType="centerCrop"
             app:riv_oval="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginTop="6dp"
-            android:layout_marginBottom="6dp"
-            android:layout_marginEnd="21dp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="60dp"
             android:background="@drawable/default_pfp"/>
         <TextView
-            android:id="@+id/tower_bar_status"
-            android:layout_width="192dp"
+            android:id="@+id/towerNameComplete"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="24dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="20dp"
+            android:layout_marginTop="178dp"
             android:textAlignment="center"
-            android:textColor="@color/black"
+            android:layout_centerHorizontal="true"
+            android:text="Name"
             android:textSize="16sp"
-            android:textStyle="bold"
-            android:translationZ="90dp" />
+            android:textStyle="bold" />
+        <TextView
+            android:id="@+id/text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="230dp"
+            android:textAlignment="center"
+            android:layout_centerHorizontal="true"
+            android:text="Thank you for using MoTow"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/baseline_check_circle_24"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="270dp"/>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/okCompleteBtn"
+            android:layout_width="264dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginTop="330dp"
+            android:backgroundTint="@color/purple_200"
+            android:padding="8dp"
+            android:text="OK"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            app:cornerRadius="40dp" />
     </RelativeLayout>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/chatButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/chat"
-        android:backgroundTint="@color/white"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginBottom="250dp"
-        android:layout_marginRight="20dp"
-        android:visibility="gone"/>
+    <!-- Completion Container -->
+    <!-- End of Containers-->
 
     <!-- Chatbox -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -578,6 +709,7 @@
             app:layout_constraintEnd_toStartOf="@+id/sendBtn"
             app:layout_constraintStart_toStartOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+    <!-- Chatbox -->
 
     <!-- Navbar -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -608,4 +740,5 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginEnd="110dp"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
+    <!-- Navbar -->
 </androidx.constraintlayout.widget.ConstraintLayout>
