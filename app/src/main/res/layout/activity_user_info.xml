@@ -1,295 +1,312 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".UserInfoActivity">
 
-        <LinearLayout
-            android:id="@+id/linearLayout"
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+            android:layout_height="60dp"
+            android:background="@drawable/bottom_nav_base">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:background="@drawable/bottom_nav_base">
-                <ImageView
-                    android:id="@+id/back_btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="20dp"
-                    android:src="@drawable/baseline_arrow_back_ios_24"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"/>
-                <TextView
-                    android:id="@+id/infoTextview"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    android:text="Personal Information"
-                    android:textColor="@color/black"
-                    android:textSize="20sp"
-                    android:textStyle="bold"/>
-            </androidx.constraintlayout.widget.ConstraintLayout>
+            <ImageView
+                android:id="@+id/back_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:src="@drawable/baseline_arrow_back_ios_24"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-            <!-- Name -->
-            <RelativeLayout
-                android:id="@+id/name_layout"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginTop="60dp"
-                android:background="@drawable/personal_info">
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="15dp"
-                    android:text="Name"
-                    android:textSize="20sp"
-                    android:textStyle="bold"/>
-                <TextView
-                    android:id="@+id/name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginRight="20dp"
-                    android:text="User Name"
-                    android:textSize="20sp"/>
-            </RelativeLayout>
+            <TextView
+                android:id="@+id/infoTextview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Personal Information"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <!-- Email -->
-            <RelativeLayout
-                android:id="@+id/email_layout"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginTop="3dp"
-                android:background="@drawable/personal_info">
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="15dp"
-                    android:text="Email"
-                    android:textSize="20sp"
-                    android:textStyle="bold"/>
-                <TextView
-                    android:id="@+id/email"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginRight="20dp"
-                    android:text="User Email"
-                    android:textSize="20sp"/>
-            </RelativeLayout>
-
-            <!-- Phone Number -->
-            <RelativeLayout
-                android:id="@+id/phone_layout"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginTop="3dp"
-                android:background="@drawable/personal_info">
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="15dp"
-                    android:text="Phone"
-                    android:textSize="20sp"
-                    android:textStyle="bold"/>
-                <TextView
-                    android:id="@+id/phone_no"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginRight="20dp"
-                    android:text="User Phone"
-                    android:textSize="20sp"/>
-            </RelativeLayout>
-        </LinearLayout>
-
-        <!-- Provider Type -->
+        <!-- Name -->
         <RelativeLayout
-            android:id="@+id/type_layout"
+            android:id="@+id/name_layout"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:layout_marginTop="300dp"
-            android:background="@drawable/personal_info"
-            android:visibility="gone"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
+            android:layout_marginTop="60dp"
+            android:background="@drawable/personal_info">
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="15dp"
-                android:text="Provider Type"
+                android:text="Name"
                 android:textSize="20sp"
-                android:textStyle="bold"/>
+                android:textStyle="bold" />
+
             <TextView
-                android:id="@+id/type"
+                android:id="@+id/name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="20dp"
-                android:text="Register Type"
-                android:textColor="@color/red"
-                android:textSize="20sp"/>
+                android:text="User Name"
+                android:textSize="20sp" />
         </RelativeLayout>
 
-        <!-- Tower Company -->
+        <!-- Email -->
         <RelativeLayout
-            android:id="@+id/company_layout"
+            android:id="@+id/email_layout"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:background="@drawable/personal_info"
-            android:visibility="gone"
             android:layout_marginTop="3dp"
-            app:layout_constraintTop_toBottomOf="@+id/type_layout"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
+            android:background="@drawable/personal_info">
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="15dp"
-                android:text="Company"
+                android:text="Email"
                 android:textSize="20sp"
-                android:textStyle="bold"/>
+                android:textStyle="bold" />
+
             <TextView
-                android:id="@+id/company"
+                android:id="@+id/email"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="20dp"
-                android:text="Register Company"
-                android:textColor="@color/red"
-                android:textSize="20sp"/>
+                android:text="User Email"
+                android:textSize="20sp" />
         </RelativeLayout>
 
-        <Button
-            android:id="@+id/manage_info_btn"
+        <!-- Phone Number -->
+        <RelativeLayout
+            android:id="@+id/phone_layout"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="3dp"
+            android:background="@drawable/personal_info">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="15dp"
+                android:text="Phone"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/phone_no"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="20dp"
+                android:text="User Phone"
+                android:textSize="20sp" />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <!-- Provider Type -->
+    <RelativeLayout
+        android:id="@+id/type_layout"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="300dp"
+        android:background="@drawable/personal_info"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="15dp"
+            android:text="Provider Type"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/type"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/purple_200"
-            android:text="Manage Info"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginBottom="220dp"/>
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="20dp"
+            android:text="Register Type"
+            android:textColor="@color/red"
+            android:textSize="20sp" />
+    </RelativeLayout>
 
-        <!-- Edit Info -->
-        <EditText
-            android:id="@+id/edit_name"
-            android:layout_width="350dp"
-            android:layout_height="60dp"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/lavender_border"
-            android:hint="Full Name"
-            android:padding="8dp"
-            android:textAlignment="center"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/cancel_btn"
-            android:visibility="gone"/>
-        <EditText
-            android:id="@+id/edit_email"
-            android:editable="false"
-            android:layout_width="350dp"
-            android:layout_height="60dp"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/lavender_border"
-            android:hint="Email"
-            android:padding="8dp"
-            android:textAlignment="center"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/edit_name"
-            android:visibility="gone"/>
-        <EditText
-            android:id="@+id/edit_phone"
-            android:layout_width="350dp"
-            android:layout_height="60dp"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/lavender_border"
-            android:hint="Phone No."
-            android:padding="8dp"
-            android:textAlignment="center"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/edit_email"
-            android:visibility="gone"/>
+    <!-- Tower Company -->
+    <RelativeLayout
+        android:id="@+id/company_layout"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="3dp"
+        android:background="@drawable/personal_info"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/type_layout">
 
-        <EditText
-            android:id="@+id/edit_company"
-            android:layout_width="350dp"
-            android:layout_height="60dp"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="30dp"
-            android:background="@drawable/lavender_border"
-            android:hint="Company Name"
-            android:padding="8dp"
-            android:textAlignment="center"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/edit_phone"
-            android:visibility="gone"/>
-        <EditText
-            android:id="@+id/edit_regnum"
-            android:layout_width="350dp"
-            android:layout_height="60dp"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/lavender_border"
-            android:hint="Registration No."
-            android:padding="8dp"
-            android:textAlignment="center"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/edit_company"
-            android:visibility="gone"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="15dp"
+            android:text="Company"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/company"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="20dp"
+            android:text="Register Company"
+            android:textColor="@color/red"
+            android:textSize="20sp" />
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/manage_info_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="220dp"
+        android:backgroundTint="@color/purple_200"
+        android:text="Manage Info"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- Edit Info -->
+    <EditText
+        android:id="@+id/edit_name"
+        android:layout_width="350dp"
+        android:layout_height="60dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/lavender_border"
+        android:hint="Full Name"
+        android:padding="8dp"
+        android:textAlignment="center"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cancel_btn" />
+
+    <EditText
+        android:id="@+id/edit_email"
+        android:layout_width="350dp"
+        android:layout_height="60dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/lavender_border"
+        android:editable="false"
+        android:hint="Email"
+        android:padding="8dp"
+        android:textAlignment="center"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edit_name" />
+
+    <EditText
+        android:id="@+id/edit_phone"
+        android:layout_width="350dp"
+        android:layout_height="60dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/lavender_border"
+        android:hint="Phone No."
+        android:padding="8dp"
+        android:textAlignment="center"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edit_email" />
+
+    <EditText
+        android:id="@+id/edit_company"
+        android:layout_width="350dp"
+        android:layout_height="60dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/lavender_border"
+        android:hint="Company Name"
+        android:padding="8dp"
+        android:textAlignment="center"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/edit_phone" />
+
+    <EditText
+        android:id="@+id/edit_regnum"
+        android:layout_width="350dp"
+        android:layout_height="60dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/lavender_border"
+        android:hint="Registration No."
+        android:padding="8dp"
+        android:textAlignment="center"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edit_company" />
+
     <RadioGroup
         android:id="@+id/providerType"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/edit_regnum"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="10dp"
         android:orientation="horizontal"
-        android:visibility="gone">
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/edit_regnum">
+
         <RadioButton
             android:id="@+id/radioPrivate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:text="Self business"/>
+            android:text="Self business" />
+
         <RadioButton
             android:id="@+id/radioCompany"
             android:layout_width="wrap_content"
@@ -302,56 +319,59 @@
         android:id="@+id/layoutPermit"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/providerType"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="20dp"
-        android:visibility="gone">
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/providerType">
+
         <Button
             android:id="@+id/insertPermit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@id/textPermit"
-            app:layout_constraintEnd_toEndOf="parent"
             android:backgroundTint="@color/grey_btn"
-            android:text="Upload Permit"/>
+            android:text="Upload Image"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/textPermit"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <TextView
             android:id="@+id/textPermit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginLeft="20dp"
-            android:text="Permit:"/>
+            android:text="Permit:"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <Button
-            android:id="@+id/save_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="520dp"
-            android:backgroundTint="@color/purple_200"
-            android:text="Save"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginLeft="250dp"
-            android:visibility="gone"/>
-        <Button
-            android:id="@+id/cancel_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="520dp"
-            android:backgroundTint="@color/red"
-            android:text="Cancel"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginLeft="50dp"
-            android:visibility="gone"/>
+    <Button
+        android:id="@+id/save_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="250dp"
+        android:layout_marginBottom="520dp"
+        android:backgroundTint="@color/purple_200"
+        android:text="Save"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/cancel_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="50dp"
+        android:layout_marginBottom="520dp"
+        android:backgroundTint="@color/red"
+        android:text="Cancel"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

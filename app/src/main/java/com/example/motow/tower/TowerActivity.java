@@ -450,14 +450,6 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                                                                     mMap.animateCamera(cameraUpdate);
                                                                 });
 
-                                                        HashMap<String, Object> informRider = new HashMap<>();
-                                                        informRider.put("senderId", userId);
-                                                        informRider.put("receiverId", riderId);
-                                                        informRider.put("message", "I'm on my way!");
-                                                        informRider.put("timestamp", new Date());
-                                                        fStore.collection("Chats")
-                                                                .add(informRider);
-
                                                         HashMap<String, Object> userStatus = new HashMap<>();
                                                         userStatus.put("status", "onduty");
                                                         fStore.collection("Users")
