@@ -47,18 +47,20 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.VehicleV
 
     class VehicleViewHolder extends RecyclerView.ViewHolder {
 
-        VehicleCardViewBinding binding;
+        private final VehicleCardViewBinding binding;
+
+        private final String userId;
 
         public VehicleViewHolder(VehicleCardViewBinding vehicleCardViewBinding) {
             super(vehicleCardViewBinding.getRoot());
             binding = vehicleCardViewBinding;
+
+            FirebaseAuth fAuth = FirebaseAuth.getInstance();
+            userId = fAuth.getUid();
         }
 
         void setVehicleData(Vehicle vehicle) {
-            FirebaseAuth fAuth = FirebaseAuth.getInstance();
             FirebaseFirestore fStore = FirebaseFirestore.getInstance();
-            String userId = fAuth.getUid();
-
             binding.displayPlate.setText(vehicle.plateNumber);
             binding.displayBrand.setText(vehicle.brand);
             binding.displayModel.setText(vehicle.model);
@@ -75,8 +77,8 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.VehicleV
                         }
                     });
             binding.getRoot().setOnClickListener(v -> {
-                    vehicleListener.onVehicleClicked(vehicle);
-                    binding.vehicleContainer.setCardBackgroundColor(Color.parseColor("#89CFF0"));
+                vehicleListener.onVehicleClicked(vehicle);
+                binding.vehicleContainer.setCardBackgroundColor(Color.parseColor("#89CFF0"));
             });
         }
     }

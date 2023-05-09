@@ -18,7 +18,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.motow.LoginActivity;
 import com.example.motow.UserInfoActivity;
 import com.example.motow.databinding.ActivityTowerManageBinding;
-import com.example.motow.utilities.Constants;
 import com.example.motow.vehicles.ManageVehicleActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FieldValue;
@@ -93,9 +92,9 @@ public class TowerManageActivity extends AppCompatActivity {
             finish();
         });
         binding.deleteAccount.setOnClickListener(v ->
-            requestDeletion());
+                requestDeletion());
         binding.cancelDelete.setOnClickListener(v ->
-            cancelDeletion());
+                cancelDeletion());
     }
 
     private String encodeImage(Bitmap bitmap) {
@@ -111,8 +110,8 @@ public class TowerManageActivity extends AppCompatActivity {
     private final ActivityResultLauncher<Intent> pickImage = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
-                if(result.getResultCode() == RESULT_OK) {
-                    if(result.getData() != null) {
+                if (result.getResultCode() == RESULT_OK) {
+                    if (result.getData() != null) {
                         Uri imageUri = result.getData().getData();
                         try {
                             InputStream inputStream = getContentResolver().openInputStream(imageUri);
@@ -120,7 +119,7 @@ public class TowerManageActivity extends AppCompatActivity {
                             binding.pfp.setImageBitmap(bitmap);
                             String encodedImage = encodeImage(bitmap);
                             HashMap<String, Object> userInfo = new HashMap<>();
-                            userInfo.put(Constants.KEY_IMAGE, encodedImage);
+                            userInfo.put("image", encodedImage);
                             fStore.collection("Users")
                                     .document(userId)
                                     .update(userInfo);
@@ -143,12 +142,12 @@ public class TowerManageActivity extends AppCompatActivity {
                     .document(userId)
                     .update(delRequest)
                     .addOnCompleteListener(task ->
-                        Toast.makeText(TowerManageActivity.this, "Request has been sent", Toast.LENGTH_SHORT).show());
+                            Toast.makeText(TowerManageActivity.this, "Request has been sent", Toast.LENGTH_SHORT).show());
             binding.deleteAccount.setVisibility(View.GONE);
             binding.cancelDelete.setVisibility(View.VISIBLE);
         });
         alert.setNegativeButton("NO", (dialogInterface, i) -> {
-           //
+            //
         });
         alert.create().show();
     }
@@ -164,7 +163,7 @@ public class TowerManageActivity extends AppCompatActivity {
                     .document(userId)
                     .update(delRequest)
                     .addOnCompleteListener(task ->
-                        Toast.makeText(TowerManageActivity.this, "Account deletion has been canceled", Toast.LENGTH_SHORT).show());
+                            Toast.makeText(TowerManageActivity.this, "Account deletion has been canceled", Toast.LENGTH_SHORT).show());
             binding.deleteAccount.setVisibility(View.VISIBLE);
             binding.cancelDelete.setVisibility(View.GONE);
         });

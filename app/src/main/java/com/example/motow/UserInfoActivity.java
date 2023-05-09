@@ -60,24 +60,24 @@ public class UserInfoActivity extends AppCompatActivity {
     @SuppressLint("SetTextI18n")
     private void setListeners() {
         binding.backBtn.setOnClickListener(v ->
-            fStore.collection("Users")
-                    .document(userId)
-                    .get()
-                    .addOnSuccessListener(documentSnapshot -> {
-                        // Identify the user access level
-                        if (documentSnapshot.getString("isRider") != null) {
-                            // User is a rider
-                            Intent intent = new Intent(getApplicationContext(), RiderManageActivity.class);
-                            startActivity(intent);
-                            finish();
-                        }
-                        if (documentSnapshot.getString("isTower") != null) {
-                            // User is a rider
-                            Intent intent = new Intent(getApplicationContext(), TowerManageActivity.class);
-                            startActivity(intent);
-                            finish();
-                        }
-                    }));
+                fStore.collection("Users")
+                        .document(userId)
+                        .get()
+                        .addOnSuccessListener(documentSnapshot -> {
+                            // Identify the user access level
+                            if (documentSnapshot.getString("isRider") != null) {
+                                // User is a rider
+                                Intent intent = new Intent(getApplicationContext(), RiderManageActivity.class);
+                                startActivity(intent);
+                                finish();
+                            }
+                            if (documentSnapshot.getString("isTower") != null) {
+                                // User is a rider
+                                Intent intent = new Intent(getApplicationContext(), TowerManageActivity.class);
+                                startActivity(intent);
+                                finish();
+                            }
+                        }));
 
         binding.manageInfoBtn.setOnClickListener(v -> {
             interfaceSetup();
@@ -92,17 +92,17 @@ public class UserInfoActivity extends AppCompatActivity {
                         binding.editCompany.setText(documentSnapshot.getString("companyName"));
                         binding.editRegnum.setText(documentSnapshot.getString("companyRegNum"));
 
-                        if(documentSnapshot.getString("isPrivate") != null) {
+                        if (documentSnapshot.getString("isPrivate") != null) {
                             binding.radioPrivate.setChecked(true);
                         }
-                        if(documentSnapshot.getString("isCompany") != null) {
+                        if (documentSnapshot.getString("isCompany") != null) {
                             binding.radioCompany.setChecked(true);
                         }
                     });
         });
 
         binding.cancelBtn.setOnClickListener(v ->
-            showAlertDialog());
+                showAlertDialog());
 
         binding.insertPermit.setOnClickListener(v -> {
             Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -174,11 +174,11 @@ public class UserInfoActivity extends AppCompatActivity {
                                 Toast.makeText(UserInfoActivity.this, "Enter registration number", Toast.LENGTH_SHORT).show();
                                 return;
                             }
-                            if(!(binding.radioPrivate.isChecked() || binding.radioCompany.isChecked())) {
+                            if (!(binding.radioPrivate.isChecked() || binding.radioCompany.isChecked())) {
                                 Toast.makeText(UserInfoActivity.this, "Select business type", Toast.LENGTH_SHORT).show();
                                 return;
                             }
-                            if(permitImage == null) {
+                            if (permitImage == null) {
                                 Toast.makeText(UserInfoActivity.this, "Upload permit", Toast.LENGTH_SHORT).show();
                                 return;
                             }
@@ -207,12 +207,12 @@ public class UserInfoActivity extends AppCompatActivity {
                             updateUser.put("companyName", companyNameFilled);
                             updateUser.put("companyRegNum", regNumFilled);
                             updateUser.put("permit", permitImage);
-                            if(binding.radioPrivate.isChecked()){
+                            if (binding.radioPrivate.isChecked()) {
                                 updateUser.put("providerType", "Private");
                                 updateUser.put("isPrivate", "1");
                                 updateUser.put("isCompany", null);
                             }
-                            if(binding.radioCompany.isChecked()){
+                            if (binding.radioCompany.isChecked()) {
                                 updateUser.put("providerType", "Company");
                                 updateUser.put("isPrivate", null);
                                 updateUser.put("isCompany", "1");
@@ -351,13 +351,13 @@ public class UserInfoActivity extends AppCompatActivity {
                                 .document(userId)
                                 .get()
                                 .addOnSuccessListener(documentSnapshot1 -> {
-                                   if(documentSnapshot1.getString("permit") != null){
-                                       binding.insertPermit.setText("Uploaded");
-                                       binding.insertPermit.setBackgroundColor(Color.GREEN);
-                                   } else {
-                                       binding.insertPermit.setText("Upload Permit");
-                                       binding.insertPermit.setBackgroundColor(Color.GRAY);
-                                   }
+                                    if (documentSnapshot1.getString("permit") != null) {
+                                        binding.insertPermit.setText("Uploaded");
+                                        binding.insertPermit.setBackgroundColor(Color.GREEN);
+                                    } else {
+                                        binding.insertPermit.setText("Upload Image");
+                                        binding.insertPermit.setBackgroundColor(Color.GRAY);
+                                    }
                                 });
                     }
                 });
@@ -377,8 +377,8 @@ public class UserInfoActivity extends AppCompatActivity {
     private final ActivityResultLauncher<Intent> pickPermitImage = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
-                if(result.getResultCode() == RESULT_OK) {
-                    if(result.getData() != null) {
+                if (result.getResultCode() == RESULT_OK) {
+                    if (result.getData() != null) {
                         Uri imageUri = result.getData().getData();
                         try {
                             InputStream inputStream = getContentResolver().openInputStream(imageUri);
@@ -396,7 +396,7 @@ public class UserInfoActivity extends AppCompatActivity {
 
     private void closeKeyboard() {
         View view = this.getCurrentFocus();
-        if(view != null){
+        if (view != null) {
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }

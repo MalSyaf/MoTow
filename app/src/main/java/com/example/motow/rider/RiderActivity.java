@@ -18,7 +18,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Base64;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -55,11 +54,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentChange;
-import com.google.firebase.firestore.DocumentId;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -73,7 +69,6 @@ import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -155,8 +150,8 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
 
     public boolean foreGroundServiceRunning() {
         ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        for(ActivityManager.RunningServiceInfo service: activityManager.getRunningServices(Integer.MAX_VALUE)) {
-            if(ForegroundService.class.getName().equals(service.service.getClassName())) {
+        for (ActivityManager.RunningServiceInfo service : activityManager.getRunningServices(Integer.MAX_VALUE)) {
+            if (ForegroundService.class.getName().equals(service.service.getClassName())) {
                 return true;
             }
         }
@@ -191,14 +186,17 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                             .fillColor(Color.parseColor("#500084d3"));
                 }
             }
+
             @Override
             public void onProviderEnabled(@NonNull String provider) {
                 //
             }
+
             @Override
             public void onProviderDisabled(@NonNull String provider) {
                 //
             }
+
             @Override
             public void onStatusChanged(String provider, int status, Bundle extras) {
                 //
@@ -227,7 +225,7 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                 .document(userId)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
-                    LatLng firstCamera = new LatLng(documentSnapshot.getDouble("latitude"),documentSnapshot.getDouble("longitude"));
+                    LatLng firstCamera = new LatLng(documentSnapshot.getDouble("latitude"), documentSnapshot.getDouble("longitude"));
                     CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(firstCamera, 15);
                     mMap.moveCamera(cameraUpdate);
                 });
@@ -248,20 +246,20 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
     private void setListeners() {
         // Navbar listener
         binding.manageBtn.setOnClickListener(v ->
-            fStore.collection("Users")
-                    .document(userId)
-                    .get()
-                    .addOnSuccessListener(documentSnapshot -> {
-                        if(documentSnapshot.getString("status") != null) {
-                            AlertDialog.Builder alert = new AlertDialog.Builder(this);
-                            alert.setTitle("No Changes Can Be Made!");
-                            alert.setMessage("You are not allowed to manage account while in the process of assistance");
-                            alert.create().show();
-                        } else {
-                            startActivity(new Intent(getApplicationContext(), RiderManageActivity.class));
-                            finish();
-                        }
-                    }));
+                fStore.collection("Users")
+                        .document(userId)
+                        .get()
+                        .addOnSuccessListener(documentSnapshot -> {
+                            if (documentSnapshot.getString("status") != null) {
+                                AlertDialog.Builder alert = new AlertDialog.Builder(this);
+                                alert.setTitle("No Changes Can Be Made!");
+                                alert.setMessage("You are not allowed to manage account while in the process of assistance");
+                                alert.create().show();
+                            } else {
+                                startActivity(new Intent(getApplicationContext(), RiderManageActivity.class));
+                                finish();
+                            }
+                        }));
 
         // Chat listener
         binding.chatButton.setOnClickListener(v -> {
@@ -277,9 +275,9 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
             binding.towerBar.setVisibility(View.VISIBLE);
         });
         binding.callBtn.setOnClickListener(v ->
-            makePhoneCall());
+                makePhoneCall());
         binding.sendBtn.setOnClickListener(v -> {
-            if(binding.inputMessage.getText().toString().isEmpty()) {
+            if (binding.inputMessage.getText().toString().isEmpty()) {
                 Toast.makeText(this, "Type a message", Toast.LENGTH_SHORT).show();
             } else {
                 sendMessage();
@@ -318,7 +316,7 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                     .document(towerId)
                     .get()
                     .addOnSuccessListener(documentSnapshot -> {
-                        LatLng firstCamera = new LatLng(documentSnapshot.getDouble("latitude"),documentSnapshot.getDouble("longitude"));
+                        LatLng firstCamera = new LatLng(documentSnapshot.getDouble("latitude"), documentSnapshot.getDouble("longitude"));
                         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(firstCamera, 15);
                         mMap.animateCamera(cameraUpdate);
                     });
@@ -337,9 +335,9 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
 
         // Payment Listeners
         binding.paymentBtn.setOnClickListener(v ->
-            binding.selectPayMethod.setVisibility(View.VISIBLE));
+                binding.selectPayMethod.setVisibility(View.VISIBLE));
         binding.payMethodBack.setOnClickListener(v ->
-            binding.selectPayMethod.setVisibility(View.GONE));
+                binding.selectPayMethod.setVisibility(View.GONE));
         // Payment Method 1
         binding.cashQr.setOnClickListener(v -> {
             binding.donePayment.setVisibility(View.VISIBLE);
@@ -349,7 +347,7 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
         });
         // Payment Method 2
         binding.card.setOnClickListener(v -> {
-            if(paymentIntentClientSecret != null) {
+            if (paymentIntentClientSecret != null) {
                 paymentSheet.presentWithPaymentIntent(paymentIntentClientSecret,
                         new PaymentSheet.Configuration("MoTow", configuration));
             }
@@ -403,8 +401,8 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                             .whereEqualTo("processStatus", "towed")
                             .get()
                             .addOnCompleteListener(task -> {
-                                if(task.isSuccessful()){
-                                    for(QueryDocumentSnapshot document: task.getResult()){
+                                if (task.isSuccessful()) {
+                                    for (QueryDocumentSnapshot document : task.getResult()) {
                                         binding.towerBarStatus.setText("Vehicle has been towed");
                                     }
                                 }
@@ -418,8 +416,8 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                             .whereEqualTo("processStatus", "paid")
                             .get()
                             .addOnCompleteListener(task -> {
-                                if(task.isSuccessful()){
-                                    for(QueryDocumentSnapshot document: task.getResult()){
+                                if (task.isSuccessful()) {
+                                    for (QueryDocumentSnapshot document : task.getResult()) {
                                         binding.towerBarStatus.setText("Confirming payment");
                                     }
                                 }
@@ -433,8 +431,8 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                             .whereEqualTo("processId", processId)
                             .get()
                             .addOnCompleteListener(task -> {
-                                if(task.isSuccessful()){
-                                    for(QueryDocumentSnapshot document: task.getResult()){
+                                if (task.isSuccessful()) {
+                                    for (QueryDocumentSnapshot document : task.getResult()) {
                                         binding.towerBarStatus.setText("Assistance is on the way");
                                     }
                                 }
@@ -507,7 +505,7 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
 
     public void fetchApi() {
         RequestQueue queue = Volley.newRequestQueue(this);
-        String url ="https://demo.codeseasy.com/apis/stripe/";
+        String url = "https://demo.codeseasy.com/apis/stripe/";
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
                 new Response.Listener<String>() {
                     @Override
@@ -529,8 +527,8 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
             public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
             }
-        }){
-            protected Map<String, String> getParams(){
+        }) {
+            protected Map<String, String> getParams() {
                 Map<String, String> paramV = new HashMap<>();
                 paramV.put("param", "abc");
                 return paramV;
@@ -542,7 +540,7 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
     private void checkProcessStatus() {
         fStore.collection("Processes")
                 .addSnapshotListener((value, error) -> {
-                    for(QueryDocumentSnapshot documentSnapshot:value){
+                    for (QueryDocumentSnapshot documentSnapshot : value) {
                         // Check process ongoing
                         fStore.collection("Processes")
                                 .whereEqualTo("riderId", userId)
@@ -551,8 +549,8 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                                 .whereEqualTo("processId", processId)
                                 .get()
                                 .addOnCompleteListener(task -> {
-                                    if(task.isSuccessful()){
-                                        for(QueryDocumentSnapshot document: task.getResult()){
+                                    if (task.isSuccessful()) {
+                                        for (QueryDocumentSnapshot document : task.getResult()) {
                                             binding.chatButton.setVisibility(View.VISIBLE);
                                             // Display tower's detail
                                             displayTowerInfo(towerId);
@@ -561,7 +559,7 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                                                     .document(towerId)
                                                     .get()
                                                     .addOnSuccessListener(documentSnapshot1 -> {
-                                                        LatLng firstCamera = new LatLng(documentSnapshot1.getDouble("latitude"),documentSnapshot1.getDouble("longitude"));
+                                                        LatLng firstCamera = new LatLng(documentSnapshot1.getDouble("latitude"), documentSnapshot1.getDouble("longitude"));
                                                         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(firstCamera, 15);
                                                         mMap.animateCamera(cameraUpdate);
                                                     });
@@ -583,8 +581,8 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                                 .whereEqualTo("processStatus", "towed")
                                 .get()
                                 .addOnCompleteListener(task -> {
-                                    if(task.isSuccessful()){
-                                        for(QueryDocumentSnapshot document: task.getResult()){
+                                    if (task.isSuccessful()) {
+                                        for (QueryDocumentSnapshot document : task.getResult()) {
                                             binding.paymentBtn.setVisibility(View.VISIBLE);
                                             binding.towerBarStatus.setText("Vehicle has been towed");
                                             notificationTowed();
@@ -600,8 +598,8 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                                 .whereEqualTo("processStatus", "completed")
                                 .get()
                                 .addOnCompleteListener(task -> {
-                                    if(task.isSuccessful()){
-                                        for(QueryDocumentSnapshot document: task.getResult()){
+                                    if (task.isSuccessful()) {
+                                        for (QueryDocumentSnapshot document : task.getResult()) {
                                             mMap.clear();
                                             binding.waiting.setVisibility(View.GONE);
                                             binding.towerBar.setVisibility(View.GONE);
@@ -626,8 +624,8 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                                 .whereEqualTo("processStatus", "paid")
                                 .get()
                                 .addOnCompleteListener(task -> {
-                                    if(task.isSuccessful()){
-                                        for(QueryDocumentSnapshot document: task.getResult()){
+                                    if (task.isSuccessful()) {
+                                        for (QueryDocumentSnapshot document : task.getResult()) {
                                             binding.towerBarStatus.setText("Confirming payment");
                                             notificationConfirmation();
                                         }
@@ -642,7 +640,7 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                 .document(towerId)
                 .get()
                 .addOnSuccessListener(documentSnapshot ->
-                    binding.chatName.setText(documentSnapshot.getString("name")));
+                        binding.chatName.setText(documentSnapshot.getString("name")));
     }
 
     private void makePhoneCall() {
@@ -683,13 +681,13 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
     }
 
     private final EventListener<QuerySnapshot> eventListener = (value, error) -> {
-        if(error != null) {
+        if (error != null) {
             return;
         }
-        if(value != null) {
+        if (value != null) {
             int count = chatMessages.size();
-            for(DocumentChange documentChange : value.getDocumentChanges()) {
-                if(documentChange.getType() == DocumentChange.Type.ADDED) {
+            for (DocumentChange documentChange : value.getDocumentChanges()) {
+                if (documentChange.getType() == DocumentChange.Type.ADDED) {
                     Chats chatMessage = new Chats();
                     chatMessage.sender = documentChange.getDocument().getString("senderId");
                     chatMessage.receiver = documentChange.getDocument().getString("receiverId");
@@ -700,7 +698,7 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                 }
             }
             Collections.sort(chatMessages, (obj1, obj2) -> obj1.dateObject.compareTo(obj2.dateObject));
-            if(count == 0) {
+            if (count == 0) {
                 chatsAdapter.notifyDataSetChanged();
             } else {
                 chatsAdapter.notifyItemRangeInserted(chatMessages.size(), chatMessages.size());
@@ -726,46 +724,46 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
     private void getAssistance() {
         fStore.collection("Users")
                 .addSnapshotListener((value, error) ->
-                    fStore.collection("Users")
-                            .whereEqualTo("isTower", "1")
-                            .whereEqualTo("status", "online")
-                            .get()
-                            .addOnCompleteListener(task -> {
-                                for (QueryDocumentSnapshot document : task.getResult()){
-                                    tLatitude = document.getDouble("latitude");
-                                    tLongitude = document.getDouble("longitude");
-                                    float[] distance = new float[2];
+                        fStore.collection("Users")
+                                .whereEqualTo("isTower", "1")
+                                .whereEqualTo("status", "online")
+                                .get()
+                                .addOnCompleteListener(task -> {
+                                    for (QueryDocumentSnapshot document : task.getResult()) {
+                                        tLatitude = document.getDouble("latitude");
+                                        tLongitude = document.getDouble("longitude");
+                                        float[] distance = new float[2];
 
-                                    Location.distanceBetween( tLatitude, tLongitude, circleOptions.getCenter().latitude, circleOptions.getCenter().longitude, distance);
-                                    // Check if tower's location is within the circle
-                                    if(distance[0] > circleOptions.getRadius()){
-                                        // Outside the radius
-                                        Toast.makeText(RiderActivity.this, "No assistance currently available in the area.", Toast.LENGTH_SHORT).show();
-                                        binding.cancelBtn.setVisibility(View.GONE);
-                                        binding.searchText.setVisibility(View.GONE);
-                                        binding.requestBtn.setVisibility(View.VISIBLE);
-                                    } else if (distance[0] < circleOptions.getRadius()) {
-                                        // Inside the radius
-                                        towerId = null;
-                                        towerId = document.getString("userId");
-                                        towerVehicle = document.getString("currentVehicle");
-                                        // Add tower's marker
-                                        fStore.collection("Users")
-                                                .document(towerId)
-                                                .addSnapshotListener((value1, error1) -> {
-                                                    mMap.clear();
-                                                    double tCurrentLatitude = value1.getDouble("latitude");
-                                                    double tCurrentLongitude = value1.getDouble("longitude");
-                                                    towerLocation = new LatLng(tCurrentLatitude, tCurrentLongitude);
-                                                });
+                                        Location.distanceBetween(tLatitude, tLongitude, circleOptions.getCenter().latitude, circleOptions.getCenter().longitude, distance);
+                                        // Check if tower's location is within the circle
+                                        if (distance[0] > circleOptions.getRadius()) {
+                                            // Outside the radius
+                                            Toast.makeText(RiderActivity.this, "No assistance currently available in the area.", Toast.LENGTH_SHORT).show();
+                                            binding.cancelBtn.setVisibility(View.GONE);
+                                            binding.searchText.setVisibility(View.GONE);
+                                            binding.requestBtn.setVisibility(View.VISIBLE);
+                                        } else if (distance[0] < circleOptions.getRadius()) {
+                                            // Inside the radius
+                                            towerId = null;
+                                            towerId = document.getString("userId");
+                                            towerVehicle = document.getString("currentVehicle");
+                                            // Add tower's marker
+                                            fStore.collection("Users")
+                                                    .document(towerId)
+                                                    .addSnapshotListener((value1, error1) -> {
+                                                        mMap.clear();
+                                                        double tCurrentLatitude = value1.getDouble("latitude");
+                                                        double tCurrentLongitude = value1.getDouble("longitude");
+                                                        towerLocation = new LatLng(tCurrentLatitude, tCurrentLongitude);
+                                                    });
+                                        }
                                     }
-                                }
-                            }));
+                                }));
         createProcess(towerId, towerVehicle);
     }
 
     private void createProcess(String towerId, String towerVehicle) {
-        if(towerId != null) {
+        if (towerId != null) {
 
             fStore.collection("Users")
                     .document(userId)
@@ -799,7 +797,7 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                 .whereEqualTo("processStatus", "requesting")
                 .get()
                 .addOnCompleteListener(task -> {
-                    if(task.isSuccessful()) {
+                    if (task.isSuccessful()) {
                         for (QueryDocumentSnapshot dc : task.getResult()) {
                             String processId = dc.getId();
 
@@ -873,13 +871,13 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
     }
 
     private void onPaymentSheetResult(final PaymentSheetResult paymentSheetResult) {
-        if(paymentSheetResult instanceof PaymentSheetResult.Canceled) {
+        if (paymentSheetResult instanceof PaymentSheetResult.Canceled) {
             Toast.makeText(this, "Payment has been canceled", Toast.LENGTH_SHORT).show();
         }
-        if(paymentSheetResult instanceof PaymentSheetResult.Failed) {
+        if (paymentSheetResult instanceof PaymentSheetResult.Failed) {
             Toast.makeText(this, (((PaymentSheetResult.Failed) paymentSheetResult).getError().getMessage()), Toast.LENGTH_SHORT).show();
         }
-        if(paymentSheetResult instanceof PaymentSheetResult.Completed) {
+        if (paymentSheetResult instanceof PaymentSheetResult.Completed) {
             HashMap<String, Object> updateStatus = new HashMap<>();
             updateStatus.put("processStatus", "paid");
             fStore.collection("Processes")
@@ -905,15 +903,15 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
     private void eventChangeListener() {
         fStore.collection("Vehicles").whereEqualTo("ownerId", userId)
                 .addSnapshotListener((value, error) -> {
-                    if(value.isEmpty()) {
+                    if (value.isEmpty()) {
                         binding.noVehicleText.setVisibility(View.VISIBLE);
                         binding.noVehicleBtn.setVisibility(View.VISIBLE);
                     }
-                    if(error != null) {
+                    if (error != null) {
                         return;
                     }
-                    for(DocumentChange dc : value.getDocumentChanges()) {
-                        if(dc.getType() == DocumentChange.Type.ADDED) {
+                    for (DocumentChange dc : value.getDocumentChanges()) {
+                        if (dc.getType() == DocumentChange.Type.ADDED) {
                             vehicleArrayList.add(dc.getDocument().toObject(Vehicle.class));
                         }
                     }

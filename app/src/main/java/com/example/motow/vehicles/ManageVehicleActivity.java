@@ -1,5 +1,6 @@
 package com.example.motow.vehicles;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -12,17 +13,16 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.example.motow.databinding.ActivityManageVehicleBinding;
 import com.example.motow.rider.RiderManageActivity;
 import com.example.motow.tower.TowerManageActivity;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 
-public class ManageVehicleActivity extends AppCompatActivity implements VehicleListener{
+public class ManageVehicleActivity extends AppCompatActivity implements VehicleListener {
 
     private ActivityManageVehicleBinding binding;
 
@@ -43,7 +43,7 @@ public class ManageVehicleActivity extends AppCompatActivity implements VehicleL
         // Firebase
         FirebaseAuth fAuth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
-        userId = fAuth.getCurrentUser().getUid();
+        userId = fAuth.getUid();
 
         setListeners();
         setUpRecyclerView();
@@ -54,22 +54,19 @@ public class ManageVehicleActivity extends AppCompatActivity implements VehicleL
         binding.backBtn.setOnClickListener(view -> {
             DocumentReference df = fStore.collection("Users").document(userId);
             // extract the data from the document
-            df.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                @Override
-                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                    // identify the user access level
-                    if (documentSnapshot.getString("isRider") != null) {
-                        // user is a rider
-                        Intent intent = new Intent(getApplicationContext(), RiderManageActivity.class);
-                        startActivity(intent);
-                        finish();
-                    }
-                    if (documentSnapshot.getString("isTower") != null) {
-                        // user is a rider
-                        Intent intent = new Intent(getApplicationContext(), TowerManageActivity.class);
-                        startActivity(intent);
-                        finish();
-                    }
+            df.get().addOnSuccessListener(documentSnapshot -> {
+                // identify the user access level
+                if (documentSnapshot.getString("isRider") != null) {
+                    // user is a rider
+                    Intent intent = new Intent(getApplicationContext(), RiderManageActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+                if (documentSnapshot.getString("isTower") != null) {
+                    // user is a rider
+                    Intent intent = new Intent(getApplicationContext(), TowerManageActivity.class);
+                    startActivity(intent);
+                    finish();
                 }
             });
         });
@@ -83,23 +80,25 @@ public class ManageVehicleActivity extends AppCompatActivity implements VehicleL
         loading(true);
         binding.recyclerView.setHasFixedSize(true);
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        vehicleArrayList = new ArrayList<Vehicle>();
+        vehicleArrayList = new ArrayList<>();
         vehicleAdapter = new VehicleAdapter(vehicleArrayList, this);
         binding.recyclerView.setAdapter(vehicleAdapter);
         loading(false);
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void eventChangeListener() {
         fStore.collection("Vehicles").whereEqualTo("ownerId", userId)
                 .addSnapshotListener((value, error) -> {
-                    if(value.isEmpty()) {
+                    assert value != null;
+                    if (value.isEmpty()) {
                         binding.errorMessage.setVisibility(View.VISIBLE);
                     }
-                    if(error != null) {
+                    if (error != null) {
                         return;
                     }
-                    for(DocumentChange dc : value.getDocumentChanges()) {
-                        if(dc.getType() == DocumentChange.Type.ADDED) {
+                    for (DocumentChange dc : value.getDocumentChanges()) {
+                        if (dc.getType() == DocumentChange.Type.ADDED) {
                             vehicleArrayList.add(dc.getDocument().toObject(Vehicle.class));
                             binding.errorMessage.setVisibility(View.GONE);
                         }
@@ -109,7 +108,7 @@ public class ManageVehicleActivity extends AppCompatActivity implements VehicleL
     }
 
     private void loading(Boolean isLoading) {
-        if(isLoading) {
+        if (isLoading) {
             binding.progressBar.setVisibility(View.VISIBLE);
         } else {
             binding.progressBar.setVisibility(View.GONE);
@@ -124,43 +123,41 @@ public class ManageVehicleActivity extends AppCompatActivity implements VehicleL
             fStore.collection("Users")
                     .document(userId)
                     .update(currentVehicle)
-                    .addOnSuccessListener(unused -> {
-                        Toast.makeText(ManageVehicleActivity.this, "Default vehicle has been changed", Toast.LENGTH_SHORT).show();
-                    });
+                    .addOnSuccessListener(unused ->
+                            Toast.makeText(ManageVehicleActivity.this, "Default vehicle has been changed", Toast.LENGTH_SHORT).show());
         });
-        binding.deleteButton.setOnClickListener(view -> {
-            fStore.collection("Users")
-                    .document(userId)
-                    .get()
-                    .addOnSuccessListener(documentSnapshot -> {
-                        if(vehicle.vehicleId != null) {
-                            if(!documentSnapshot.getString("currentVehicle").equals(vehicle.vehicleId)) {
-                                AlertDialog.Builder alert = new AlertDialog.Builder(this);
-                                alert.setTitle("Are you sure?");
-                                alert.setMessage("Do you want to delete this vehicle?");
-                                alert.setPositiveButton("YES", (dialogInterface, i) -> {
-                                    fStore.collection("Vehicles")
-                                            .document(vehicle.vehicleId)
-                                            .delete();
-                                    Intent intent = new Intent(getApplicationContext(), ManageVehicleActivity.class);
-                                    startActivity(intent);
-                                    finish();
-                                });
-                                alert.setNegativeButton("NO", (dialogInterface, i) -> {
-                                    //
-                                });
-                                alert.create().show();
-                            } else {
-                                AlertDialog.Builder alert = new AlertDialog.Builder(this);
-                                alert.setTitle("Default Vehicle");
-                                alert.setMessage("You cannot delete a default vehicle");
-                                alert.setNeutralButton("OK", (dialogInterface, i) -> {
-                                   //
-                                });
-                                alert.create().show();
+        binding.deleteButton.setOnClickListener(view ->
+                fStore.collection("Users")
+                        .document(userId)
+                        .get()
+                        .addOnSuccessListener(documentSnapshot -> {
+                            if (vehicle.vehicleId != null) {
+                                if (!Objects.equals(documentSnapshot.getString("currentVehicle"), vehicle.vehicleId)) {
+                                    AlertDialog.Builder alert = new AlertDialog.Builder(this);
+                                    alert.setTitle("Are you sure?");
+                                    alert.setMessage("Do you want to delete this vehicle?");
+                                    alert.setPositiveButton("YES", (dialogInterface, i) -> {
+                                        fStore.collection("Vehicles")
+                                                .document(vehicle.vehicleId)
+                                                .delete();
+                                        Intent intent = new Intent(getApplicationContext(), ManageVehicleActivity.class);
+                                        startActivity(intent);
+                                        finish();
+                                    });
+                                    alert.setNegativeButton("NO", (dialogInterface, i) -> {
+                                        //
+                                    });
+                                    alert.create().show();
+                                } else {
+                                    AlertDialog.Builder alert = new AlertDialog.Builder(this);
+                                    alert.setTitle("Default Vehicle");
+                                    alert.setMessage("You cannot delete a default vehicle");
+                                    alert.setNeutralButton("OK", (dialogInterface, i) -> {
+                                        //
+                                    });
+                                    alert.create().show();
+                                }
                             }
-                        }
-                    });
-            });
+                        }));
     }
 }

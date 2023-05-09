@@ -48,14 +48,14 @@ public class SignUpActivity extends AppCompatActivity {
         // Firebase
         fAuth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
-        
+
         setListeners();
     }
 
     private void setListeners() {
         binding.loginRedirectText.setOnClickListener(v -> onBackPressed());
         binding.signupButton.setOnClickListener(v -> {
-            if(isValidSignUpDetails()) {
+            if (isValidSignUpDetails()) {
                 signUp();
             }
         });
@@ -84,9 +84,9 @@ public class SignUpActivity extends AppCompatActivity {
                         DocumentReference df = fStore.collection("Users").document(user.getUid());
                         HashMap<String, Object> userInfo = new HashMap<>();
 
-                        if(binding.radioRider.isChecked()){
-                            userInfo.put("userId", fAuth.getCurrentUser().getUid());
-                            userInfo.put("isRider","1");
+                        if (binding.radioRider.isChecked()) {
+                            userInfo.put("userId", fAuth.getUid());
+                            userInfo.put("isRider", "1");
                             userInfo.put("name", binding.fullName.getText().toString());
                             userInfo.put("email", binding.email.getText().toString());
                             userInfo.put("contact", binding.contact.getText().toString());
@@ -100,8 +100,8 @@ public class SignUpActivity extends AppCompatActivity {
                             Intent intent = new Intent(getApplicationContext(), RiderActivity.class);
                             startActivity(intent);
                         }
-                        if(binding.radioTower.isChecked()){
-                            userInfo.put("userId", fAuth.getCurrentUser().getUid());
+                        if (binding.radioTower.isChecked()) {
+                            userInfo.put("userId", fAuth.getUid());
                             userInfo.put("isTower", "1");
                             userInfo.put("name", binding.fullName.getText().toString());
                             userInfo.put("email", binding.email.getText().toString());
@@ -143,8 +143,8 @@ public class SignUpActivity extends AppCompatActivity {
     private final ActivityResultLauncher<Intent> pickPfpImage = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
-                if(result.getResultCode() == RESULT_OK) {
-                    if(result.getData() != null) {
+                if (result.getResultCode() == RESULT_OK) {
+                    if (result.getData() != null) {
                         Uri imageUri = result.getData().getData();
                         try {
                             InputStream inputStream = getContentResolver().openInputStream(imageUri);
@@ -164,8 +164,8 @@ public class SignUpActivity extends AppCompatActivity {
     private final ActivityResultLauncher<Intent> pickIcImage = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
-                if(result.getResultCode() == RESULT_OK) {
-                    if(result.getData() != null) {
+                if (result.getResultCode() == RESULT_OK) {
+                    if (result.getData() != null) {
                         Uri imageUri = result.getData().getData();
                         try {
                             InputStream inputStream = getContentResolver().openInputStream(imageUri);
@@ -182,7 +182,7 @@ public class SignUpActivity extends AppCompatActivity {
     );
 
     private Boolean isValidSignUpDetails() {
-        if(encodedImage == null) {
+        if (encodedImage == null) {
             showToast("Upload profile image");
             return false;
         } else if (binding.fullName.getText().toString().trim().isEmpty()) {
@@ -222,11 +222,12 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     private void loading(Boolean isLoading) {
-        if(isLoading) {
+        if (isLoading) {
             binding.signupButton.setVisibility(View.INVISIBLE);
             binding.progressBar.setVisibility(View.VISIBLE);
         } else {
             binding.signupButton.setVisibility(View.VISIBLE);
-            binding.progressBar.setVisibility(View.INVISIBLE);        }
+            binding.progressBar.setVisibility(View.INVISIBLE);
+        }
     }
 }

@@ -20,7 +20,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Base64;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -51,7 +50,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -148,14 +146,17 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                     updateCurrentLocation(latitude, longitude);
                 }
             }
+
             @Override
             public void onProviderEnabled(@NonNull String provider) {
                 //
             }
+
             @Override
             public void onProviderDisabled(@NonNull String provider) {
                 //
             }
+
             @Override
             public void onStatusChanged(String provider, int status, Bundle extras) {
                 //
@@ -231,8 +232,8 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
     }
 
     private void createNotificationChannel() {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel("My Notifications","My Notifications", NotificationManager.IMPORTANCE_DEFAULT);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel("My Notifications", "My Notifications", NotificationManager.IMPORTANCE_DEFAULT);
             NotificationManager manager = getSystemService(NotificationManager.class);
             manager.createNotificationChannel(channel);
         }
@@ -241,25 +242,25 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
     private void setListeners() {
         // Navbar listeners
         binding.manageBtn.setOnClickListener(v ->
-            fStore.collection("Users")
-                    .document(userId)
-                    .get()
-                    .addOnSuccessListener(documentSnapshot -> {
-                        if(documentSnapshot.getString("status").equals("onduty")) {
-                            AlertDialog.Builder alert = new AlertDialog.Builder(this);
-                            alert.setTitle("You Are On Duty!");
-                            alert.setMessage("You are not allowed to manage account while on duty");
-                            alert.create().show();
-                        } else if (documentSnapshot.getString("status").equals("online")) {
-                            AlertDialog.Builder alert = new AlertDialog.Builder(this);
-                            alert.setTitle("You Are Online!");
-                            alert.setMessage("You are not allowed to manage account while online");
-                            alert.create().show();
-                        } else {
-                            startActivity(new Intent(getApplicationContext(), TowerManageActivity.class));
-                            finish();
-                        }
-                    }));
+                fStore.collection("Users")
+                        .document(userId)
+                        .get()
+                        .addOnSuccessListener(documentSnapshot -> {
+                            if (documentSnapshot.getString("status").equals("onduty")) {
+                                AlertDialog.Builder alert = new AlertDialog.Builder(this);
+                                alert.setTitle("You Are On Duty!");
+                                alert.setMessage("You are not allowed to manage account while on duty");
+                                alert.create().show();
+                            } else if (documentSnapshot.getString("status").equals("online")) {
+                                AlertDialog.Builder alert = new AlertDialog.Builder(this);
+                                alert.setTitle("You Are Online!");
+                                alert.setMessage("You are not allowed to manage account while online");
+                                alert.create().show();
+                            } else {
+                                startActivity(new Intent(getApplicationContext(), TowerManageActivity.class));
+                                finish();
+                            }
+                        }));
         // Chat listeners
         binding.chatBtn.setOnClickListener(view -> {
             binding.chatLayout.setVisibility(View.VISIBLE);
@@ -274,9 +275,9 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
             binding.chatBtn.setVisibility(View.VISIBLE);
         });
         binding.callBtn.setOnClickListener(view ->
-            makePhoneCall());
+                makePhoneCall());
         binding.sendBtn.setOnClickListener(v -> {
-            if(binding.inputMessage.getText().toString().isEmpty()) {
+            if (binding.inputMessage.getText().toString().isEmpty()) {
                 Toast.makeText(this, "Type a message", Toast.LENGTH_SHORT).show();
             } else {
                 sendMessage();
@@ -350,7 +351,7 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                 .document(riderId)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
-                   binding.chatName.setText(documentSnapshot.getString("name"));
+                    binding.chatName.setText(documentSnapshot.getString("name"));
                 });
     }
 
@@ -445,7 +446,7 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                                                                 .document(riderId)
                                                                 .get()
                                                                 .addOnSuccessListener(documentSnapshot1 -> {
-                                                                    LatLng firstCamera = new LatLng(documentSnapshot1.getDouble("latitude"),documentSnapshot1.getDouble("longitude"));
+                                                                    LatLng firstCamera = new LatLng(documentSnapshot1.getDouble("latitude"), documentSnapshot1.getDouble("longitude"));
                                                                     CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(firstCamera, 15);
                                                                     mMap.animateCamera(cameraUpdate);
                                                                 });
@@ -484,7 +485,7 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
 
                                                                     Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("google.navigation:q=" + riderLatitude + "," + riderLongitude));
                                                                     intent.setPackage("com.google.android.apps.maps");
-                                                                    if(intent.resolveActivity(getPackageManager()) != null){
+                                                                    if (intent.resolveActivity(getPackageManager()) != null) {
                                                                         startActivity(intent);
                                                                     }
                                                                 });
@@ -623,13 +624,13 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
     }
 
     private final EventListener<QuerySnapshot> eventListener = (value, error) -> {
-        if(error != null) {
+        if (error != null) {
             return;
         }
-        if(value != null) {
+        if (value != null) {
             int count = chatMessages.size();
-            for(DocumentChange documentChange : value.getDocumentChanges()) {
-                if(documentChange.getType() == DocumentChange.Type.ADDED) {
+            for (DocumentChange documentChange : value.getDocumentChanges()) {
+                if (documentChange.getType() == DocumentChange.Type.ADDED) {
                     Chats chatMessage = new Chats();
                     chatMessage.sender = documentChange.getDocument().getString("senderId");
                     chatMessage.receiver = documentChange.getDocument().getString("receiverId");
@@ -640,7 +641,7 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                 }
             }
             Collections.sort(chatMessages, (obj1, obj2) -> obj1.dateObject.compareTo(obj2.dateObject));
-            if(count == 0) {
+            if (count == 0) {
                 chatsAdapter.notifyDataSetChanged();
             } else {
                 chatsAdapter.notifyItemRangeInserted(chatMessages.size(), chatMessages.size());
@@ -659,7 +660,7 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                 .document(userId)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
-                    if(documentSnapshot.getString("companyRegNum") != null & documentSnapshot.getString("currentVehicle") != null & documentSnapshot.getString("providerType") != null){
+                    if (documentSnapshot.getString("companyRegNum") != null & documentSnapshot.getString("currentVehicle") != null & documentSnapshot.getString("providerType") != null) {
                         Map<String, Object> infoUpdate = new HashMap<>();
                         infoUpdate.put("status", "online");
                         fStore.collection("Users")
@@ -683,6 +684,6 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                 .document(userId)
                 .update(infoUpdate)
                 .addOnSuccessListener(unused ->
-                    Toast.makeText(TowerActivity.this, "You are offline!", Toast.LENGTH_SHORT).show());
+                        Toast.makeText(TowerActivity.this, "You are offline!", Toast.LENGTH_SHORT).show());
     }
 }

@@ -11,21 +11,16 @@ import androidx.annotation.Nullable;
 
 import com.example.motow.R;
 
-import org.checkerframework.checker.units.qual.C;
-
 public class ForegroundService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         new Thread(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        while(true) {
-                            try {
-                                Thread.sleep(2000);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
+                () -> {
+                    while (true) {
+                        try {
+                            Thread.sleep(2000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
                         }
                     }
                 }
