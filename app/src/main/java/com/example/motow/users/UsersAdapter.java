@@ -16,9 +16,11 @@ import java.util.List;
 public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHolder>{
 
     private final List<Users> users;
+    private final UserListener userListener;
 
-    public UsersAdapter(List<Users> users) {
+    public UsersAdapter(List<Users> users, UserListener userListener) {
         this.users = users;
+        this.userListener = userListener;
     }
 
     @NonNull
@@ -54,6 +56,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
         void setUserData(Users users) {
             binding.profileImage.setImageBitmap(getUserImage(users.pfp));
             binding.userName.setText(users.name);
+            binding.getRoot().setOnClickListener(v -> userListener.onUserClicked(users));
         }
     }
 

@@ -14,11 +14,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.motow.LoginActivity;
 import com.example.motow.R;
+import com.example.motow.admin.adminprocesses.AdminProcessActivity;
+import com.example.motow.admin.adminusers.UserVerificationActivity;
+import com.example.motow.admin.adminvehicles.AdminVehicleActivity;
 import com.example.motow.databinding.ActivityAdminBinding;
+import com.example.motow.users.UserListener;
 import com.example.motow.users.Users;
 import com.example.motow.users.UsersAdapter;
-import com.example.motow.vehicles.Vehicle;
-import com.example.motow.vehicles.VehicleAdapter;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentChange;
@@ -28,7 +30,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AdminActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class AdminActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, UserListener {
 
     private ActivityAdminBinding binding;
 
@@ -54,10 +56,11 @@ public class AdminActivity extends AppCompatActivity implements NavigationView.O
         setListeners();
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void getUsers() {
         FirebaseAuth fAuth = FirebaseAuth.getInstance();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("Users").whereEqualTo("isVerified", null)
+        db.collection("Users").whereEqualTo("isVerified", null).whereEqualTo("isRejected", null)
                 .get()
                 .addOnCompleteListener(task -> {
                     String currentUserId = fAuth.getUid();
@@ -68,12 +71,13 @@ public class AdminActivity extends AppCompatActivity implements NavigationView.O
                                 continue;
                             }
                             Users users1 = new Users();
+                            users1.userId = queryDocumentSnapshot.getId();
                             users1.pfp = queryDocumentSnapshot.getString("image");
                             users1.name = queryDocumentSnapshot.getString("name");
                             users.add(users1);
                         }
                         if (users.size() > 0) {
-                            UsersAdapter usersAdapter = new UsersAdapter(users);
+                            UsersAdapter usersAdapter = new UsersAdapter(users, this);
                             binding.verifyUserRecycler.setAdapter(usersAdapter);
                             binding.noUserText.setVisibility(View.GONE);
                         }
@@ -91,15 +95,17 @@ public class AdminActivity extends AppCompatActivity implements NavigationView.O
                                 continue;
                             }
                             Users users1 = new Users();
+                            users1.userId = queryDocumentSnapshot.getId();
                             users1.pfp = queryDocumentSnapshot.getString("image");
                             users1.name = queryDocumentSnapshot.getString("name");
                             users.add(users1);
                         }
                         if (users.size() > 0) {
-                            UsersAdapter usersAdapter = new UsersAdapter(users);
+                            UsersAdapter usersAdapter = new UsersAdapter(users, this);
                             binding.usersRecycler.setAdapter(usersAdapter);
                             binding.emptyUsers.setVisibility(View.GONE);
                         }
+                        usersAdapter.notifyDataSetChanged();
                     }
                 });
     }
@@ -110,7 +116,7 @@ public class AdminActivity extends AppCompatActivity implements NavigationView.O
         binding.usersRecycler.setHasFixedSize(true);
         binding.usersRecycler.setLayoutManager(new LinearLayoutManager(this));
         users = new ArrayList<>();
-        usersAdapter = new UsersAdapter(users);
+        usersAdapter = new UsersAdapter(users, this);
         binding.verifyUserRecycler.setAdapter(usersAdapter);
         binding.usersRecycler.setAdapter(usersAdapter);
     }
@@ -122,28 +128,6 @@ public class AdminActivity extends AppCompatActivity implements NavigationView.O
         binding.navigtationView.setNavigationItemSelectedListener(this);
     }
 
-    @SuppressLint("NotifyDataSetChanged")
-    private void eventChangeListener() {
-        fStore.collection("Vehicles").whereEqualTo("ownerId", userId)
-                .addSnapshotListener((value, error) -> {
-                    assert value != null;
-                    if (value.isEmpty()) {
-                        binding.noUserText.setVisibility(View.VISIBLE);
-                    }
-                    if (error != null) {
-                        return;
-                    }
-                    for (DocumentChange dc : value.getDocumentChanges()) {
-                        if (dc.getType() == DocumentChange.Type.ADDED) {
-                            users.add(dc.getDocument().toObject(Users.class));
-                            binding.noUserText.setVisibility(View.GONE);
-                        }
-                    }
-                    usersAdapter.notifyDataSetChanged();
-                });
-    }
-
-
     @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -151,18 +135,15 @@ public class AdminActivity extends AppCompatActivity implements NavigationView.O
             case R.id.menuUsers:
                 break;
             case R.id.menuVehicles:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer,
-                        new VehiclesFragment()).commit();
+                startActivity(new Intent(getApplicationContext(), AdminVehicleActivity.class));
                 break;
             case R.id.menuProcesses:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer,
-                        new ProcessesFragment()).commit();
+                startActivity(new Intent(getApplicationContext(), AdminProcessActivity.class));
                 break;
             case R.id.menuLogout:
                 FirebaseAuth.getInstance().signOut();
                 startActivity(new Intent(getApplicationContext(), LoginActivity.class));
                 Toast.makeText(this, "Logged out", Toast.LENGTH_SHORT).show();
-                finish();
                 break;
         }
 
@@ -177,5 +158,13 @@ public class AdminActivity extends AppCompatActivity implements NavigationView.O
         } else {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    public void onUserClicked(Users users) {
+        Intent intent = new Intent(getApplicationContext(), UserVerificationActivity.class);
+        intent.putExtra("userId", users);
+        startActivity(intent);
+        finish();
     }
 }

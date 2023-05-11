@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.motow.databinding.ActivityRegisterVehicleBinding;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -57,35 +58,46 @@ public class RegisterVehicleActivity extends AppCompatActivity {
     }
 
     private void registerVehicle() {
-        Map<String, Object> vehicle = new HashMap<>();
-        vehicle.put("ownerId", userId);
-        vehicle.put("plateNumber", binding.registerPlate.getText().toString());
-        vehicle.put("brand", binding.registerBrand.getText().toString());
-        vehicle.put("model", binding.registerModel.getText().toString());
-        vehicle.put("color", binding.registerColor.getText().toString());
+        fStore.collection("Vehicles").whereEqualTo("plateNumber", binding.registerPlate.getText().toString())
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot ignored : task.getResult()) {
+                            Toast.makeText(this, "Plate number has already been registered", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                    if (task.getResult().isEmpty()) {
+                        Map<String, Object> vehicle = new HashMap<>();
+                        vehicle.put("ownerId", userId);
+                        vehicle.put("plateNumber", binding.registerPlate.getText().toString());
+                        vehicle.put("brand", binding.registerBrand.getText().toString());
+                        vehicle.put("model", binding.registerModel.getText().toString());
+                        vehicle.put("color", binding.registerColor.getText().toString());
 
-        fStore.collection("Vehicles")
-                .add(vehicle)
-                .addOnSuccessListener(documentReference -> {
-                    Toast.makeText(RegisterVehicleActivity.this, "Vehicle Registered", Toast.LENGTH_SHORT).show();
-                    binding.registerPlate.setText(null);
-                    binding.registerBrand.setText(null);
-                    binding.registerModel.setText(null);
-                    binding.registerColor.setText(null);
-                    String documentId = documentReference.getId();
-                    Map<String, Object> vehicleId = new HashMap<>();
-                    vehicleId.put("vehicleId", documentId);
-                    fStore.collection("Vehicles")
-                            .document(documentId)
-                            .update(vehicleId);
-                    Map<String, Object> userCurrentVehicle = new HashMap<>();
-                    userCurrentVehicle.put("currentVehicle", documentId);
-                    fStore.collection("Users")
-                            .document(userId)
-                            .update(userCurrentVehicle);
+                        fStore.collection("Vehicles")
+                                .add(vehicle)
+                                .addOnSuccessListener(documentReference -> {
+                                    Toast.makeText(RegisterVehicleActivity.this, "Vehicle Registered", Toast.LENGTH_SHORT).show();
+                                    binding.registerPlate.setText(null);
+                                    binding.registerBrand.setText(null);
+                                    binding.registerModel.setText(null);
+                                    binding.registerColor.setText(null);
+                                    String documentId = documentReference.getId();
+                                    Map<String, Object> vehicleId = new HashMap<>();
+                                    vehicleId.put("vehicleId", documentId);
+                                    fStore.collection("Vehicles")
+                                            .document(documentId)
+                                            .update(vehicleId);
+                                    Map<String, Object> userCurrentVehicle = new HashMap<>();
+                                    userCurrentVehicle.put("currentVehicle", documentId);
+                                    fStore.collection("Users")
+                                            .document(userId)
+                                            .update(userCurrentVehicle);
 
-                    startActivity(new Intent(getApplicationContext(), ManageVehicleActivity.class));
-                    finish();
+                                    startActivity(new Intent(getApplicationContext(), ManageVehicleActivity.class));
+                                    finish();
+                                });
+                    }
                 });
     }
 

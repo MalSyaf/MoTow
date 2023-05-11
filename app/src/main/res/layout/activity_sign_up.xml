@@ -40,6 +40,20 @@
         </FrameLayout>
 
         <EditText
+            android:id="@+id/icNo"
+            android:layout_width="350dp"
+            android:layout_height="60dp"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/edit_text_borders"
+            android:drawableLeft="@drawable/credit_card"
+            android:drawablePadding="8dp"
+            android:hint="Mykad/Passport (e.g. 001010010101)"
+            android:padding="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/layoutImage" />
+
+        <EditText
             android:id="@+id/fullName"
             android:layout_width="350dp"
             android:layout_height="60dp"
@@ -51,7 +65,7 @@
             android:padding="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/layoutImage" />
+            app:layout_constraintTop_toBottomOf="@id/icNo" />
 
         <EditText
             android:id="@+id/email"

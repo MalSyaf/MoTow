@@ -81,12 +81,14 @@ public class SignUpActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         FirebaseUser user = fAuth.getCurrentUser();
                         Toast.makeText(SignUpActivity.this, "Account created", Toast.LENGTH_SHORT).show();
+                        assert user != null;
                         DocumentReference df = fStore.collection("Users").document(user.getUid());
                         HashMap<String, Object> userInfo = new HashMap<>();
 
                         if (binding.radioRider.isChecked()) {
                             userInfo.put("userId", fAuth.getUid());
                             userInfo.put("isRider", "1");
+                            userInfo.put("idNum", binding.icNo.getText().toString());
                             userInfo.put("name", binding.fullName.getText().toString());
                             userInfo.put("email", binding.email.getText().toString());
                             userInfo.put("contact", binding.contact.getText().toString());
@@ -96,13 +98,15 @@ public class SignUpActivity extends AppCompatActivity {
                             userInfo.put("longitude", null);
                             userInfo.put("latitude", null);
                             userInfo.put("isVerified", null);
+                            userInfo.put("isRejected", null);
 
-                            Intent intent = new Intent(getApplicationContext(), RiderActivity.class);
+                            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                             startActivity(intent);
                         }
                         if (binding.radioTower.isChecked()) {
                             userInfo.put("userId", fAuth.getUid());
                             userInfo.put("isTower", "1");
+                            userInfo.put("idNum", binding.icNo.getText().toString());
                             userInfo.put("name", binding.fullName.getText().toString());
                             userInfo.put("email", binding.email.getText().toString());
                             userInfo.put("contact", binding.contact.getText().toString());
@@ -116,8 +120,9 @@ public class SignUpActivity extends AppCompatActivity {
                             userInfo.put("latitude", null);
                             userInfo.put("status", "offline");
                             userInfo.put("isVerified", null);
+                            userInfo.put("isRejected", null);
 
-                            Intent intent = new Intent(getApplicationContext(), TowerActivity.class);
+                            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                             startActivity(intent);
                         }
 
@@ -184,6 +189,9 @@ public class SignUpActivity extends AppCompatActivity {
     private Boolean isValidSignUpDetails() {
         if (encodedImage == null) {
             showToast("Upload profile image");
+            return false;
+        } else if (binding.icNo.getText().toString().trim().isEmpty()) {
+            showToast("Enter identification number");
             return false;
         } else if (binding.fullName.getText().toString().trim().isEmpty()) {
             showToast("Enter full name");

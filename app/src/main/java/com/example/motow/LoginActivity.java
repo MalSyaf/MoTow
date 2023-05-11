@@ -67,7 +67,6 @@ public class LoginActivity extends AppCompatActivity {
         fAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        Toast.makeText(LoginActivity.this, "Login successful.", Toast.LENGTH_SHORT).show();
                         checkUserAccessLevel(Objects.requireNonNull(task.getResult().getUser()).getUid());
                     } else {
                         loading(false);
@@ -104,32 +103,24 @@ public class LoginActivity extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(), AdminActivity.class);
                 startActivity(intent);
                 finish();
-            }
-            if (documentSnapshot.getString("isRider") != null) {
+            } else if (documentSnapshot.getString("isRider") != null && documentSnapshot.getString("isVerified") != null) {
                 // User is a rider
-                /*db.collection(Constants.KEY_COLLECTION_USERS)
-                        .whereEqualTo(Constants.KEY_EMAIL, binding.loginEmail.getText().toString())
-                        .whereEqualTo(Constants.KEY_PASSWORD, binding.loginPassword.getText().toString())
-                        .whereEqualTo("isRider", "1")
-                        .get()
-                        .addOnCompleteListener(task -> {
-                            if(task.isSuccessful() && task.getResult() != null && task.getResult().getDocuments().size() > 0) {
-                                DocumentSnapshot dfSnapshot = task.getResult().getDocuments().get(0);
-                                preferenceManager.putBoolean(Constants.KEY_IS_SIGNED_IN, true);
-                                preferenceManager.putString(Constants.KEY_USER_ID, dfSnapshot.getId());
-                                preferenceManager.putString(Constants.KEY_NAME, dfSnapshot.getString(Constants.KEY_NAME));
-                                preferenceManager.putString(Constants.KEY_IMAGE, dfSnapshot.getString(Constants.KEY_IMAGE));
-                            }
-                        });*/
+                Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(getApplicationContext(), RiderActivity.class);
                 startActivity(intent);
                 finish();
-            }
-            if (documentSnapshot.getString("isTower") != null) {
+            } else if (documentSnapshot.getString("isTower") != null && documentSnapshot.getString("isVerified") != null) {
                 // User is a tower
+                Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(getApplicationContext(), TowerActivity.class);
                 startActivity(intent);
                 finish();
+            } else if (documentSnapshot.getString("isRejected") != null) {
+                loading(false);
+                Toast.makeText(LoginActivity.this, "Your account registration has been rejected", Toast.LENGTH_SHORT).show();
+            } else {
+                loading(false);
+                Toast.makeText(LoginActivity.this, "Account has not yet verified", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -141,11 +132,11 @@ public class LoginActivity extends AppCompatActivity {
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
             DocumentReference df = FirebaseFirestore.getInstance().collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid());
             df.get().addOnSuccessListener(documentSnapshot -> {
-                if (documentSnapshot.getString("isRider") != null) {
+                if (documentSnapshot.getString("isRider") != null && documentSnapshot.getString("isVerified") != null) {
                     startActivity(new Intent(getApplicationContext(), RiderActivity.class));
                     finish();
                 }
-                if (documentSnapshot.getString("isTower") != null) {
+                if (documentSnapshot.getString("isTower") != null && documentSnapshot.getString("isVerified") != null) {
                     startActivity(new Intent(getApplicationContext(), TowerActivity.class));
                     finish();
                 }

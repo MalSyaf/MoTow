@@ -21,7 +21,19 @@
         android:theme="@style/Theme.MoTow"
         tools:targetApi="31">
         <activity
-            android:name=".admin.UsersActivity"
+            android:name=".admin.adminprocesses.AdminProcessDetails"
+            android:exported="false" />
+        <activity
+            android:name=".admin.adminvehicles.AdminVehicleDetailsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".admin.adminprocesses.AdminProcessActivity"
+            android:exported="false" />
+        <activity
+            android:name=".admin.adminvehicles.AdminVehicleActivity"
+            android:exported="false" />
+        <activity
+            android:name=".admin.adminusers.UserVerificationActivity"
             android:exported="false" />
         <activity
             android:name=".admin.AdminActivity"

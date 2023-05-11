@@ -225,9 +225,11 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                 .document(userId)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
-                    LatLng firstCamera = new LatLng(documentSnapshot.getDouble("latitude"), documentSnapshot.getDouble("longitude"));
-                    CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(firstCamera, 15);
-                    mMap.moveCamera(cameraUpdate);
+                    if (documentSnapshot.getDouble("latitude") != null) {
+                        LatLng firstCamera = new LatLng(documentSnapshot.getDouble("latitude"), documentSnapshot.getDouble("longitude"));
+                        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(firstCamera, 15);
+                        mMap.moveCamera(cameraUpdate);
+                    }
                 });
     }
 

@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".admin.adminprocesses.AdminProcessDetails">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@drawable/bottom_nav_base"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/backBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:src="@drawable/baseline_arrow_back_ios_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/infoTextview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Status Information"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:padding="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/topBar">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/statusText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Process"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TableLayout
+                android:id="@+id/statusTable"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_margin="10dp"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginVertical="30dp"
+                android:background="@color/grey_btn"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/statusText">
+
+                <TableRow>
+
+                    <TextView
+                        android:layout_marginHorizontal="1dp"
+                        android:layout_marginTop="1dp"
+                        android:layout_marginBottom="1dp"
+                        android:background="@color/white"
+                        android:gravity="right"
+                        android:padding="8dp"
+                        android:text="Status:"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/processStatus"
+                        android:layout_marginHorizontal="1dp"
+                        android:layout_marginTop="1dp"
+                        android:layout_marginBottom="1dp"
+                        android:layout_weight="1"
+                        android:background="@color/white"
+                        android:gravity="center"
+                        android:padding="8dp" />
+                </TableRow>
+
+                <TableRow>
+
+                    <TextView
+                        android:layout_marginHorizontal="1dp"
+                        android:background="@color/white"
+                        android:gravity="right"
+                        android:padding="8dp"
+                        android:text="@string/date_time"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/processDateTime"
+                        android:layout_marginHorizontal="1dp"
+                        android:layout_marginBottom="1dp"
+                        android:layout_weight="1"
+                        android:background="@color/white"
+                        android:gravity="center"
+                        android:padding="8dp" />
+                </TableRow>
+            </TableLayout>
+
+            <TextView
+                android:id="@+id/operatorText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Operator's Information"
+                android:textSize="20sp"
+                android:layout_marginTop="20dp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/riderTable" />
+
+            <TextView
+                android:id="@+id/riderText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Rider's Information"
+                android:textSize="20sp"
+                android:layout_marginTop="20dp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/statusTable" />
+
+            <TableLayout
+                android:id="@+id/riderTable"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_margin="10dp"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginVertical="30dp"
+                android:background="@color/grey_btn"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/riderText">
+
+                <TableRow>
+
+                    <TextView
+                        android:layout_marginHorizontal="1dp"
+                        android:layout_marginTop="1dp"
+                        android:layout_marginBottom="1dp"
+                        android:background="@color/white"
+                        android:gravity="right"
+                        android:padding="8dp"
+                        android:text="MyKad/Passport:"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/riderIc"
+                        android:layout_marginHorizontal="1dp"
+                        android:layout_marginTop="1dp"
+                        android:layout_marginBottom="1dp"
+                        android:layout_weight="1"
+                        android:background="@color/white"
+                        android:gravity="center"
+                        android:padding="8dp" />
+                </TableRow>
+
+                <TableRow>
+
+                    <TextView
+                        android:layout_marginHorizontal="1dp"
+                        android:background="@color/white"
+                        android:gravity="right"
+                        android:padding="8dp"
+                        android:text="Name:"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/riderName"
+                        android:layout_marginHorizontal="1dp"
+                        android:layout_marginBottom="1dp"
+                        android:layout_weight="1"
+                        android:background="@color/white"
+                        android:gravity="center"
+                        android:padding="8dp" />
+                </TableRow>
+
+                <TableRow>
+
+                    <TextView
+                        android:layout_marginHorizontal="1dp"
+                        android:background="@color/white"
+                        android:gravity="right"
+                        android:padding="8dp"
+                        android:text="Contact:"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/riderContact"
+                        android:layout_marginHorizontal="1dp"
+                        android:layout_marginBottom="1dp"
+                        android:layout_weight="1"
+                        android:background="@color/white"
+                        android:gravity="center"
+                        android:padding="8dp" />
+                </TableRow>
+
+                <TableRow>
+
+                    <TextView
+                        android:layout_marginHorizontal="1dp"
+                        android:background="@color/white"
+                        android:gravity="right"
+                        android:padding="8dp"
+                        android:text="Plate No:"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/riderPlateNo"
+                        android:layout_marginHorizontal="1dp"
+                        android:layout_marginBottom="1dp"
+                        android:layout_weight="1"
+                        android:background="@color/white"
+                        android:gravity="center"
+                        android:padding="8dp" />
+                </TableRow>
+            </TableLayout>
+
+            <TableLayout
+                android:id="@+id/operatorTable"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_margin="10dp"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginVertical="30dp"
+                android:background="@color/grey_btn"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/operatorText">
+
+                <TableRow>
+
+                    <TextView
+                        android:layout_marginHorizontal="1dp"
+                        android:layout_marginTop="1dp"
+                        android:layout_marginBottom="1dp"
+                        android:background="@color/white"
+                        android:gravity="right"
+                        android:padding="8dp"
+                        android:text="MyKad/Passport:"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/operatorIc"
+                        android:layout_marginHorizontal="1dp"
+                        android:layout_marginTop="1dp"
+                        android:layout_marginBottom="1dp"
+                        android:layout_weight="1"
+                        android:background="@color/white"
+                        android:gravity="center"
+                        android:padding="8dp" />
+                </TableRow>
+
+                <TableRow>
+
+                    <TextView
+                        android:layout_marginHorizontal="1dp"
+                        android:background="@color/white"
+                        android:gravity="right"
+                        android:padding="8dp"
+                        android:text="Name:"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/operatorName"
+                        android:layout_marginHorizontal="1dp"
+                        android:layout_marginBottom="1dp"
+                        android:layout_weight="1"
+                        android:background="@color/white"
+                        android:gravity="center"
+                        android:padding="8dp" />
+                </TableRow>
+
+                <TableRow>
+
+                    <TextView
+                        android:layout_marginHorizontal="1dp"
+                        android:background="@color/white"
+                        android:gravity="right"
+                        android:padding="8dp"
+                        android:text="Contact:"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/operatorContact"
+                        android:layout_marginHorizontal="1dp"
+                        android:layout_marginBottom="1dp"
+                        android:layout_weight="1"
+                        android:background="@color/white"
+                        android:gravity="center"
+                        android:padding="8dp" />
+                </TableRow>
+
+                <TableRow>
+
+                    <TextView
+                        android:layout_marginHorizontal="1dp"
+                        android:background="@color/white"
+                        android:gravity="right"
+                        android:padding="8dp"
+                        android:text="Plate No:"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/operatorPlateNo"
+                        android:layout_marginHorizontal="1dp"
+                        android:layout_marginBottom="1dp"
+                        android:layout_weight="1"
+                        android:background="@color/white"
+                        android:gravity="center"
+                        android:padding="8dp" />
+                </TableRow>
+            </TableLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>
