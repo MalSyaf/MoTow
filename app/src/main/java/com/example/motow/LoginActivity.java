@@ -20,11 +20,11 @@ import java.util.Objects;
 
 public class LoginActivity extends AppCompatActivity {
 
+    private ActivityLoginBinding binding;
+
     // Firebase
     private FirebaseAuth fAuth;
     private FirebaseFirestore fStore;
-
-    private ActivityLoginBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,16 +49,6 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void loading(Boolean isLoading) {
-        if (isLoading) {
-            binding.loginButton.setVisibility(View.INVISIBLE);
-            binding.progressBar.setVisibility(View.VISIBLE);
-        } else {
-            binding.loginButton.setVisibility(View.VISIBLE);
-            binding.progressBar.setVisibility(View.INVISIBLE);
-        }
-    }
-
     private void signIn() {
         loading(true);
         String email = binding.loginEmail.getText().toString();
@@ -73,25 +63,6 @@ public class LoginActivity extends AppCompatActivity {
                         Toast.makeText(LoginActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
                     }
                 });
-    }
-
-    private void showToast(String message) {
-        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-    }
-
-    private Boolean isValidSignInDetails() {
-        if (binding.loginEmail.getText().toString().trim().isEmpty()) {
-            showToast("Enter email");
-            return false;
-        } else if (!Patterns.EMAIL_ADDRESS.matcher(binding.loginEmail.getText().toString()).matches()) {
-            showToast("Enter valid email");
-            return false;
-        } else if (binding.loginPassword.getText().toString().trim().isEmpty()) {
-            showToast("Enter password");
-            return false;
-        } else {
-            return true;
-        }
     }
 
     private void checkUserAccessLevel(String uid) {
@@ -145,6 +116,35 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(new Intent(getApplicationContext(), LoginActivity.class));
                 finish();
             });
+        }
+    }
+
+    private Boolean isValidSignInDetails() {
+        if (binding.loginEmail.getText().toString().trim().isEmpty()) {
+            showToast("Enter email");
+            return false;
+        } else if (!Patterns.EMAIL_ADDRESS.matcher(binding.loginEmail.getText().toString()).matches()) {
+            showToast("Enter valid email");
+            return false;
+        } else if (binding.loginPassword.getText().toString().trim().isEmpty()) {
+            showToast("Enter password");
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    private void showToast(String message) {
+        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+    }
+
+    private void loading(Boolean isLoading) {
+        if (isLoading) {
+            binding.loginButton.setVisibility(View.INVISIBLE);
+            binding.progressBar.setVisibility(View.VISIBLE);
+        } else {
+            binding.loginButton.setVisibility(View.VISIBLE);
+            binding.progressBar.setVisibility(View.INVISIBLE);
         }
     }
 }

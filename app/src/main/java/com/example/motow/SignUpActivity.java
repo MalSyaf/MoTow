@@ -255,7 +255,7 @@ public class SignUpActivity extends AppCompatActivity {
             showToast("Upload license image");
             return false;
         } else if (binding.radioOperator.isChecked()) {
-            if(binding.companyName.getText().toString().trim().isEmpty()) {
+            if (binding.companyName.getText().toString().trim().isEmpty()) {
                 showToast("Enter company's name");
                 return false;
             } else if (binding.companyRegNo.getText().toString().trim().isEmpty()) {

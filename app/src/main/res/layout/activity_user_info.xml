@@ -29,7 +29,8 @@
                 android:src="@drawable/baseline_arrow_back_ios_24"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="ContentDescription,RtlHardcoded" />
 
             <TextView
                 android:id="@+id/infoTextview"
@@ -42,7 +43,8 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="HardcodedText" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!-- Name -->
@@ -61,7 +63,8 @@
                 android:layout_marginRight="15dp"
                 android:text="Name"
                 android:textSize="20sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                tools:ignore="HardcodedText,RtlHardcoded" />
 
             <TextView
                 android:id="@+id/name"
@@ -71,7 +74,8 @@
                 android:layout_centerVertical="true"
                 android:layout_marginRight="20dp"
                 android:text="User Name"
-                android:textSize="20sp" />
+                android:textSize="20sp"
+                tools:ignore="HardcodedText,RtlHardcoded" />
         </RelativeLayout>
 
         <!-- Email -->
@@ -90,7 +94,8 @@
                 android:layout_marginRight="15dp"
                 android:text="Email"
                 android:textSize="20sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                tools:ignore="HardcodedText,RtlHardcoded" />
 
             <TextView
                 android:id="@+id/email"
@@ -100,7 +105,8 @@
                 android:layout_centerVertical="true"
                 android:layout_marginRight="20dp"
                 android:text="User Email"
-                android:textSize="20sp" />
+                android:textSize="20sp"
+                tools:ignore="HardcodedText,RtlHardcoded" />
         </RelativeLayout>
 
         <!-- Phone Number -->
@@ -119,7 +125,8 @@
                 android:layout_marginRight="15dp"
                 android:text="Phone"
                 android:textSize="20sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                tools:ignore="HardcodedText,RtlHardcoded" />
 
             <TextView
                 android:id="@+id/phone_no"
@@ -129,7 +136,8 @@
                 android:layout_centerVertical="true"
                 android:layout_marginRight="20dp"
                 android:text="User Phone"
-                android:textSize="20sp" />
+                android:textSize="20sp"
+                tools:ignore="HardcodedText,RtlHardcoded" />
         </RelativeLayout>
     </LinearLayout>
 
@@ -153,7 +161,8 @@
             android:layout_marginRight="15dp"
             android:text="Company"
             android:textSize="20sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            tools:ignore="HardcodedText,RtlHardcoded" />
 
         <TextView
             android:id="@+id/company"
@@ -164,7 +173,8 @@
             android:layout_marginRight="20dp"
             android:text="Register Company"
             android:textColor="@color/red"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            tools:ignore="HardcodedText,RtlHardcoded" />
     </RelativeLayout>
 
     <Button
@@ -176,7 +186,8 @@
         android:text="Manage Info"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="HardcodedText" />
 
     <!-- Edit Info -->
     <EditText
@@ -192,7 +203,8 @@
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cancel_btn" />
+        app:layout_constraintTop_toBottomOf="@+id/cancel_btn"
+        tools:ignore="Autofill,HardcodedText,TextFields" />
 
     <EditText
         android:id="@+id/edit_email"
@@ -208,7 +220,8 @@
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edit_name" />
+        app:layout_constraintTop_toBottomOf="@+id/edit_name"
+        tools:ignore="Autofill,Deprecated,HardcodedText,TextFields" />
 
     <EditText
         android:id="@+id/edit_phone"
@@ -223,7 +236,8 @@
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edit_email" />
+        app:layout_constraintTop_toBottomOf="@+id/edit_email"
+        tools:ignore="Autofill,HardcodedText,TextFields" />
 
     <EditText
         android:id="@+id/edit_company"
@@ -238,7 +252,8 @@
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/edit_phone" />
+        app:layout_constraintTop_toBottomOf="@id/edit_phone"
+        tools:ignore="Autofill,HardcodedText,TextFields" />
 
     <EditText
         android:id="@+id/edit_regnum"
@@ -253,7 +268,8 @@
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edit_company" />
+        app:layout_constraintTop_toBottomOf="@+id/edit_company"
+        tools:ignore="Autofill,HardcodedText,TextFields" />
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -275,7 +291,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/licenseText"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="HardcodedText" />
 
         <TextView
             android:id="@+id/licenseText"
@@ -285,7 +302,8 @@
             android:text="License:"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="HardcodedText,RtlHardcoded" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <Button
@@ -300,7 +318,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="HardcodedText,RtlHardcoded" />
 
     <Button
         android:id="@+id/cancel_btn"
@@ -314,5 +333,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="HardcodedText,RtlHardcoded" />
 </androidx.constraintlayout.widget.ConstraintLayout>

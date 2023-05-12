@@ -13,7 +13,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <ImageView
             android:layout_width="200dp"
@@ -22,7 +22,8 @@
             android:background="@drawable/logo"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription" />
 
         <EditText
             android:id="@+id/loginEmail"
@@ -37,7 +38,8 @@
             android:padding="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="Autofill,HardcodedText,RtlHardcoded,TextFields,VisualLintTextFieldSize" />
 
         <EditText
             android:id="@+id/loginPassword"
@@ -45,14 +47,15 @@
             android:layout_height="60dp"
             android:layout_marginTop="10dp"
             android:background="@drawable/edit_text_borders"
-            android:drawableLeft="@drawable/login_pass"
+            android:drawableStart="@drawable/login_pass"
             android:drawablePadding="8dp"
             android:hint="Password"
             android:inputType="textPassword"
             android:padding="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/loginEmail" />
+            app:layout_constraintTop_toBottomOf="@id/loginEmail"
+            tools:ignore="Autofill,HardcodedText,VisualLintTextFieldSize" />
 
         <FrameLayout
             android:id="@+id/loginLayout"
@@ -73,7 +76,8 @@
                 android:imeOptions="actionDone"
                 android:text="Login"
                 android:textSize="18sp"
-                app:cornerRadius="30dp" />
+                app:cornerRadius="30dp"
+                tools:ignore="HardcodedText,VisualLintButtonSize" />
 
             <ProgressBar
                 android:id="@+id/progressBar"
@@ -95,6 +99,7 @@
             android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/loginLayout" />
+            app:layout_constraintTop_toBottomOf="@id/loginLayout"
+            tools:ignore="HardcodedText" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
