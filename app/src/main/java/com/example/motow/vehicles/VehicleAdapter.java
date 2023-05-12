@@ -72,7 +72,7 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.VehicleV
                         if (documentSnapshot.getString("isRider") != null) {
                             binding.vehicleImage.setImageResource(R.drawable.sportbike);
                         }
-                        if (documentSnapshot.getString("isTower") != null) {
+                        if (documentSnapshot.getString("isOperator") != null) {
                             binding.vehicleImage.setImageResource(R.drawable.main);
                         }
                     });

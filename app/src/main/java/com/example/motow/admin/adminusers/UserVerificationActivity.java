@@ -57,6 +57,47 @@ public class UserVerificationActivity extends AppCompatActivity {
                 rejectUser());
     }
 
+    private void loadUserDetails(Users users) {
+        fStore.collection("Users")
+                .document(users.userId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    binding.name.setText(documentSnapshot.getString("name"));
+                    // Profile image
+                    byte[] pfpImage = Base64.decode(documentSnapshot.getString("pfp"), Base64.DEFAULT);
+                    Bitmap pfp = BitmapFactory.decodeByteArray(pfpImage, 0, pfpImage.length);
+                    binding.profileImage.setImageBitmap(pfp);
+                    if (documentSnapshot.getString("isRider") != null) {
+                        binding.accType.setText("Rider");
+                    }
+                    if (documentSnapshot.getString("isOperator") != null) {
+                        binding.accType.setText("Operator");
+                        binding.companyName.setText(documentSnapshot.getString("companyName"));
+                        binding.companyRegNo.setText(documentSnapshot.getString("companyRegNum"));
+                        // License image
+                        byte[] licenseImage = Base64.decode(documentSnapshot.getString("license"), Base64.DEFAULT);
+                        Bitmap license = BitmapFactory.decodeByteArray(licenseImage, 0, licenseImage.length);
+                        binding.licenseImage.setImageBitmap(license);
+                    }
+                    binding.idNum.setText(documentSnapshot.getString("idNum"));
+                    binding.email.setText(documentSnapshot.getString("email"));
+                    binding.contact.setText(documentSnapshot.getString("contact"));
+                    // IC image
+                    byte[] icImage = Base64.decode(documentSnapshot.getString("ic"), Base64.DEFAULT);
+                    Bitmap ic = BitmapFactory.decodeByteArray(icImage, 0, icImage.length);
+                    binding.icImage.setImageBitmap(ic);
+                    if (documentSnapshot.getString("isVerified") != null) {
+                        binding.verifyButton.setVisibility(View.GONE);
+                        binding.rejectButton.setVisibility(View.GONE);
+                    }
+                    if (documentSnapshot.getString("delRequest") != null) {
+                        binding.verifyButton.setVisibility(View.GONE);
+                        binding.rejectButton.setVisibility(View.GONE);
+                        binding.deleteBtn.setVisibility(View.VISIBLE);
+                    }
+                });
+    }
+
     private void verifyUser() {
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
         alert.setTitle("Are you sure?");
@@ -93,47 +134,5 @@ public class UserVerificationActivity extends AppCompatActivity {
         }).setNegativeButton("NO", (dialogInterface, i) ->
                 Toast.makeText(this, "Rejection unsuccessful", Toast.LENGTH_SHORT).show());
         alert.create().show();
-    }
-
-    private void loadUserDetails(Users users) {
-        fStore.collection("Users")
-                .document(users.userId)
-                .get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    binding.name.setText(documentSnapshot.getString("name"));
-                    // Profile image
-                    byte[] pfpImage = Base64.decode(documentSnapshot.getString("image"), Base64.DEFAULT);
-                    Bitmap pfp = BitmapFactory.decodeByteArray(pfpImage, 0, pfpImage.length);
-                    binding.profileImage.setImageBitmap(pfp);
-                    if (documentSnapshot.getString("isRider") != null) {
-                        binding.accType.setText("Rider");
-                    }
-                    if (documentSnapshot.getString("isTower") != null) {
-                        binding.accType.setText("Operator");
-                        binding.companyName.setText(documentSnapshot.getString("companyName"));
-                        binding.companyRegNo.setText(documentSnapshot.getString("companyRegNum"));
-                        if (documentSnapshot.getString("providerType").equals("Private")) {
-                            binding.providerType.setText("Private");
-                        }
-                        if (documentSnapshot.getString("providerType").equals("Company")) {
-                            binding.providerType.setText("Company");
-                        }
-                        // License image
-                        byte[] licenseImage = Base64.decode(documentSnapshot.getString("license"), Base64.DEFAULT);
-                        Bitmap license = BitmapFactory.decodeByteArray(licenseImage, 0, licenseImage.length);
-                        binding.licenseImage.setImageBitmap(license);
-                    }
-                    binding.idNum.setText(documentSnapshot.getString("idNum"));
-                    binding.email.setText(documentSnapshot.getString("email"));
-                    binding.contact.setText(documentSnapshot.getString("contact"));
-                    // IC image
-                    byte[] icImage = Base64.decode(documentSnapshot.getString("ic"), Base64.DEFAULT);
-                    Bitmap ic = BitmapFactory.decodeByteArray(icImage, 0, icImage.length);
-                    binding.icImage.setImageBitmap(ic);
-                    if (documentSnapshot.getString("isVerified") != null) {
-                        binding.verifyButton.setVisibility(View.GONE);
-                        binding.rejectButton.setVisibility(View.GONE);
-                    }
-                });
     }
 }

@@ -11,8 +11,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.motow.databinding.ActivityManageVehicleBinding;
+import com.example.motow.operator.OperatorManageActivity;
 import com.example.motow.rider.RiderManageActivity;
-import com.example.motow.tower.TowerManageActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
@@ -62,9 +62,9 @@ public class ManageVehicleActivity extends AppCompatActivity implements VehicleL
                     startActivity(intent);
                     finish();
                 }
-                if (documentSnapshot.getString("isTower") != null) {
+                if (documentSnapshot.getString("isOperator") != null) {
                     // user is a rider
-                    Intent intent = new Intent(getApplicationContext(), TowerManageActivity.class);
+                    Intent intent = new Intent(getApplicationContext(), OperatorManageActivity.class);
                     startActivity(intent);
                     finish();
                 }

@@ -41,7 +41,7 @@
         </LinearLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/verifylayout"
+            android:id="@+id/usersLayout"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -50,41 +50,41 @@
             app:layout_constraintTop_toBottomOf="@id/layoutToolbar">
 
             <TextView
-                android:id="@+id/verifyHeader"
+                android:id="@+id/usersHeader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="25dp"
-                android:text="Verification"
+                android:text="Users"
                 android:textSize="20sp"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toTopOf="@id/verifyRecycler"
+                app:layout_constraintBottom_toTopOf="@id/usersRecycler"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <SearchView
-                android:id="@+id/verifySearch"
+                android:id="@+id/usersSearch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="220dp"
+                android:layout_marginStart="260dp"
                 android:layout_marginTop="20dp"
-                android:layout_marginEnd="20dp"
+                android:layout_marginEnd="25dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/verifyHeader"
+                app:layout_constraintStart_toEndOf="@id/usersHeader"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/verifyEmpty"
+                android:id="@+id/emptyUsersText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="No Request"
+                android:text="No Users"
                 android:textSize="15sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/verifyHeader" />
+                app:layout_constraintTop_toBottomOf="@id/usersHeader" />
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/verifyRecycler"
+                android:id="@+id/usersRecycler"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_marginStart="20dp"
@@ -93,7 +93,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/verifyHeader" />
+                app:layout_constraintTop_toBottomOf="@id/usersHeader" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 

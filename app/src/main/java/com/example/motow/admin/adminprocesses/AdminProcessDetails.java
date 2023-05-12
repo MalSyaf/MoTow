@@ -51,7 +51,7 @@ public class AdminProcessDetails extends AppCompatActivity {
                                binding.riderContact.setText(riderSnapshot.getString("contact"));
                            });
                     db.collection("Users")
-                            .document(documentSnapshot.getString("towerId"))
+                            .document(documentSnapshot.getString("operatorId"))
                             .get()
                             .addOnSuccessListener(operatorSnapshot -> {
                                 binding.operatorIc.setText(operatorSnapshot.getString("idNum"));
@@ -65,7 +65,7 @@ public class AdminProcessDetails extends AppCompatActivity {
                                 binding.riderPlateNo.setText(riderVehicle.getString("plateNumber"));
                             });
                     db.collection("Vehicles")
-                            .document(documentSnapshot.getString("towerVehicle"))
+                            .document(documentSnapshot.getString("operatorVehicle"))
                             .get()
                             .addOnSuccessListener(operatorSnapshot -> {
                                binding.operatorPlateNo.setText(operatorSnapshot.getString("plateNumber"));

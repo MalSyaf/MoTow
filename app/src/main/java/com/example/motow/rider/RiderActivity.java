@@ -104,9 +104,9 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
     private List<Chats> chatMessages;
     private ChatsAdapter chatsAdapter;
 
-    // Tower
-    private String towerId, tCurrentVehicle, towerVehicle;
-    private LatLng towerLocation;
+    // operator
+    private String operatorId, tCurrentVehicle, operatorVehicle;
+    private LatLng operatorLocation;
     private Double tLatitude, tLongitude;
 
     private static final int REQUEST_CALL = 1;
@@ -239,7 +239,7 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
                     binding.userName.setText("Hi, " + documentSnapshot.getString("name") + "!");
-                    byte[] bytes = Base64.decode(documentSnapshot.getString("image"), Base64.DEFAULT);
+                    byte[] bytes = Base64.decode(documentSnapshot.getString("pfp"), Base64.DEFAULT);
                     Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                     binding.welcomePfp.setImageBitmap(bitmap);
                 });
@@ -267,14 +267,14 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
         binding.chatButton.setOnClickListener(v -> {
             binding.chatLayout.setVisibility(View.VISIBLE);
             binding.chatButton.setVisibility(View.GONE);
-            binding.towerBar.setVisibility(View.GONE);
+            binding.operatorBar.setVisibility(View.GONE);
             listenMessages();
             loadReceiverName();
         });
         binding.chatBackBtn.setOnClickListener(v -> {
             binding.chatLayout.setVisibility(View.GONE);
             binding.chatButton.setVisibility(View.VISIBLE);
-            binding.towerBar.setVisibility(View.VISIBLE);
+            binding.operatorBar.setVisibility(View.VISIBLE);
         });
         binding.callBtn.setOnClickListener(v ->
                 makePhoneCall());
@@ -300,22 +300,22 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
             finish();
         });
         binding.okBtn.setOnClickListener(view -> {
-            binding.towerBar.setVisibility(View.VISIBLE);
-            binding.towerContainer.setVisibility(View.GONE);
-            changeTowerStatus();
+            binding.operatorBar.setVisibility(View.VISIBLE);
+            binding.operatorContainer.setVisibility(View.GONE);
+            changeoperatorStatus();
         });
         binding.cancelBtn.setOnClickListener(view -> {
             binding.searchText.setVisibility(View.GONE);
             binding.cancelBtn.setVisibility(View.GONE);
             binding.requestBtn.setVisibility(View.VISIBLE);
         });
-        binding.towerBar.setOnClickListener(view -> {
-            binding.towerContainer.setVisibility(View.VISIBLE);
-            binding.towerBar.setVisibility(View.GONE);
-            binding.towerBarStatus.setText("Assistance is on the way");
+        binding.operatorBar.setOnClickListener(view -> {
+            binding.operatorContainer.setVisibility(View.VISIBLE);
+            binding.operatorBar.setVisibility(View.GONE);
+            binding.operatorBarStatus.setText("Assistance is on the way");
             binding.waiting.setVisibility(View.GONE);
             fStore.collection("Users")
-                    .document(towerId)
+                    .document(operatorId)
                     .get()
                     .addOnSuccessListener(documentSnapshot -> {
                         LatLng firstCamera = new LatLng(documentSnapshot.getDouble("latitude"), documentSnapshot.getDouble("longitude"));
@@ -326,7 +326,7 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
         binding.okCompleteBtn.setOnClickListener(view -> {
             binding.requestBtn.setVisibility(View.VISIBLE);
             binding.completionContainer.setVisibility(View.GONE);
-            towerId = null;
+            operatorId = null;
             deleteRequests();
             changeRiderStatus();
         });
@@ -358,7 +358,7 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
 
     private void deleteRequests() {
         fStore.collection("Processes")
-                .whereEqualTo("towerId", userId)
+                .whereEqualTo("operatorId", userId)
                 .whereEqualTo("processStatus", "rejected")
                 .get()
                 .addOnCompleteListener(task -> {
@@ -371,7 +371,7 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                     }
                 });
         fStore.collection("Processes")
-                .whereEqualTo("towerId", userId)
+                .whereEqualTo("operatorId", userId)
                 .whereEqualTo("processStatus", "requesting")
                 .get()
                 .addOnCompleteListener(task -> {
@@ -393,19 +393,19 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                 .update(status);
     }
 
-    private void changeTowerStatus() {
+    private void changeoperatorStatus() {
         fStore.collection("Processes")
                 .addSnapshotListener((value, error) -> {
                     // Check process towed
                     fStore.collection("Processes")
                             .whereEqualTo("riderId", userId)
-                            .whereEqualTo("towerId", towerId)
+                            .whereEqualTo("operatorId", operatorId)
                             .whereEqualTo("processStatus", "towed")
                             .get()
                             .addOnCompleteListener(task -> {
                                 if (task.isSuccessful()) {
                                     for (QueryDocumentSnapshot document : task.getResult()) {
-                                        binding.towerBarStatus.setText("Vehicle has been towed");
+                                        binding.operatorBarStatus.setText("Vehicle has been towed");
                                     }
                                 }
                             });
@@ -413,14 +413,14 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                     // Check process paid
                     fStore.collection("Processes")
                             .whereEqualTo("riderId", userId)
-                            .whereEqualTo("towerId", towerId)
+                            .whereEqualTo("operatorId", operatorId)
                             .whereEqualTo("processId", processId)
                             .whereEqualTo("processStatus", "paid")
                             .get()
                             .addOnCompleteListener(task -> {
                                 if (task.isSuccessful()) {
                                     for (QueryDocumentSnapshot document : task.getResult()) {
-                                        binding.towerBarStatus.setText("Confirming payment");
+                                        binding.operatorBarStatus.setText("Confirming payment");
                                     }
                                 }
                             });
@@ -428,14 +428,14 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                     // Check process ongoing
                     fStore.collection("Processes")
                             .whereEqualTo("riderId", userId)
-                            .whereEqualTo("towerId", towerId)
+                            .whereEqualTo("operatorId", operatorId)
                             .whereEqualTo("processStatus", "ongoing")
                             .whereEqualTo("processId", processId)
                             .get()
                             .addOnCompleteListener(task -> {
                                 if (task.isSuccessful()) {
                                     for (QueryDocumentSnapshot document : task.getResult()) {
-                                        binding.towerBarStatus.setText("Assistance is on the way");
+                                        binding.operatorBarStatus.setText("Assistance is on the way");
                                     }
                                 }
                             });
@@ -546,7 +546,7 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                         // Check process ongoing
                         fStore.collection("Processes")
                                 .whereEqualTo("riderId", userId)
-                                .whereEqualTo("towerId", towerId)
+                                .whereEqualTo("operatorId", operatorId)
                                 .whereEqualTo("processStatus", "ongoing")
                                 .whereEqualTo("processId", processId)
                                 .get()
@@ -554,11 +554,11 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                                     if (task.isSuccessful()) {
                                         for (QueryDocumentSnapshot document : task.getResult()) {
                                             binding.chatButton.setVisibility(View.VISIBLE);
-                                            // Display tower's detail
-                                            displayTowerInfo(towerId);
-                                            mMap.addMarker(new MarkerOptions().position(towerLocation).title(document.getString("fullName")).icon(BitmapDescriptorFactory.fromResource(R.drawable.tow_truck)));
+                                            // Display operator's detail
+                                            displayoperatorInfo(operatorId);
+                                            mMap.addMarker(new MarkerOptions().position(operatorLocation).title(document.getString("fullName")).icon(BitmapDescriptorFactory.fromResource(R.drawable.tow_truck)));
                                             fStore.collection("Users")
-                                                    .document(towerId)
+                                                    .document(operatorId)
                                                     .get()
                                                     .addOnSuccessListener(documentSnapshot1 -> {
                                                         LatLng firstCamera = new LatLng(documentSnapshot1.getDouble("latitude"), documentSnapshot1.getDouble("longitude"));
@@ -579,14 +579,14 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                         // Check process towed
                         fStore.collection("Processes")
                                 .whereEqualTo("riderId", userId)
-                                .whereEqualTo("towerId", towerId)
+                                .whereEqualTo("operatorId", operatorId)
                                 .whereEqualTo("processStatus", "towed")
                                 .get()
                                 .addOnCompleteListener(task -> {
                                     if (task.isSuccessful()) {
                                         for (QueryDocumentSnapshot document : task.getResult()) {
                                             binding.paymentBtn.setVisibility(View.VISIBLE);
-                                            binding.towerBarStatus.setText("Vehicle has been towed");
+                                            binding.operatorBarStatus.setText("Vehicle has been towed");
                                             notificationTowed();
                                         }
                                     }
@@ -595,7 +595,7 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                         // Check process completed
                         fStore.collection("Processes")
                                 .whereEqualTo("riderId", userId)
-                                .whereEqualTo("towerId", towerId)
+                                .whereEqualTo("operatorId", operatorId)
                                 .whereEqualTo("processId", processId)
                                 .whereEqualTo("processStatus", "completed")
                                 .get()
@@ -604,7 +604,7 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                                         for (QueryDocumentSnapshot document : task.getResult()) {
                                             mMap.clear();
                                             binding.waiting.setVisibility(View.GONE);
-                                            binding.towerBar.setVisibility(View.GONE);
+                                            binding.operatorBar.setVisibility(View.GONE);
                                             binding.chatButton.setVisibility(View.GONE);
 
                                             HashMap<String, Object> status = new HashMap<>();
@@ -621,14 +621,14 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                         // Check process paid
                         fStore.collection("Processes")
                                 .whereEqualTo("riderId", userId)
-                                .whereEqualTo("towerId", towerId)
+                                .whereEqualTo("operatorId", operatorId)
                                 .whereEqualTo("processId", processId)
                                 .whereEqualTo("processStatus", "paid")
                                 .get()
                                 .addOnCompleteListener(task -> {
                                     if (task.isSuccessful()) {
                                         for (QueryDocumentSnapshot document : task.getResult()) {
-                                            binding.towerBarStatus.setText("Confirming payment");
+                                            binding.operatorBarStatus.setText("Confirming payment");
                                             notificationConfirmation();
                                         }
                                     }
@@ -639,7 +639,7 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
 
     private void loadReceiverName() {
         fStore.collection("Users")
-                .document(towerId)
+                .document(operatorId)
                 .get()
                 .addOnSuccessListener(documentSnapshot ->
                         binding.chatName.setText(documentSnapshot.getString("name")));
@@ -650,7 +650,7 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.CALL_PHONE}, REQUEST_CALL);
         } else {
             fStore.collection("Users")
-                    .document(towerId)
+                    .document(operatorId)
                     .get()
                     .addOnSuccessListener(documentSnapshot -> {
                         String contact = documentSnapshot.getString("contact");
@@ -663,7 +663,7 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
     private void sendMessage() {
         HashMap<String, Object> sendMessage = new HashMap<>();
         sendMessage.put("senderId", userId);
-        sendMessage.put("receiverId", towerId);
+        sendMessage.put("receiverId", operatorId);
         sendMessage.put("message", binding.inputMessage.getText().toString());
         sendMessage.put("timestamp", new Date());
         fStore.collection("Chats")
@@ -674,10 +674,10 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
     private void listenMessages() {
         fStore.collection("Chats")
                 .whereEqualTo("senderId", userId)
-                .whereEqualTo("receiverId", towerId)
+                .whereEqualTo("receiverId", operatorId)
                 .addSnapshotListener(eventListener);
         fStore.collection("Chats")
-                .whereEqualTo("senderId", towerId)
+                .whereEqualTo("senderId", operatorId)
                 .whereEqualTo("receiverId", userId)
                 .addSnapshotListener(eventListener);
     }
@@ -727,7 +727,7 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
         fStore.collection("Users")
                 .addSnapshotListener((value, error) ->
                         fStore.collection("Users")
-                                .whereEqualTo("isTower", "1")
+                                .whereEqualTo("isOperator", "1")
                                 .whereEqualTo("status", "online")
                                 .get()
                                 .addOnCompleteListener(task -> {
@@ -737,7 +737,7 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                                         float[] distance = new float[2];
 
                                         Location.distanceBetween(tLatitude, tLongitude, circleOptions.getCenter().latitude, circleOptions.getCenter().longitude, distance);
-                                        // Check if tower's location is within the circle
+                                        // Check if operator's location is within the circle
                                         if (distance[0] > circleOptions.getRadius()) {
                                             // Outside the radius
                                             Toast.makeText(RiderActivity.this, "No assistance currently available in the area.", Toast.LENGTH_SHORT).show();
@@ -746,26 +746,26 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                                             binding.requestBtn.setVisibility(View.VISIBLE);
                                         } else if (distance[0] < circleOptions.getRadius()) {
                                             // Inside the radius
-                                            towerId = null;
-                                            towerId = document.getString("userId");
-                                            towerVehicle = document.getString("currentVehicle");
-                                            // Add tower's marker
+                                            operatorId = null;
+                                            operatorId = document.getString("userId");
+                                            operatorVehicle = document.getString("currentVehicle");
+                                            // Add operator's marker
                                             fStore.collection("Users")
-                                                    .document(towerId)
+                                                    .document(operatorId)
                                                     .addSnapshotListener((value1, error1) -> {
                                                         mMap.clear();
                                                         double tCurrentLatitude = value1.getDouble("latitude");
                                                         double tCurrentLongitude = value1.getDouble("longitude");
-                                                        towerLocation = new LatLng(tCurrentLatitude, tCurrentLongitude);
+                                                        operatorLocation = new LatLng(tCurrentLatitude, tCurrentLongitude);
                                                     });
                                         }
                                     }
                                 }));
-        createProcess(towerId, towerVehicle);
+        createProcess(operatorId, operatorVehicle);
     }
 
-    private void createProcess(String towerId, String towerVehicle) {
-        if (towerId != null) {
+    private void createProcess(String operatorId, String operatorVehicle) {
+        if (operatorId != null) {
 
             fStore.collection("Users")
                     .document(userId)
@@ -775,8 +775,8 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                         Map<String, Object> process = new HashMap<>();
                         process.put("riderId", userId);
                         process.put("riderVehicle", riderVehicle);
-                        process.put("towerId", towerId);
-                        process.put("towerVehicle", towerVehicle);
+                        process.put("operatorId", operatorId);
+                        process.put("operatorVehicle", operatorVehicle);
                         process.put("processStatus", "requesting");
                         process.put("timestamp", new Date());
                         // Add process document in database
@@ -795,7 +795,7 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
 
         fStore.collection("Processes")
                 .whereEqualTo("riderId", userId)
-                .whereEqualTo("towerId", towerId)
+                .whereEqualTo("operatorId", operatorId)
                 .whereEqualTo("processStatus", "requesting")
                 .get()
                 .addOnCompleteListener(task -> {
@@ -811,41 +811,41 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
     private void loadCompletion() {
         binding.completionContainer.setVisibility(View.VISIBLE);
         fStore.collection("Users")
-                .document(towerId)
+                .document(operatorId)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
-                    binding.towerNameComplete.setText(documentSnapshot.getString("name"));
-                    byte[] bytes = Base64.decode(documentSnapshot.getString("image"), Base64.DEFAULT);
+                    binding.operatorNameComplete.setText(documentSnapshot.getString("name"));
+                    byte[] bytes = Base64.decode(documentSnapshot.getString("pfp"), Base64.DEFAULT);
                     Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                    binding.towerPfpComplete.setImageBitmap(bitmap);
+                    binding.operatorPfpComplete.setImageBitmap(bitmap);
                 });
     }
 
-    private void displayTowerInfo(String towerId) {
+    private void displayoperatorInfo(String operatorId) {
         binding.cancelBtn.setVisibility(View.GONE);
         binding.searchText.setVisibility(View.GONE);
-        binding.towerContainer.setVisibility(View.VISIBLE);
+        binding.operatorContainer.setVisibility(View.VISIBLE);
 
-        // Display tower's info
+        // Display operator's info
         fStore.collection("Users")
-                .document(towerId)
+                .document(operatorId)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
-                    binding.towerName.setText(documentSnapshot.getString("name"));
-                    binding.towerType.setText(documentSnapshot.getString("companyName"));
-                    byte[] bytes = Base64.decode(documentSnapshot.getString("image"), Base64.DEFAULT);
+                    binding.operatorName.setText(documentSnapshot.getString("name"));
+                    binding.operatorType.setText(documentSnapshot.getString("companyName"));
+                    byte[] bytes = Base64.decode(documentSnapshot.getString("pfp"), Base64.DEFAULT);
                     Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                    binding.towerBarPfp.setImageBitmap(bitmap);
-                    binding.towerPfp.setImageBitmap(bitmap);
+                    binding.operatorBarPfp.setImageBitmap(bitmap);
+                    binding.operatorPfp.setImageBitmap(bitmap);
 
                     tCurrentVehicle = documentSnapshot.getString("currentVehicle");
-                    // Get tower's current vehicle info
+                    // Get operator's current vehicle info
                     fStore.collection("Vehicles")
                             .document(tCurrentVehicle)
                             .get()
                             .addOnSuccessListener(documentSnapshot1 -> {
-                                binding.towerVehicle.setText(documentSnapshot1.getString("brand") + " " + documentSnapshot1.getString("model") + " (" + documentSnapshot1.getString("color") + ")");
-                                binding.towerPlate.setText(documentSnapshot1.getString("plateNumber"));
+                                binding.operatorVehicle.setText(documentSnapshot1.getString("brand") + " " + documentSnapshot1.getString("model") + " (" + documentSnapshot1.getString("color") + ")");
+                                binding.operatorPlate.setText(documentSnapshot1.getString("plateNumber"));
                             });
                 });
     }
@@ -933,7 +933,7 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
             fStore.collection("Users")
                     .document(userId)
                     .update(updateVehicle);
-            // Find tower
+            // Find operator
             getAssistance();
         });
     }

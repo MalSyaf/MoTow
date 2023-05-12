@@ -10,8 +10,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.motow.admin.AdminActivity;
 import com.example.motow.databinding.ActivityLoginBinding;
+import com.example.motow.operator.OperatorActivity;
 import com.example.motow.rider.RiderActivity;
-import com.example.motow.tower.TowerActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -109,10 +109,10 @@ public class LoginActivity extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(), RiderActivity.class);
                 startActivity(intent);
                 finish();
-            } else if (documentSnapshot.getString("isTower") != null && documentSnapshot.getString("isVerified") != null) {
-                // User is a tower
+            } else if (documentSnapshot.getString("isOperator") != null && documentSnapshot.getString("isVerified") != null) {
+                // User is a operator
                 Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(getApplicationContext(), TowerActivity.class);
+                Intent intent = new Intent(getApplicationContext(), OperatorActivity.class);
                 startActivity(intent);
                 finish();
             } else if (documentSnapshot.getString("isRejected") != null) {
@@ -120,7 +120,7 @@ public class LoginActivity extends AppCompatActivity {
                 Toast.makeText(LoginActivity.this, "Your account registration has been rejected", Toast.LENGTH_SHORT).show();
             } else {
                 loading(false);
-                Toast.makeText(LoginActivity.this, "Account has not yet verified", Toast.LENGTH_SHORT).show();
+                Toast.makeText(LoginActivity.this, "Account has not been verified", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -136,8 +136,8 @@ public class LoginActivity extends AppCompatActivity {
                     startActivity(new Intent(getApplicationContext(), RiderActivity.class));
                     finish();
                 }
-                if (documentSnapshot.getString("isTower") != null && documentSnapshot.getString("isVerified") != null) {
-                    startActivity(new Intent(getApplicationContext(), TowerActivity.class));
+                if (documentSnapshot.getString("isOperator") != null && documentSnapshot.getString("isVerified") != null) {
+                    startActivity(new Intent(getApplicationContext(), OperatorActivity.class));
                     finish();
                 }
             }).addOnFailureListener(e -> {

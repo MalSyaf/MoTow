@@ -47,7 +47,7 @@
             android:background="@drawable/edit_text_borders"
             android:drawableLeft="@drawable/credit_card"
             android:drawablePadding="8dp"
-            android:hint="Mykad/Passport (e.g. 001010010101)"
+            android:hint="Mykad/Passport (e.g. 001010011010)"
             android:padding="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -89,7 +89,7 @@
             android:background="@drawable/edit_text_borders"
             android:drawableLeft="@drawable/login_pass"
             android:drawablePadding="8dp"
-            android:hint="Confirm Password"
+            android:hint="Password"
             android:inputType="textPassword"
             android:padding="8dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -104,7 +104,7 @@
             android:background="@drawable/edit_text_borders"
             android:drawableLeft="@drawable/login_pass"
             android:drawablePadding="8dp"
-            android:hint="Password"
+            android:hint="Confirm Password"
             android:inputType="textPassword"
             android:padding="8dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -125,6 +125,34 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/confirmPassword" />
 
+        <EditText
+            android:id="@+id/companyName"
+            android:layout_width="350dp"
+            android:layout_height="60dp"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/edit_text_borders"
+            android:drawableLeft="@drawable/phone_num"
+            android:drawablePadding="8dp"
+            android:hint="Company Name (For Operator Only)"
+            android:padding="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/contact" />
+
+        <EditText
+            android:id="@+id/companyRegNo"
+            android:layout_width="350dp"
+            android:layout_height="60dp"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/edit_text_borders"
+            android:drawableLeft="@drawable/phone_num"
+            android:drawablePadding="8dp"
+            android:hint="SSM (For Operator Only)"
+            android:padding="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/companyName" />
+
         <RadioGroup
             android:id="@+id/accType"
             android:layout_width="wrap_content"
@@ -133,38 +161,38 @@
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/layoutIc">
-
-            <RadioButton
-                android:id="@+id/radioTower"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:text="Register as tower" />
+            app:layout_constraintTop_toBottomOf="@id/companyRegNo">
 
             <RadioButton
                 android:id="@+id/radioRider"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:text="Register as rider" />
+                android:text="Register as Rider" />
+
+            <RadioButton
+                android:id="@+id/radioOperator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:text="Register as Operator" />
         </RadioGroup>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/layoutIc"
             android:layout_width="350dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/contact">
+            app:layout_constraintTop_toBottomOf="@id/accType">
 
             <Button
                 android:id="@+id/insertIc"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/grey_btn"
-                android:text="Upload Image"
+                android:text="Upload IC"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/textIc"
@@ -181,6 +209,38 @@
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/licenseLayout"
+            android:layout_width="350dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/layoutIc">
+
+            <Button
+                android:id="@+id/licenseImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="60dp"
+                android:backgroundTint="@color/grey_btn"
+                android:text="License"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/licenseText"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/licenseText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:text="License:"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
         <FrameLayout
             android:id="@+id/signupLayout"
             android:layout_width="match_parent"
@@ -188,14 +248,14 @@
             android:animateLayoutChanges="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/accType">
+            app:layout_constraintTop_toBottomOf="@id/licenseLayout">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/signupButton"
                 android:layout_width="350dp"
                 android:layout_height="70dp"
                 android:layout_gravity="center"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="10dp"
                 android:backgroundTint="@color/purple_200"
                 android:text="Sign Up"
                 android:textSize="18sp"
@@ -214,6 +274,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_margin="10dp"
             android:padding="8dp"
             android:text="Already registered? Login"
             android:textColor="@color/purple_500"

@@ -18,8 +18,6 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.motow.databinding.ActivitySignUpBinding;
-import com.example.motow.rider.RiderActivity;
-import com.example.motow.tower.TowerActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -29,15 +27,17 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class SignUpActivity extends AppCompatActivity {
+
+    private ActivitySignUpBinding binding;
 
     // Firebase
     private FirebaseAuth fAuth;
     private FirebaseFirestore fStore;
 
-    private ActivitySignUpBinding binding;
-    private String encodedImage, icImage;
+    private String profileImage, icImage, licenseImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +69,11 @@ public class SignUpActivity extends AppCompatActivity {
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             pickIcImage.launch(intent);
         });
+        binding.licenseImage.setOnClickListener(v -> {
+            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            pickLicenseImage.launch(intent);
+        });
     }
 
     private void signUp() {
@@ -81,8 +86,7 @@ public class SignUpActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         FirebaseUser user = fAuth.getCurrentUser();
                         Toast.makeText(SignUpActivity.this, "Account created", Toast.LENGTH_SHORT).show();
-                        assert user != null;
-                        DocumentReference df = fStore.collection("Users").document(user.getUid());
+                        DocumentReference df = fStore.collection("Users").document(Objects.requireNonNull(user).getUid());
                         HashMap<String, Object> userInfo = new HashMap<>();
 
                         if (binding.radioRider.isChecked()) {
@@ -92,35 +96,41 @@ public class SignUpActivity extends AppCompatActivity {
                             userInfo.put("name", binding.fullName.getText().toString());
                             userInfo.put("email", binding.email.getText().toString());
                             userInfo.put("contact", binding.contact.getText().toString());
-                            userInfo.put("image", encodedImage);
+                            userInfo.put("pfp", profileImage);
                             userInfo.put("ic", icImage);
+                            userInfo.put("license", licenseImage);
                             userInfo.put("currentVehicle", null);
                             userInfo.put("longitude", null);
                             userInfo.put("latitude", null);
+                            // Account requests
                             userInfo.put("isVerified", null);
                             userInfo.put("isRejected", null);
+                            userInfo.put("delRequest", null);
 
                             Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                             startActivity(intent);
                         }
-                        if (binding.radioTower.isChecked()) {
+                        if (binding.radioOperator.isChecked()) {
                             userInfo.put("userId", fAuth.getUid());
-                            userInfo.put("isTower", "1");
+                            userInfo.put("isOperator", "1");
                             userInfo.put("idNum", binding.icNo.getText().toString());
                             userInfo.put("name", binding.fullName.getText().toString());
                             userInfo.put("email", binding.email.getText().toString());
                             userInfo.put("contact", binding.contact.getText().toString());
-                            userInfo.put("image", encodedImage);
+                            userInfo.put("pfp", profileImage);
                             userInfo.put("ic", icImage);
-                            userInfo.put("providerType", null);
-                            userInfo.put("companyName", null);
-                            userInfo.put("companyRegNum", null);
+                            userInfo.put("license", licenseImage);
                             userInfo.put("currentVehicle", null);
                             userInfo.put("longitude", null);
                             userInfo.put("latitude", null);
                             userInfo.put("status", "offline");
+                            // Account requests
                             userInfo.put("isVerified", null);
                             userInfo.put("isRejected", null);
+                            userInfo.put("delRequest", null);
+                            // Company details
+                            userInfo.put("companyName", binding.companyName.getText().toString());
+                            userInfo.put("companyRegNum", binding.companyRegNo.getText().toString());
 
                             Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                             startActivity(intent);
@@ -130,7 +140,7 @@ public class SignUpActivity extends AppCompatActivity {
                     } else {
                         // If sign in fails, display a message to the user.
                         loading(false);
-                        Toast.makeText(SignUpActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(SignUpActivity.this, "Authentication failed", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -156,7 +166,7 @@ public class SignUpActivity extends AppCompatActivity {
                             Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                             binding.profileImage.setImageBitmap(bitmap);
                             binding.pfpText.setVisibility(View.GONE);
-                            encodedImage = encodeImage(bitmap);
+                            profileImage = encodeImage(bitmap);
                         } catch (FileNotFoundException e) {
                             e.printStackTrace();
                         }
@@ -186,8 +196,29 @@ public class SignUpActivity extends AppCompatActivity {
             }
     );
 
+    @SuppressLint("SetTextI18n")
+    private final ActivityResultLauncher<Intent> pickLicenseImage = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == RESULT_OK) {
+                    if (result.getData() != null) {
+                        Uri imageUri = result.getData().getData();
+                        try {
+                            InputStream inputStream = getContentResolver().openInputStream(imageUri);
+                            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                            licenseImage = encodeImage(bitmap);
+                            binding.licenseImage.setText("Uploaded");
+                            binding.licenseImage.setBackgroundColor(Color.GREEN);
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+    );
+
     private Boolean isValidSignUpDetails() {
-        if (encodedImage == null) {
+        if (profileImage == null) {
             showToast("Upload profile image");
             return false;
         } else if (binding.icNo.getText().toString().trim().isEmpty()) {
@@ -214,12 +245,24 @@ public class SignUpActivity extends AppCompatActivity {
         } else if (binding.contact.getText().toString().trim().isEmpty()) {
             showToast("Enter phone number");
             return false;
+        } else if (!(binding.radioRider.isChecked() || binding.radioOperator.isChecked())) {
+            showToast("Choose account type");
+            return false;
         } else if (icImage == null) {
             showToast("Upload identification image");
             return false;
-        } else if (!(binding.radioRider.isChecked() || binding.radioTower.isChecked())) {
-            showToast("Choose account type");
+        } else if (licenseImage == null) {
+            showToast("Upload license image");
             return false;
+        } else if (binding.radioOperator.isChecked()) {
+            if(binding.companyName.getText().toString().trim().isEmpty()) {
+                showToast("Enter company's name");
+                return false;
+            } else if (binding.companyRegNo.getText().toString().trim().isEmpty()) {
+                showToast("Enter company's registration number");
+                return false;
+            }
+            return true;
         } else {
             return true;
         }

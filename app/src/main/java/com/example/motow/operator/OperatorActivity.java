@@ -1,6 +1,15 @@
-package com.example.motow.tower;
+package com.example.motow.operator;
 
 import static com.example.motow.utilities.App.CHANNEL_1_ID;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
 import android.app.ActivityManager;
@@ -22,19 +31,10 @@ import android.util.Base64;
 import android.view.View;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.core.app.ActivityCompat;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentActivity;
-
 import com.example.motow.R;
 import com.example.motow.chats.Chats;
 import com.example.motow.chats.ChatsAdapter;
-import com.example.motow.databinding.ActivityTowerBinding;
+import com.example.motow.databinding.ActivityOperatorBinding;
 import com.example.motow.utilities.ForegroundService;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -64,9 +64,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public class TowerActivity extends FragmentActivity implements OnMapReadyCallback {
+public class OperatorActivity extends FragmentActivity implements OnMapReadyCallback {
 
-    private ActivityTowerBinding binding;
+
+    private ActivityOperatorBinding binding;
 
     // Google Map
     private GoogleMap mMap;
@@ -89,7 +90,7 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityTowerBinding.inflate(getLayoutInflater());
+        binding = ActivityOperatorBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         if (!foreGroundServiceRunning()) {
             Intent serviceIntent = new Intent(this, ForegroundService.class);
@@ -110,7 +111,6 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
 
         supportMapFragment();
         loadUserDetails();
-        deleteRequests();
         createNotificationChannel();
         setListeners();
     }
@@ -184,7 +184,7 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                 .document(userId)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
-                    if(documentSnapshot.getDouble("latitude") != null) {
+                    if (documentSnapshot.getDouble("latitude") != null) {
                         LatLng firstCamera = new LatLng(documentSnapshot.getDouble("latitude"), documentSnapshot.getDouble("longitude"));
                         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(firstCamera, 15);
                         mMap.moveCamera(cameraUpdate);
@@ -198,38 +198,9 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
                     binding.userName.setText("Hi, " + documentSnapshot.getString("name") + "!");
-                    byte[] bytes = Base64.decode(documentSnapshot.getString("image"), Base64.DEFAULT);
+                    byte[] bytes = Base64.decode(documentSnapshot.getString("pfp"), Base64.DEFAULT);
                     Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                     binding.welcomePfp.setImageBitmap(bitmap);
-                });
-    }
-
-    private void deleteRequests() {
-        fStore.collection("Processes")
-                .whereEqualTo("towerId", userId)
-                .whereEqualTo("processStatus", "rejected")
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            fStore.collection("Processes")
-                                    .document(document.getId())
-                                    .delete();
-                        }
-                    }
-                });
-        fStore.collection("Processes")
-                .whereEqualTo("towerId", userId)
-                .whereEqualTo("processStatus", "requesting")
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            fStore.collection("Processes")
-                                    .document(document.getId())
-                                    .delete();
-                        }
-                    }
                 });
     }
 
@@ -259,7 +230,7 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                                 alert.setMessage("You are not allowed to manage account while online");
                                 alert.create().show();
                             } else {
-                                startActivity(new Intent(getApplicationContext(), TowerManageActivity.class));
+                                startActivity(new Intent(getApplicationContext(), OperatorManageActivity.class));
                                 finish();
                             }
                         }));
@@ -303,7 +274,6 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
             binding.rejectBtn.setVisibility(View.VISIBLE);
             binding.riderContainer.setVisibility(View.GONE);
             binding.textStatus.setText("Assistance Needed!");
-            deleteRequests();
         });
 
         binding.okBtn.setOnClickListener(view -> {
@@ -383,7 +353,7 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
 
                             fStore.collection("Processes")
                                     .whereEqualTo("riderId", riderId)
-                                    .whereEqualTo("towerId", userId)
+                                    .whereEqualTo("operatorId", userId)
                                     .whereEqualTo("processStatus", "paid")
                                     .whereEqualTo("processId", currentProcessId)
                                     .get()
@@ -399,7 +369,7 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
 
                             // Find request
                             fStore.collection("Processes")
-                                    .whereEqualTo("towerId", userId)
+                                    .whereEqualTo("operatorId", userId)
                                     .whereEqualTo("riderId", riderId)
                                     .whereEqualTo("processStatus", "requesting")
                                     .get()
@@ -420,7 +390,7 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                                                             .get()
                                                             .addOnSuccessListener(documentSnapshot -> {
                                                                 binding.riderName.setText(documentSnapshot.getString("name"));
-                                                                byte[] bytes = Base64.decode(documentSnapshot.getString("image"), Base64.DEFAULT);
+                                                                byte[] bytes = Base64.decode(documentSnapshot.getString("pfp"), Base64.DEFAULT);
                                                                 Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                                                                 binding.riderPfp.setImageBitmap(bitmap);
                                                                 binding.riderBarPfp.setImageBitmap(bitmap);
@@ -465,7 +435,7 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                                                                 .document(currentProcessId)
                                                                 .update(updateStatus)
                                                                 .addOnSuccessListener(unused ->
-                                                                        Toast.makeText(TowerActivity.this, "Request has been accepted", Toast.LENGTH_SHORT).show());
+                                                                        Toast.makeText(OperatorActivity.this, "Request has been accepted", Toast.LENGTH_SHORT).show());
 
                                                         fStore.collection("Vehicles")
                                                                 .document(riderCurrentVehicle)
@@ -503,7 +473,7 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                                                                 .document(currentProcessId)
                                                                 .update(updateStatus)
                                                                 .addOnSuccessListener(unused ->
-                                                                        Toast.makeText(TowerActivity.this, "Request has been rejected", Toast.LENGTH_SHORT).show());
+                                                                        Toast.makeText(OperatorActivity.this, "Request has been rejected", Toast.LENGTH_SHORT).show());
 
                                                         HashMap<String, Object> userStatus = new HashMap<>();
                                                         userStatus.put("status", "offline");
@@ -522,7 +492,7 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                                                                 .update(updateStatus)
                                                                 .addOnSuccessListener(unused -> {
                                                                     binding.waitingText.setVisibility(View.VISIBLE);
-                                                                    Toast.makeText(TowerActivity.this, "Vehicle has been towed", Toast.LENGTH_SHORT).show();
+                                                                    Toast.makeText(OperatorActivity.this, "Vehicle has been towed", Toast.LENGTH_SHORT).show();
                                                                 });
                                                     });
 
@@ -550,7 +520,7 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                                                                 .document(currentProcessId)
                                                                 .update(updateStatus)
                                                                 .addOnSuccessListener(unused ->
-                                                                        Toast.makeText(TowerActivity.this, "Process has been completed", Toast.LENGTH_SHORT).show());
+                                                                        Toast.makeText(OperatorActivity.this, "Process has been completed", Toast.LENGTH_SHORT).show());
                                                     });
                                                 }
                                             }
@@ -662,7 +632,7 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                 .document(userId)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.getString("companyRegNum") != null & documentSnapshot.getString("currentVehicle") != null & documentSnapshot.getString("providerType") != null) {
+                    if (documentSnapshot.getString("companyRegNum") != null & documentSnapshot.getString("currentVehicle") != null) {
                         Map<String, Object> infoUpdate = new HashMap<>();
                         infoUpdate.put("status", "online");
                         fStore.collection("Users")
@@ -671,10 +641,10 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                                 .addOnSuccessListener(unused -> {
                                     binding.offlineBtn.setVisibility(View.INVISIBLE);
                                     binding.onlineBtn.setVisibility(View.VISIBLE);
-                                    Toast.makeText(TowerActivity.this, "You are online!", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(OperatorActivity.this, "You are online!", Toast.LENGTH_SHORT).show();
                                 });
                     } else {
-                        Toast.makeText(TowerActivity.this, "Register company and vehicle", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(OperatorActivity.this, "Register vehicle", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -686,6 +656,6 @@ public class TowerActivity extends FragmentActivity implements OnMapReadyCallbac
                 .document(userId)
                 .update(infoUpdate)
                 .addOnSuccessListener(unused ->
-                        Toast.makeText(TowerActivity.this, "You are offline!", Toast.LENGTH_SHORT).show());
+                        Toast.makeText(OperatorActivity.this, "You are offline!", Toast.LENGTH_SHORT).show());
     }
 }

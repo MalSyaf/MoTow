@@ -133,9 +133,9 @@
         </RelativeLayout>
     </LinearLayout>
 
-    <!-- Provider Type -->
+    <!-- Operator Company -->
     <RelativeLayout
-        android:id="@+id/type_layout"
+        android:id="@+id/company_layout"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginTop="300dp"
@@ -144,40 +144,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="15dp"
-            android:text="Provider Type"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/type"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="20dp"
-            android:text="Register Type"
-            android:textColor="@color/red"
-            android:textSize="20sp" />
-    </RelativeLayout>
-
-    <!-- Tower Company -->
-    <RelativeLayout
-        android:id="@+id/company_layout"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginTop="3dp"
-        android:background="@drawable/personal_info"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/type_layout">
 
         <TextView
             android:layout_width="match_parent"
@@ -289,54 +255,30 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/edit_company" />
 
-    <RadioGroup
-        android:id="@+id/providerType"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:orientation="horizontal"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/edit_regnum">
-
-        <RadioButton
-            android:id="@+id/radioPrivate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:text="Self business" />
-
-        <RadioButton
-            android:id="@+id/radioCompany"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:text="Under organization" />
-    </RadioGroup>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/layoutPermit"
+        android:id="@+id/licenseLayout"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/providerType">
+        app:layout_constraintTop_toBottomOf="@id/edit_regnum">
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/insertPermit"
+            android:id="@+id/insertLicense"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/grey_btn"
+            android:text="Upload"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/textPermit"
+            app:layout_constraintStart_toEndOf="@id/licenseText"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/textPermit"
+            android:id="@+id/licenseText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"

@@ -15,8 +15,9 @@ import android.widget.Toast;
 import com.example.motow.LoginActivity;
 import com.example.motow.R;
 import com.example.motow.admin.AdminActivity;
+import com.example.motow.admin.adminusers.AdminUserActivity;
+import com.example.motow.admin.adminusers.UserDeleteActivity;
 import com.example.motow.admin.adminvehicles.AdminVehicleActivity;
-import com.example.motow.admin.adminvehicles.AdminVehicleAdapter;
 import com.example.motow.databinding.ActivityAdminProcessBinding;
 import com.example.motow.processes.ProcessListener;
 import com.example.motow.processes.Processes;
@@ -88,13 +89,19 @@ public class AdminProcessActivity extends AppCompatActivity implements Navigatio
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menuUsers:
+            case R.id.menuHome:
                 startActivity(new Intent(getApplicationContext(), AdminActivity.class));
+                break;
+            case R.id.menuUsers:
+                startActivity(new Intent(getApplicationContext(), AdminUserActivity.class));
                 break;
             case R.id.menuVehicles:
                 startActivity(new Intent(getApplicationContext(), AdminVehicleActivity.class));
                 break;
             case R.id.menuProcesses:
+                break;
+            case R.id.menuDelete:
+                startActivity(new Intent(getApplicationContext(), UserDeleteActivity.class));
                 break;
             case R.id.menuLogout:
                 FirebaseAuth.getInstance().signOut();

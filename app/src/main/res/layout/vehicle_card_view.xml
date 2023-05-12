@@ -29,7 +29,6 @@
                 android:layout_width="100dp"
                 android:layout_height="55dp"
                 android:layout_marginLeft="10dp"
-                android:src="@drawable/sportbike"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

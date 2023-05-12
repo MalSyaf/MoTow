@@ -57,7 +57,7 @@ public class RiderManageActivity extends AppCompatActivity {
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
                     binding.riderName.setText(documentSnapshot.getString("name"));
-                    byte[] bytes = Base64.decode(documentSnapshot.getString("image"), Base64.DEFAULT);
+                    byte[] bytes = Base64.decode(documentSnapshot.getString("pfp"), Base64.DEFAULT);
                     Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                     binding.pfp.setImageBitmap(bitmap);
                 });
@@ -119,7 +119,7 @@ public class RiderManageActivity extends AppCompatActivity {
                             binding.pfp.setImageBitmap(bitmap);
                             String encodedImage = encodeImage(bitmap);
                             HashMap<String, Object> userInfo = new HashMap<>();
-                            userInfo.put("image", encodedImage);
+                            userInfo.put("pfp", encodedImage);
                             fStore.collection("Users")
                                     .document(userId)
                                     .update(userInfo);

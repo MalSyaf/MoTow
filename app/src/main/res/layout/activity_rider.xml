@@ -65,7 +65,7 @@
         android:textStyle="bold"
         android:translationZ="90dp"
         android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/tower_bar"
+        app:layout_constraintBottom_toTopOf="@+id/operator_bar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -106,7 +106,7 @@
         android:textSize="18sp"
         android:visibility="gone"
         app:cornerRadius="40dp"
-        app:layout_constraintBottom_toTopOf="@+id/tower_bar"
+        app:layout_constraintBottom_toTopOf="@+id/operator_bar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -164,9 +164,9 @@
     </RelativeLayout>
     <!-- Welcome Bar -->
 
-    <!-- Tower Bar -->
+    <!-- operator Bar -->
     <RelativeLayout
-        android:id="@+id/tower_bar"
+        android:id="@+id/operator_bar"
         android:layout_width="291dp"
         android:layout_height="62dp"
         android:layout_alignParentTop="true"
@@ -180,7 +180,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <com.makeramen.roundedimageview.RoundedImageView
-            android:id="@+id/tower_bar_pfp"
+            android:id="@+id/operator_bar_pfp"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_alignParentTop="true"
@@ -194,7 +194,7 @@
             app:riv_oval="true" />
 
         <TextView
-            android:id="@+id/tower_bar_status"
+            android:id="@+id/operator_bar_status"
             android:layout_width="192dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="24dp"
@@ -206,7 +206,7 @@
             android:textStyle="bold"
             android:translationZ="90dp" />
     </RelativeLayout>
-    <!-- Tower Bar -->
+    <!-- operator Bar -->
     <!-- End of Bars -->
 
     <!-- Starting of Containers-->
@@ -324,9 +324,9 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
     <!-- Select Vehicle Container -->
 
-    <!-- Tower Container -->
+    <!-- operator Container -->
     <RelativeLayout
-        android:id="@+id/tower_container"
+        android:id="@+id/operator_container"
         android:layout_width="291dp"
         android:layout_height="397dp"
         android:layout_alignParentTop="true"
@@ -352,7 +352,7 @@
             android:textStyle="bold" />
 
         <com.makeramen.roundedimageview.RoundedImageView
-            android:id="@+id/tower_pfp"
+            android:id="@+id/operator_pfp"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_centerHorizontal="true"
@@ -362,7 +362,7 @@
             app:riv_oval="true" />
 
         <TextView
-            android:id="@+id/tower_name"
+            android:id="@+id/operator_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
@@ -373,7 +373,7 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/tower_type"
+            android:id="@+id/operator_type"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
@@ -384,7 +384,7 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/tower_vehicle"
+            android:id="@+id/operator_vehicle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
@@ -395,7 +395,7 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/tower_plate"
+            android:id="@+id/operator_plate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
@@ -421,7 +421,7 @@
             android:textSize="18sp"
             app:cornerRadius="40dp" />
     </RelativeLayout>
-    <!-- Tower Container -->
+    <!-- operator Container -->
 
     <!-- Payment Method Containers -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -577,7 +577,7 @@
             android:textStyle="bold" />
 
         <com.makeramen.roundedimageview.RoundedImageView
-            android:id="@+id/towerPfpComplete"
+            android:id="@+id/operatorPfpComplete"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_centerHorizontal="true"
@@ -587,7 +587,7 @@
             app:riv_oval="true" />
 
         <TextView
-            android:id="@+id/towerNameComplete"
+            android:id="@+id/operatorNameComplete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"

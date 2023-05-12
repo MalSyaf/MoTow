@@ -4,6 +4,9 @@
     tools:showIn="navigation_view">
     <group android:checkableBehavior="single">
         <item
+            android:id="@+id/menuHome"
+            android:title="Account Verification" />
+        <item
             android:id="@+id/menuUsers"
             android:title="Users" />
         <item
@@ -12,6 +15,9 @@
         <item
             android:id="@+id/menuProcesses"
             android:title="Processes" />
+        <item
+            android:id="@+id/menuDelete"
+            android:title="Deletion Request" />
     </group>
 
     <item

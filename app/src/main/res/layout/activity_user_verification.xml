@@ -56,7 +56,7 @@
                 android:id="@+id/name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="20dp"
+                android:layout_margin="10dp"
                 android:text="Name"
                 android:textSize="20sp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -97,6 +97,27 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/accType">
+
+                <TableRow>
+
+                    <TextView
+                        android:layout_marginHorizontal="1dp"
+                        android:layout_marginTop="1dp"
+                        android:background="@color/white"
+                        android:gravity="right"
+                        android:padding="8dp"
+                        android:text="Status:"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/accStatus"
+                        android:layout_marginHorizontal="1dp"
+                        android:layout_marginTop="1dp"
+                        android:layout_weight="1"
+                        android:background="@color/white"
+                        android:gravity="center"
+                        android:padding="8dp" />
+                </TableRow>
 
                 <TableRow>
 
@@ -237,29 +258,6 @@
                     <TextView
                         android:id="@+id/companyRegNo"
                         android:layout_marginHorizontal="1dp"
-                        android:layout_marginBottom="1dp"
-                        android:layout_weight="1"
-                        android:background="@color/white"
-                        android:gravity="center"
-                        android:padding="8dp"
-                        android:text="For operator only" />
-                </TableRow>
-
-                <TableRow>
-
-                    <TextView
-                        android:layout_marginHorizontal="1dp"
-                        android:layout_marginBottom="1dp"
-                        android:background="@color/white"
-                        android:gravity="right"
-                        android:padding="8dp"
-                        android:text="Provider Type:"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/providerType"
-                        android:layout_marginHorizontal="1dp"
-                        android:layout_marginBottom="1dp"
                         android:layout_weight="1"
                         android:background="@color/white"
                         android:gravity="center"
@@ -316,6 +314,19 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/verifyButton"
                 app:layout_constraintTop_toBottomOf="@id/companyInfoTable" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/deleteBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:backgroundTint="@color/red"
+                android:text="Delete"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/companyInfoTable" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 
@@ -362,8 +373,8 @@
 
         <ImageView
             android:id="@+id/icImage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="300dp"
+            android:layout_height="200dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -414,8 +425,8 @@
 
         <ImageView
             android:id="@+id/licenseImage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="300dp"
+            android:layout_height="200dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

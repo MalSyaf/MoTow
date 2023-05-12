@@ -1,4 +1,9 @@
-package com.example.motow.tower;
+package com.example.motow.operator;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -10,14 +15,9 @@ import android.util.Base64;
 import android.view.View;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.example.motow.LoginActivity;
 import com.example.motow.UserInfoActivity;
-import com.example.motow.databinding.ActivityTowerManageBinding;
+import com.example.motow.databinding.ActivityOperatorManageBinding;
 import com.example.motow.vehicles.ManageVehicleActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FieldValue;
@@ -28,9 +28,9 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.HashMap;
 
-public class TowerManageActivity extends AppCompatActivity {
+public class OperatorManageActivity extends AppCompatActivity {
 
-    private ActivityTowerManageBinding binding;
+    private ActivityOperatorManageBinding binding;
 
     // Firebase
     private FirebaseFirestore fStore;
@@ -39,7 +39,7 @@ public class TowerManageActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityTowerManageBinding.inflate(getLayoutInflater());
+        binding = ActivityOperatorManageBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         // Firebase
@@ -56,10 +56,14 @@ public class TowerManageActivity extends AppCompatActivity {
                 .document(userId)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
-                    binding.towerName.setText(documentSnapshot.getString("name"));
-                    byte[] bytes = Base64.decode(documentSnapshot.getString("image"), Base64.DEFAULT);
+                    binding.operatorName.setText(documentSnapshot.getString("name"));
+                    byte[] bytes = Base64.decode(documentSnapshot.getString("pfp"), Base64.DEFAULT);
                     Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                     binding.pfp.setImageBitmap(bitmap);
+                    if (documentSnapshot.getString("delRequest") != null) {
+                        binding.deleteAccount.setVisibility(View.GONE);
+                        binding.cancelDelete.setVisibility(View.VISIBLE);
+                    }
                 });
     }
 
@@ -73,7 +77,7 @@ public class TowerManageActivity extends AppCompatActivity {
 
         // Navbar
         binding.homeBtn.setOnClickListener(v -> {
-            startActivity(new Intent(getApplicationContext(), TowerActivity.class));
+            startActivity(new Intent(getApplicationContext(), OperatorActivity.class));
             finish();
         });
 
@@ -119,7 +123,7 @@ public class TowerManageActivity extends AppCompatActivity {
                             binding.pfp.setImageBitmap(bitmap);
                             String encodedImage = encodeImage(bitmap);
                             HashMap<String, Object> userInfo = new HashMap<>();
-                            userInfo.put("image", encodedImage);
+                            userInfo.put("pfp", encodedImage);
                             fStore.collection("Users")
                                     .document(userId)
                                     .update(userInfo);
@@ -137,12 +141,12 @@ public class TowerManageActivity extends AppCompatActivity {
         alert.setMessage("This account will not be accessible after 7 working days.");
         alert.setPositiveButton("YES", (dialogInterface, i) -> {
             HashMap<String, Object> delRequest = new HashMap<>();
-            delRequest.put("delRequest", 1);
+            delRequest.put("delRequest", "1");
             fStore.collection("Users")
                     .document(userId)
                     .update(delRequest)
                     .addOnCompleteListener(task ->
-                            Toast.makeText(TowerManageActivity.this, "Request has been sent", Toast.LENGTH_SHORT).show());
+                            Toast.makeText(OperatorManageActivity.this, "Request has been sent", Toast.LENGTH_SHORT).show());
             binding.deleteAccount.setVisibility(View.GONE);
             binding.cancelDelete.setVisibility(View.VISIBLE);
         });
@@ -163,7 +167,7 @@ public class TowerManageActivity extends AppCompatActivity {
                     .document(userId)
                     .update(delRequest)
                     .addOnCompleteListener(task ->
-                            Toast.makeText(TowerManageActivity.this, "Account deletion has been canceled", Toast.LENGTH_SHORT).show());
+                            Toast.makeText(OperatorManageActivity.this, "Account deletion has been canceled", Toast.LENGTH_SHORT).show());
             binding.deleteAccount.setVisibility(View.VISIBLE);
             binding.cancelDelete.setVisibility(View.GONE);
         });

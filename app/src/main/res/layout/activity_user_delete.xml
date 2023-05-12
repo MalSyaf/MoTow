@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".admin.AdminActivity">
+    tools:context=".admin.adminusers.UserDeleteActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -41,7 +41,7 @@
         </LinearLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/verifylayout"
+            android:id="@+id/deletionLayout"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -50,30 +50,30 @@
             app:layout_constraintTop_toBottomOf="@id/layoutToolbar">
 
             <TextView
-                android:id="@+id/verifyHeader"
+                android:id="@+id/deletionHeader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="25dp"
-                android:text="Verification"
+                android:text="Requests"
                 android:textSize="20sp"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toTopOf="@id/verifyRecycler"
+                app:layout_constraintBottom_toTopOf="@id/deletionRecycler"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <SearchView
-                android:id="@+id/verifySearch"
+                android:id="@+id/deletetionSearch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="220dp"
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/verifyHeader"
+                app:layout_constraintStart_toEndOf="@id/deletionHeader"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/verifyEmpty"
+                android:id="@+id/deletionEmpty"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="No Request"
@@ -81,10 +81,10 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/verifyHeader" />
+                app:layout_constraintTop_toBottomOf="@id/deletionHeader" />
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/verifyRecycler"
+                android:id="@+id/deletionRecycler"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_marginStart="20dp"
@@ -93,7 +93,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/verifyHeader" />
+                app:layout_constraintTop_toBottomOf="@id/deletionHeader" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
