@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.example.motow.LoginActivity;
@@ -22,8 +23,11 @@ import com.example.motow.databinding.ActivityAdminProcessBinding;
 import com.example.motow.processes.ProcessListener;
 import com.example.motow.processes.Processes;
 import com.example.motow.processes.ProcessesAdapter;
+import com.example.motow.users.Users;
+import com.example.motow.users.UsersAdapter;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -46,6 +50,50 @@ public class AdminProcessActivity extends AppCompatActivity implements Navigatio
         setUpRecyclerView();
         getVehicles();
         setListeners();
+    }
+
+    private void setListeners() {
+        binding.imageMenu.setOnClickListener(v ->
+                binding.drawerLayout.openDrawer(GravityCompat.START));
+
+        binding.navigtationView.setNavigationItemSelectedListener(this);
+
+        binding.searchStatus.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                searchData(s);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                searchData(s);
+                return false;
+            }
+        });
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private void searchData(String s) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("Processes").whereEqualTo("processId", s)
+                .get()
+                .addOnCompleteListener(task -> {
+                    processes.clear();
+                    for(QueryDocumentSnapshot queryDocumentSnapshot : task.getResult()) {
+                        Processes processes1 = new Processes();
+                        processes1.processId = queryDocumentSnapshot.getId();
+                        processes.add(processes1);
+                    }
+                    if (processes.size() > 0) {
+                        ProcessesAdapter processesAdapter1 = new ProcessesAdapter(processes, this);
+                        binding.statusRecycler.setAdapter(processesAdapter1);
+                        binding.emptyStatus.setVisibility(View.GONE);
+                    }
+                }).addOnFailureListener(e -> {
+
+                });
     }
 
     private void getVehicles() {
@@ -76,13 +124,6 @@ public class AdminProcessActivity extends AppCompatActivity implements Navigatio
         processes = new ArrayList<>();
         processesAdapter = new ProcessesAdapter(processes, this);
         binding.statusRecycler.setAdapter(processesAdapter);
-    }
-
-    private void setListeners() {
-        binding.imageMenu.setOnClickListener(v ->
-                binding.drawerLayout.openDrawer(GravityCompat.START));
-
-        binding.navigtationView.setNavigationItemSelectedListener(this);
     }
 
     @SuppressLint("NonConstantResourceId")

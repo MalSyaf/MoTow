@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -25,6 +26,7 @@ import com.example.motow.users.Users;
 import com.example.motow.users.UsersAdapter;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -54,6 +56,45 @@ public class AdminActivity extends AppCompatActivity implements NavigationView.O
                 binding.drawerLayout.openDrawer(GravityCompat.START));
 
         binding.navigtationView.setNavigationItemSelectedListener(this);
+
+        binding.verifySearch.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                searchData(s);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                searchData(s);
+                return false;
+            }
+        });
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private void searchData(String s) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("Users").whereEqualTo("idNum", s)
+                .get()
+                .addOnCompleteListener(task -> {
+                    users.clear();
+                    for (DocumentSnapshot doc : task.getResult()) {
+                        Users users1 = new Users();
+                        users1.userId = doc.getId();
+                        users1.pfp = doc.getString("pfp");
+                        users1.name = doc.getString("name");
+                        users.add(users1);
+                    }
+                    if (users.size() > 0) {
+                        UsersAdapter usersAdapter = new UsersAdapter(users, this);
+                        binding.verifyRecycler.setAdapter(usersAdapter);
+                        binding.verifyEmpty.setVisibility(View.GONE);
+                    }
+                }).addOnFailureListener(e -> {
+
+                });
     }
 
     private void setUpRecyclerView() {

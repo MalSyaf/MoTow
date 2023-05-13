@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -19,10 +20,13 @@ import com.example.motow.admin.adminprocesses.AdminProcessActivity;
 import com.example.motow.admin.adminusers.AdminUserActivity;
 import com.example.motow.admin.adminusers.UserDeleteActivity;
 import com.example.motow.databinding.ActivityAdminVehicleBinding;
+import com.example.motow.users.Users;
+import com.example.motow.users.UsersAdapter;
 import com.example.motow.vehicles.Vehicle;
 import com.example.motow.vehicles.VehicleListener;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -52,6 +56,44 @@ public class AdminVehicleActivity extends AppCompatActivity implements Navigatio
                 binding.drawerLayout.openDrawer(GravityCompat.START));
 
         binding.navigtationView.setNavigationItemSelectedListener(this);
+
+        binding.searchVehicle.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                searchData(s);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                searchData(s);
+                return false;
+            }
+        });
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private void searchData(String s) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("Vehicles").whereEqualTo("plateNumber", s)
+                .get()
+                .addOnCompleteListener(task -> {
+                    vehicles.clear();
+                    for (DocumentSnapshot doc : task.getResult()) {
+                        Vehicle vehicles1 = new Vehicle();
+                        vehicles1.vehicleId = doc.getId();
+                        vehicles1.plateNumber = doc.getString("plateNumber");
+                        vehicles.add(vehicles1);
+                    }
+                    if (vehicles.size() > 0) {
+                        AdminVehicleAdapter adminVehicleAdapter = new AdminVehicleAdapter(vehicles, this);
+                        binding.vehicleRecycler.setAdapter(adminVehicleAdapter);
+                        binding.emptyVechicle.setVisibility(View.GONE);
+                    }
+                }).addOnFailureListener(e -> {
+
+                });
     }
 
     private void getVehicles() {

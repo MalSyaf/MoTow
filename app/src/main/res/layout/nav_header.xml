@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="200dp"
     android:background="@color/purple_200"
@@ -21,10 +22,12 @@
         android:layout_height="wrap_content"
         android:paddingTop="8dp"
         android:text="Admin"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        tools:ignore="HardcodedText" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="admin@motow.com" />
+        android:text="admin@motow.com"
+        tools:ignore="HardcodedText,TextContrastCheck" />
 </LinearLayout>

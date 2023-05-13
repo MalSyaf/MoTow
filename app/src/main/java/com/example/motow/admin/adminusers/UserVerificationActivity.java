@@ -39,7 +39,7 @@ public class UserVerificationActivity extends AppCompatActivity {
 
     private void setListeners() {
         binding.backBtn.setOnClickListener(v -> {
-            Intent intent = new Intent(getApplicationContext(), AdminActivity.class);
+            Intent intent = new Intent(getApplicationContext(), AdminUserActivity.class);
             startActivity(intent);
         });
         binding.icBackBtn.setOnClickListener(v ->
