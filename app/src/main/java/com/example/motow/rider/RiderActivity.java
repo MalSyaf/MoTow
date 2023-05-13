@@ -327,7 +327,6 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
             binding.requestBtn.setVisibility(View.VISIBLE);
             binding.completionContainer.setVisibility(View.GONE);
             operatorId = null;
-            deleteRequests();
             changeRiderStatus();
         });
         binding.addVehicle.setOnClickListener(v -> {
@@ -354,35 +353,6 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                         new PaymentSheet.Configuration("MoTow", configuration));
             }
         });
-    }
-
-    private void deleteRequests() {
-        fStore.collection("Processes")
-                .whereEqualTo("operatorId", userId)
-                .whereEqualTo("processStatus", "rejected")
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            fStore.collection("Processes")
-                                    .document(document.getId())
-                                    .delete();
-                        }
-                    }
-                });
-        fStore.collection("Processes")
-                .whereEqualTo("operatorId", userId)
-                .whereEqualTo("processStatus", "requesting")
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            fStore.collection("Processes")
-                                    .document(document.getId())
-                                    .delete();
-                        }
-                    }
-                });
     }
 
     private void changeRiderStatus() {

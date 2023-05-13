@@ -8,7 +8,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.motow.databinding.UserCardViewBinding;
-import com.example.motow.users.UsersAdapter;
 import com.example.motow.vehicles.Vehicle;
 import com.example.motow.vehicles.VehicleListener;
 

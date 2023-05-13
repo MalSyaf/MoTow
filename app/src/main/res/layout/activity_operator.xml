@@ -31,7 +31,8 @@
         app:cornerRadius="40dp"
         app:layout_constraintBottom_toBottomOf="@+id/navbar"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="HardcodedText,TextContrastCheck" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/onlineBtn"
@@ -52,7 +53,8 @@
         app:cornerRadius="40dp"
         app:layout_constraintBottom_toBottomOf="@+id/navbar"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="HardcodedText" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/pickup_btn"
@@ -73,7 +75,8 @@
         app:cornerRadius="40dp"
         app:layout_constraintBottom_toTopOf="@+id/riderBar"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="HardcodedText" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/complete_btn"
@@ -94,7 +97,8 @@
         app:cornerRadius="40dp"
         app:layout_constraintBottom_toTopOf="@+id/riderBar"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="HardcodedText" />
 
     <TextView
         android:id="@+id/waitingText"
@@ -108,7 +112,8 @@
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/riderBar"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="HardcodedText" />
 
     <!--Welcome Bar-->
     <RelativeLayout
@@ -133,7 +138,8 @@
             android:layout_marginEnd="50dp"
             android:background="@drawable/default_pfp"
             android:scaleType="centerCrop"
-            app:riv_oval="true" />
+            app:riv_oval="true"
+            tools:ignore="ImageContrastCheck" />
 
         <TextView
             android:id="@+id/userName"
@@ -146,7 +152,8 @@
             android:textColor="@color/black"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:translationZ="90dp" />
+            android:translationZ="90dp"
+            tools:ignore="RtlHardcoded" />
     </RelativeLayout>
 
     <!-- Assistance Needed Container -->
@@ -175,7 +182,8 @@
             android:text="Assistance Needed!"
             android:textAlignment="center"
             android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            tools:ignore="HardcodedText" />
 
         <com.makeramen.roundedimageview.RoundedImageView
             android:id="@+id/riderPfp"
@@ -196,7 +204,8 @@
             android:text="Name"
             android:textAlignment="center"
             android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            tools:ignore="HardcodedText" />
 
         <TextView
             android:id="@+id/riderVehicle"
@@ -207,7 +216,8 @@
             android:text="Type"
             android:textAlignment="center"
             android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            tools:ignore="HardcodedText" />
 
         <TextView
             android:id="@+id/riderPlate"
@@ -218,7 +228,8 @@
             android:text="Vehicle"
             android:textAlignment="center"
             android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            tools:ignore="HardcodedText" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/acceptBtn"
@@ -234,7 +245,8 @@
             android:text="ACCEPT"
             android:textColor="@color/white"
             android:textSize="18sp"
-            app:cornerRadius="40dp" />
+            app:cornerRadius="40dp"
+            tools:ignore="HardcodedText" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/rejectBtn"
@@ -250,7 +262,8 @@
             android:text="REJECT"
             android:textColor="@color/white"
             android:textSize="18sp"
-            app:cornerRadius="40dp" />
+            app:cornerRadius="40dp"
+            tools:ignore="HardcodedText" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/okBtn"
@@ -267,7 +280,8 @@
             android:textColor="@color/white"
             android:textSize="18sp"
             android:visibility="gone"
-            app:cornerRadius="40dp" />
+            app:cornerRadius="40dp"
+            tools:ignore="HardcodedText" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/doneBtn"
@@ -284,7 +298,8 @@
             android:textColor="@color/white"
             android:textSize="18sp"
             android:visibility="gone"
-            app:cornerRadius="40dp" />
+            app:cornerRadius="40dp"
+            tools:ignore="HardcodedText" />
     </RelativeLayout>
 
     <!-- Rider Bar -->
@@ -327,7 +342,8 @@
             android:textColor="@color/black"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:translationZ="90dp" />
+            android:translationZ="90dp"
+            tools:ignore="RtlHardcoded" />
 
         <TextView
             android:id="@+id/riderBarPlate"
@@ -340,7 +356,8 @@
             android:textColor="@color/black"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:translationZ="90dp" />
+            android:translationZ="90dp"
+            tools:ignore="RtlHardcoded" />
     </RelativeLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -353,7 +370,8 @@
         android:src="@drawable/chat"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:ignore="ContentDescription,RtlHardcoded" />
 
     <!-- Chatbox -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -385,7 +403,9 @@
             android:layout_marginTop="30dp"
             android:src="@drawable/baseline_arrow_back_ios_24"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            android:contentDescription="TODO"
+            tools:ignore="ContentDescription,HardcodedText,RtlHardcoded" />
 
         <TextView
             android:id="@+id/chatName"
@@ -411,7 +431,8 @@
             android:layout_margin="26dp"
             android:background="@drawable/phone_num"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/chatRecycler"
@@ -434,7 +455,8 @@
             android:layout_marginBottom="20dp"
             android:background="@drawable/background_chat_input"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:ignore="RtlHardcoded">
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:layout_width="match_parent"
@@ -465,7 +487,8 @@
             android:textColorHint="@color/black"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/sendBtn"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            tools:ignore="HardcodedText,RtlHardcoded" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- Navbar -->
@@ -487,7 +510,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/manageBtn"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription" />
 
         <ImageView
             android:id="@+id/manageBtn"
@@ -497,6 +521,7 @@
             android:src="@drawable/manage_user"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -149,9 +149,6 @@ public class AdminUserActivity extends AppCompatActivity implements NavigationVi
             case R.id.menuProcesses:
                 startActivity(new Intent(getApplicationContext(), AdminProcessActivity.class));
                 break;
-            case R.id.menuDelete:
-                startActivity(new Intent(getApplicationContext(), UserDeleteActivity.class));
-                break;
             case R.id.menuLogout:
                 FirebaseAuth.getInstance().signOut();
                 startActivity(new Intent(getApplicationContext(), LoginActivity.class));

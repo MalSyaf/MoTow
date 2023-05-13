@@ -105,7 +105,7 @@ public class SignUpActivity extends AppCompatActivity {
                             // Account requests
                             userInfo.put("isVerified", null);
                             userInfo.put("isRejected", null);
-                            userInfo.put("delRequest", null);
+                            userInfo.put("isDeleted", null);
 
                             Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                             startActivity(intent);
@@ -127,7 +127,7 @@ public class SignUpActivity extends AppCompatActivity {
                             // Account requests
                             userInfo.put("isVerified", null);
                             userInfo.put("isRejected", null);
-                            userInfo.put("delRequest", null);
+                            userInfo.put("isDeleted", null);
                             // Company details
                             userInfo.put("companyName", binding.companyName.getText().toString());
                             userInfo.put("companyRegNum", binding.companyRegNo.getText().toString());

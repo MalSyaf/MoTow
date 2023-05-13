@@ -25,7 +25,6 @@
         android:layout_above="@+id/navbar"
         android:layout_centerHorizontal="true"
         android:layout_marginStart="5dp"
-        android:layout_marginTop="5dp"
         android:layout_marginEnd="5dp"
         android:layout_marginBottom="103dp"
         android:backgroundTint="@color/purple_200"
@@ -36,7 +35,8 @@
         app:cornerRadius="40dp"
         app:layout_constraintBottom_toBottomOf="@+id/navbar"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="HardcodedText,TextSizeCheck" />
 
     <TextView
         android:id="@+id/search_text"
@@ -51,7 +51,8 @@
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/cancel_btn"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="HardcodedText" />
 
     <TextView
         android:id="@+id/waiting"
@@ -67,7 +68,8 @@
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/operator_bar"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="HardcodedText" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/cancel_btn"
@@ -88,7 +90,8 @@
         app:cornerRadius="40dp"
         app:layout_constraintBottom_toBottomOf="@+id/navbar"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="HardcodedText" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/payment_btn"
@@ -108,7 +111,8 @@
         app:cornerRadius="40dp"
         app:layout_constraintBottom_toTopOf="@+id/operator_bar"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="HardcodedText" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/chatButton"
@@ -120,7 +124,8 @@
         android:src="@drawable/chat"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:ignore="ContentDescription,RtlHardcoded" />
     <!-- End of Buttons -->
 
     <!-- Start of Bars -->
@@ -147,13 +152,14 @@
             android:layout_marginEnd="50dp"
             android:background="@drawable/default_pfp"
             android:scaleType="centerCrop"
-            app:riv_oval="true" />
+            app:riv_oval="true"
+            tools:ignore="ImageContrastCheck" />
 
         <TextView
             android:id="@+id/user_name"
             android:layout_width="158dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="46dp"
+            android:layout_marginStart="46dp"
             android:layout_marginTop="20dp"
             android:layout_marginBottom="20dp"
             android:textAlignment="center"
@@ -204,7 +210,8 @@
             android:textColor="@color/black"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:translationZ="90dp" />
+            android:translationZ="90dp"
+            tools:ignore="RtlHardcoded" />
     </RelativeLayout>
     <!-- operator Bar -->
     <!-- End of Bars -->
@@ -237,7 +244,8 @@
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="HardcodedText" />
 
         <ImageView
             android:id="@+id/vehicleBackBtn"
@@ -249,7 +257,8 @@
             android:src="@drawable/baseline_arrow_back_ios_24"
             app:layout_constraintEnd_toStartOf="@id/selectVehicleText"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription" />
 
         <ImageView
             android:id="@+id/addVehicle"
@@ -261,7 +270,8 @@
             android:src="@drawable/add_vehicle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/selectVehicleText"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/vehicleRecycler"
@@ -290,7 +300,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/vehicleRecycler" />
+            app:layout_constraintTop_toBottomOf="@id/vehicleRecycler"
+            tools:ignore="HardcodedText" />
 
         <TextView
             android:id="@+id/noVehicleText"
@@ -304,7 +315,8 @@
             app:layout_constraintBottom_toTopOf="@id/noVehicleBtn"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="HardcodedText" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/noVehicleBtn"
@@ -320,7 +332,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/vehicleRecycler" />
+            app:layout_constraintTop_toBottomOf="@id/vehicleRecycler"
+            tools:ignore="HardcodedText" />
     </androidx.constraintlayout.widget.ConstraintLayout>
     <!-- Select Vehicle Container -->
 
@@ -349,7 +362,8 @@
             android:text="Assistance Found!"
             android:textAlignment="center"
             android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            tools:ignore="HardcodedText" />
 
         <com.makeramen.roundedimageview.RoundedImageView
             android:id="@+id/operator_pfp"
@@ -370,7 +384,8 @@
             android:text="Name"
             android:textAlignment="center"
             android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            tools:ignore="HardcodedText" />
 
         <TextView
             android:id="@+id/operator_type"
@@ -381,7 +396,8 @@
             android:text="Type"
             android:textAlignment="center"
             android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            tools:ignore="HardcodedText" />
 
         <TextView
             android:id="@+id/operator_vehicle"
@@ -392,7 +408,8 @@
             android:text="Vehicle"
             android:textAlignment="center"
             android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            tools:ignore="HardcodedText" />
 
         <TextView
             android:id="@+id/operator_plate"
@@ -403,7 +420,8 @@
             android:text="Plate"
             android:textAlignment="center"
             android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            tools:ignore="HardcodedText" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/ok_btn"
@@ -419,7 +437,8 @@
             android:text="OK"
             android:textColor="@color/white"
             android:textSize="18sp"
-            app:cornerRadius="40dp" />
+            app:cornerRadius="40dp"
+            tools:ignore="HardcodedText" />
     </RelativeLayout>
     <!-- operator Container -->
 
@@ -450,7 +469,8 @@
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="HardcodedText" />
 
         <ImageView
             android:id="@+id/payMethodBack"
@@ -462,7 +482,8 @@
             android:src="@drawable/baseline_arrow_back_ios_24"
             app:layout_constraintEnd_toStartOf="@id/paymentMethodText"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription" />
         <!-- Method 1 -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cashQr"
@@ -482,7 +503,8 @@
                 android:src="@drawable/qr_code"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="ContentDescription" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -492,7 +514,8 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/method1"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="HardcodedText" />
         </androidx.constraintlayout.widget.ConstraintLayout>
         <!-- Method 1 -->
         <!-- Method 2 -->
@@ -516,7 +539,8 @@
                 android:src="@drawable/credit_card"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="ContentDescription" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -526,7 +550,8 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/method2"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="HardcodedText" />
         </androidx.constraintlayout.widget.ConstraintLayout>
         <!-- Method 2 -->
         <!-- Done Payment Button -->
@@ -544,7 +569,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/card" />
+            app:layout_constraintTop_toBottomOf="@id/card"
+            tools:ignore="HardcodedText" />
         <!-- Done Payment Button -->
     </androidx.constraintlayout.widget.ConstraintLayout>
     <!-- Payment Method Containers -->
@@ -574,7 +600,8 @@
             android:text="Assistance Completed!"
             android:textAlignment="center"
             android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            tools:ignore="HardcodedText" />
 
         <com.makeramen.roundedimageview.RoundedImageView
             android:id="@+id/operatorPfpComplete"
@@ -595,7 +622,8 @@
             android:text="Name"
             android:textAlignment="center"
             android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            tools:ignore="HardcodedText" />
 
         <TextView
             android:id="@+id/text"
@@ -606,14 +634,16 @@
             android:text="Thank you for using MoTow"
             android:textAlignment="center"
             android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            tools:ignore="HardcodedText" />
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="270dp"
-            android:src="@drawable/baseline_check_circle_24" />
+            android:src="@drawable/baseline_check_circle_24"
+            tools:ignore="ContentDescription" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/okCompleteBtn"
@@ -629,7 +659,8 @@
             android:text="OK"
             android:textColor="@color/white"
             android:textSize="18sp"
-            app:cornerRadius="40dp" />
+            app:cornerRadius="40dp"
+            tools:ignore="HardcodedText" />
     </RelativeLayout>
     <!-- Completion Container -->
     <!-- End of Containers-->
@@ -664,7 +695,8 @@
             android:layout_marginTop="30dp"
             android:src="@drawable/baseline_arrow_back_ios_24"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription,RtlHardcoded" />
 
         <TextView
             android:id="@+id/chatName"
@@ -690,7 +722,8 @@
             android:layout_margin="26dp"
             android:background="@drawable/phone_num"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/chatRecycler"
@@ -713,7 +746,8 @@
             android:layout_marginBottom="20dp"
             android:background="@drawable/background_chat_input"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:ignore="RtlHardcoded">
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:layout_width="match_parent"
@@ -744,7 +778,8 @@
             android:textColorHint="@color/black"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/sendBtn"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            tools:ignore="HardcodedText,RtlHardcoded" />
     </androidx.constraintlayout.widget.ConstraintLayout>
     <!-- Chatbox -->
 
@@ -767,7 +802,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/manageBtn"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription" />
 
         <ImageView
             android:id="@+id/manageBtn"
@@ -777,7 +813,8 @@
             android:src="@drawable/manage_user"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription" />
     </androidx.constraintlayout.widget.ConstraintLayout>
     <!-- Navbar -->
 </androidx.constraintlayout.widget.ConstraintLayout>

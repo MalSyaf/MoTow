@@ -6,10 +6,6 @@ public class Processes implements Serializable {
 
     public String processId;
 
-    public Processes(String processId) {
-        this.processId = processId;
-    }
-
     public Processes() {
         //
     }

@@ -17,17 +17,13 @@ import com.example.motow.LoginActivity;
 import com.example.motow.R;
 import com.example.motow.admin.AdminActivity;
 import com.example.motow.admin.adminusers.AdminUserActivity;
-import com.example.motow.admin.adminusers.UserDeleteActivity;
 import com.example.motow.admin.adminvehicles.AdminVehicleActivity;
 import com.example.motow.databinding.ActivityAdminProcessBinding;
 import com.example.motow.processes.ProcessListener;
 import com.example.motow.processes.Processes;
 import com.example.motow.processes.ProcessesAdapter;
-import com.example.motow.users.Users;
-import com.example.motow.users.UsersAdapter;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -38,9 +34,8 @@ public class AdminProcessActivity extends AppCompatActivity implements Navigatio
 
     private ActivityAdminProcessBinding binding;
     private ArrayList<Processes> processes;
-    private ProcessesAdapter processesAdapter;
 
-    
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -122,7 +117,7 @@ public class AdminProcessActivity extends AppCompatActivity implements Navigatio
         binding.statusRecycler.setHasFixedSize(true);
         binding.statusRecycler.setLayoutManager(new LinearLayoutManager(this));
         processes = new ArrayList<>();
-        processesAdapter = new ProcessesAdapter(processes, this);
+        ProcessesAdapter processesAdapter = new ProcessesAdapter(processes, this);
         binding.statusRecycler.setAdapter(processesAdapter);
     }
 
@@ -140,9 +135,6 @@ public class AdminProcessActivity extends AppCompatActivity implements Navigatio
                 startActivity(new Intent(getApplicationContext(), AdminVehicleActivity.class));
                 break;
             case R.id.menuProcesses:
-                break;
-            case R.id.menuDelete:
-                startActivity(new Intent(getApplicationContext(), UserDeleteActivity.class));
                 break;
             case R.id.menuLogout:
                 FirebaseAuth.getInstance().signOut();

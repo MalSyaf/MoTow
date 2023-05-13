@@ -37,7 +37,8 @@
                 android:layout_marginStart="15dp"
                 android:text="Hi, Admin!"
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                tools:ignore="HardcodedText" />
         </LinearLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -59,7 +60,8 @@
                 android:textStyle="bold"
                 app:layout_constraintBottom_toTopOf="@id/usersRecycler"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="HardcodedText" />
 
             <SearchView
                 android:id="@+id/usersSearch"
@@ -81,7 +83,8 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/usersHeader" />
+                app:layout_constraintTop_toBottomOf="@id/usersHeader"
+                tools:ignore="HardcodedText,VisualLintOverlap" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/usersRecycler"
@@ -103,5 +106,6 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         app:headerLayout="@layout/nav_header"
-        app:menu="@menu/navigation_menu" />
+        app:menu="@menu/navigation_menu"
+        tools:ignore="VisualLintBounds" />
 </androidx.drawerlayout.widget.DrawerLayout>

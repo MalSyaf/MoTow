@@ -1,5 +1,6 @@
 package com.example.motow.admin.adminusers;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -57,6 +58,7 @@ public class UserVerificationActivity extends AppCompatActivity {
                 rejectUser());
     }
 
+    @SuppressLint("SetTextI18n")
     private void loadUserDetails(Users users) {
         fStore.collection("Users")
                 .document(users.userId)
@@ -74,10 +76,6 @@ public class UserVerificationActivity extends AppCompatActivity {
                         binding.accType.setText("Operator");
                         binding.companyName.setText(documentSnapshot.getString("companyName"));
                         binding.companyRegNo.setText(documentSnapshot.getString("companyRegNum"));
-                        // License image
-                        byte[] licenseImage = Base64.decode(documentSnapshot.getString("license"), Base64.DEFAULT);
-                        Bitmap license = BitmapFactory.decodeByteArray(licenseImage, 0, licenseImage.length);
-                        binding.licenseImage.setImageBitmap(license);
                     }
                     binding.idNum.setText(documentSnapshot.getString("idNum"));
                     binding.email.setText(documentSnapshot.getString("email"));
@@ -86,14 +84,24 @@ public class UserVerificationActivity extends AppCompatActivity {
                     byte[] icImage = Base64.decode(documentSnapshot.getString("ic"), Base64.DEFAULT);
                     Bitmap ic = BitmapFactory.decodeByteArray(icImage, 0, icImage.length);
                     binding.icImage.setImageBitmap(ic);
+                    // License image
+                    byte[] licenseImage = Base64.decode(documentSnapshot.getString("license"), Base64.DEFAULT);
+                    Bitmap license = BitmapFactory.decodeByteArray(licenseImage, 0, licenseImage.length);
+                    binding.licenseImage.setImageBitmap(license);
                     if (documentSnapshot.getString("isVerified") != null) {
                         binding.verifyButton.setVisibility(View.GONE);
                         binding.rejectButton.setVisibility(View.GONE);
+                        binding.accStatus.setText("Verified");
                     }
-                    if (documentSnapshot.getString("delRequest") != null) {
+                    if (documentSnapshot.getString("isDeleted") != null) {
                         binding.verifyButton.setVisibility(View.GONE);
                         binding.rejectButton.setVisibility(View.GONE);
-                        binding.deleteBtn.setVisibility(View.VISIBLE);
+                        binding.accStatus.setText("Deleted");
+                    }
+                    if (documentSnapshot.getString("isRejected") != null) {
+                        binding.verifyButton.setVisibility(View.GONE);
+                        binding.rejectButton.setVisibility(View.GONE);
+                        binding.accStatus.setText("Rejected");
                     }
                 });
     }

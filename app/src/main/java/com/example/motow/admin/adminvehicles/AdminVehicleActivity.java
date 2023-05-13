@@ -18,10 +18,7 @@ import com.example.motow.R;
 import com.example.motow.admin.AdminActivity;
 import com.example.motow.admin.adminprocesses.AdminProcessActivity;
 import com.example.motow.admin.adminusers.AdminUserActivity;
-import com.example.motow.admin.adminusers.UserDeleteActivity;
 import com.example.motow.databinding.ActivityAdminVehicleBinding;
-import com.example.motow.users.Users;
-import com.example.motow.users.UsersAdapter;
 import com.example.motow.vehicles.Vehicle;
 import com.example.motow.vehicles.VehicleListener;
 import com.google.android.material.navigation.NavigationView;
@@ -38,7 +35,6 @@ public class AdminVehicleActivity extends AppCompatActivity implements Navigatio
     private ActivityAdminVehicleBinding binding;
 
     private ArrayList<Vehicle> vehicles;
-    private AdminVehicleAdapter vehicleAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,7 +123,7 @@ public class AdminVehicleActivity extends AppCompatActivity implements Navigatio
         binding.vehicleRecycler.setHasFixedSize(true);
         binding.vehicleRecycler.setLayoutManager(new LinearLayoutManager(this));
         vehicles = new ArrayList<>();
-        vehicleAdapter = new AdminVehicleAdapter(vehicles, this);
+        AdminVehicleAdapter vehicleAdapter = new AdminVehicleAdapter(vehicles, this);
         binding.vehicleRecycler.setAdapter(vehicleAdapter);
     }
 
@@ -145,9 +141,6 @@ public class AdminVehicleActivity extends AppCompatActivity implements Navigatio
                 break;
             case R.id.menuProcesses:
                 startActivity(new Intent(getApplicationContext(), AdminProcessActivity.class));
-                break;
-            case R.id.menuDelete:
-                startActivity(new Intent(getApplicationContext(), UserDeleteActivity.class));
                 break;
             case R.id.menuLogout:
                 FirebaseAuth.getInstance().signOut();

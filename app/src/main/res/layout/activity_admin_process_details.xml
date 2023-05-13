@@ -23,7 +23,8 @@
             android:src="@drawable/baseline_arrow_back_ios_24"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription,RtlHardcoded" />
 
         <TextView
             android:id="@+id/infoTextview"
@@ -36,7 +37,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="HardcodedText" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ScrollView
@@ -50,7 +52,8 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            tools:ignore="ScrollViewSize">
 
             <TextView
                 android:id="@+id/statusText"
@@ -61,7 +64,8 @@
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="HardcodedText" />
 
             <TableLayout
                 android:id="@+id/statusTable"
@@ -85,7 +89,8 @@
                         android:gravity="right"
                         android:padding="8dp"
                         android:text="Status:"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        tools:ignore="HardcodedText,RtlHardcoded" />
 
                     <TextView
                         android:id="@+id/processStatus"
@@ -106,7 +111,8 @@
                         android:gravity="right"
                         android:padding="8dp"
                         android:text="@string/date_time"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        tools:ignore="RtlHardcoded" />
 
                     <TextView
                         android:id="@+id/processDateTime"
@@ -129,7 +135,8 @@
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/riderTable" />
+                app:layout_constraintTop_toBottomOf="@id/riderTable"
+                tools:ignore="HardcodedText" />
 
             <TextView
                 android:id="@+id/riderText"
@@ -141,7 +148,8 @@
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/statusTable" />
+                app:layout_constraintTop_toBottomOf="@id/statusTable"
+                tools:ignore="HardcodedText" />
 
             <TableLayout
                 android:id="@+id/riderTable"
@@ -165,7 +173,8 @@
                         android:gravity="right"
                         android:padding="8dp"
                         android:text="MyKad/Passport:"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        tools:ignore="HardcodedText,RtlHardcoded" />
 
                     <TextView
                         android:id="@+id/riderIc"
@@ -186,7 +195,8 @@
                         android:gravity="right"
                         android:padding="8dp"
                         android:text="Name:"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        tools:ignore="HardcodedText,RtlHardcoded" />
 
                     <TextView
                         android:id="@+id/riderName"
@@ -206,7 +216,8 @@
                         android:gravity="right"
                         android:padding="8dp"
                         android:text="Contact:"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        tools:ignore="HardcodedText,RtlHardcoded" />
 
                     <TextView
                         android:id="@+id/riderContact"
@@ -226,7 +237,8 @@
                         android:gravity="right"
                         android:padding="8dp"
                         android:text="Plate No:"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        tools:ignore="HardcodedText,RtlHardcoded" />
 
                     <TextView
                         android:id="@+id/riderPlateNo"
@@ -261,7 +273,8 @@
                         android:gravity="right"
                         android:padding="8dp"
                         android:text="MyKad/Passport:"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        tools:ignore="HardcodedText,RtlHardcoded" />
 
                     <TextView
                         android:id="@+id/operatorIc"
@@ -282,7 +295,8 @@
                         android:gravity="right"
                         android:padding="8dp"
                         android:text="Name:"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        tools:ignore="HardcodedText,RtlHardcoded" />
 
                     <TextView
                         android:id="@+id/operatorName"
@@ -302,7 +316,8 @@
                         android:gravity="right"
                         android:padding="8dp"
                         android:text="Contact:"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        tools:ignore="HardcodedText,RtlHardcoded" />
 
                     <TextView
                         android:id="@+id/operatorContact"
@@ -322,7 +337,8 @@
                         android:gravity="right"
                         android:padding="8dp"
                         android:text="Plate No:"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        tools:ignore="HardcodedText,RtlHardcoded" />
 
                     <TextView
                         android:id="@+id/operatorPlateNo"

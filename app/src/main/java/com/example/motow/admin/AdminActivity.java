@@ -17,7 +17,6 @@ import com.example.motow.LoginActivity;
 import com.example.motow.R;
 import com.example.motow.admin.adminprocesses.AdminProcessActivity;
 import com.example.motow.admin.adminusers.AdminUserActivity;
-import com.example.motow.admin.adminusers.UserDeleteActivity;
 import com.example.motow.admin.adminusers.UserVerificationActivity;
 import com.example.motow.admin.adminvehicles.AdminVehicleActivity;
 import com.example.motow.databinding.ActivityAdminBinding;
@@ -38,7 +37,6 @@ public class AdminActivity extends AppCompatActivity implements NavigationView.O
     private ActivityAdminBinding binding;
 
     private ArrayList<Users> users;
-    private UsersAdapter usersAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,7 +99,7 @@ public class AdminActivity extends AppCompatActivity implements NavigationView.O
         binding.verifyRecycler.setHasFixedSize(true);
         binding.verifyRecycler.setLayoutManager(new LinearLayoutManager(this));
         users = new ArrayList<>();
-        usersAdapter = new UsersAdapter(users, this);
+        UsersAdapter usersAdapter = new UsersAdapter(users, this);
         binding.verifyRecycler.setAdapter(usersAdapter);
     }
 
@@ -156,9 +154,6 @@ public class AdminActivity extends AppCompatActivity implements NavigationView.O
                 break;
             case R.id.menuProcesses:
                 startActivity(new Intent(getApplicationContext(), AdminProcessActivity.class));
-                break;
-            case R.id.menuDelete:
-                startActivity(new Intent(getApplicationContext(), UserDeleteActivity.class));
                 break;
             case R.id.menuLogout:
                 FirebaseAuth.getInstance().signOut();

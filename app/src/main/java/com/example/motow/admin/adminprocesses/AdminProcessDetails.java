@@ -16,7 +16,6 @@ import java.util.Locale;
 public class AdminProcessDetails extends AppCompatActivity {
 
     private ActivityAdminProcessDetailsBinding binding;
-    private Processes processes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,7 +23,7 @@ public class AdminProcessDetails extends AppCompatActivity {
         binding = ActivityAdminProcessDetailsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        processes = (Processes) getIntent().getSerializableExtra("processId");
+        Processes processes = (Processes) getIntent().getSerializableExtra("processId");
 
         loadAssistanceDetails(processes);
         setListeners();
@@ -61,15 +60,11 @@ public class AdminProcessDetails extends AppCompatActivity {
                     db.collection("Vehicles")
                             .document(documentSnapshot.getString("riderVehicle"))
                             .get()
-                            .addOnSuccessListener(riderVehicle -> {
-                                binding.riderPlateNo.setText(riderVehicle.getString("plateNumber"));
-                            });
+                            .addOnSuccessListener(riderVehicle -> binding.riderPlateNo.setText(riderVehicle.getString("plateNumber")));
                     db.collection("Vehicles")
                             .document(documentSnapshot.getString("operatorVehicle"))
                             .get()
-                            .addOnSuccessListener(operatorSnapshot -> {
-                               binding.operatorPlateNo.setText(operatorSnapshot.getString("plateNumber"));
-                            });
+                            .addOnSuccessListener(operatorSnapshot -> binding.operatorPlateNo.setText(operatorSnapshot.getString("plateNumber")));
                 });
     }
 

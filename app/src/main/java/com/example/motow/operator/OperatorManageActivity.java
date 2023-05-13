@@ -1,10 +1,5 @@
 package com.example.motow.operator;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -15,12 +10,17 @@ import android.util.Base64;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.motow.LoginActivity;
 import com.example.motow.UserInfoActivity;
 import com.example.motow.databinding.ActivityOperatorManageBinding;
 import com.example.motow.vehicles.ManageVehicleActivity;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.ByteArrayOutputStream;
@@ -62,7 +62,6 @@ public class OperatorManageActivity extends AppCompatActivity {
                     binding.pfp.setImageBitmap(bitmap);
                     if (documentSnapshot.getString("delRequest") != null) {
                         binding.deleteAccount.setVisibility(View.GONE);
-                        binding.cancelDelete.setVisibility(View.VISIBLE);
                     }
                 });
     }
@@ -96,9 +95,7 @@ public class OperatorManageActivity extends AppCompatActivity {
             finish();
         });
         binding.deleteAccount.setOnClickListener(v ->
-                requestDeletion());
-        binding.cancelDelete.setOnClickListener(v ->
-                cancelDeletion());
+                deleteAccount());
     }
 
     private String encodeImage(Bitmap bitmap) {
@@ -135,41 +132,28 @@ public class OperatorManageActivity extends AppCompatActivity {
             }
     );
 
-    private void requestDeletion() {
+    private void deleteAccount() {
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
         alert.setTitle("Are you sure?");
-        alert.setMessage("This account will not be accessible after 7 working days.");
+        alert.setMessage("This account will deleted from the system and it is irreversible.");
         alert.setPositiveButton("YES", (dialogInterface, i) -> {
-            HashMap<String, Object> delRequest = new HashMap<>();
-            delRequest.put("delRequest", "1");
-            fStore.collection("Users")
-                    .document(userId)
-                    .update(delRequest)
-                    .addOnCompleteListener(task ->
-                            Toast.makeText(OperatorManageActivity.this, "Request has been sent", Toast.LENGTH_SHORT).show());
-            binding.deleteAccount.setVisibility(View.GONE);
-            binding.cancelDelete.setVisibility(View.VISIBLE);
-        });
-        alert.setNegativeButton("NO", (dialogInterface, i) -> {
-            //
-        });
-        alert.create().show();
-    }
+            // Delete account
+            FirebaseAuth fAuth = FirebaseAuth.getInstance();
+            FirebaseUser user = fAuth.getCurrentUser();
 
-    private void cancelDeletion() {
-        AlertDialog.Builder alert = new AlertDialog.Builder(this);
-        alert.setTitle("Are you sure?");
-        alert.setMessage("Do you want to cancel the account deletion?");
-        alert.setPositiveButton("YES", (dialogInterface, i) -> {
-            HashMap<String, Object> delRequest = new HashMap<>();
-            delRequest.put("delRequest", FieldValue.delete());
+            HashMap<String, Object> delete = new HashMap<>();
+            delete.put("isDeleted", "1");
+
             fStore.collection("Users")
                     .document(userId)
-                    .update(delRequest)
-                    .addOnCompleteListener(task ->
-                            Toast.makeText(OperatorManageActivity.this, "Account deletion has been canceled", Toast.LENGTH_SHORT).show());
-            binding.deleteAccount.setVisibility(View.VISIBLE);
-            binding.cancelDelete.setVisibility(View.GONE);
+                    .update(delete);
+
+            user.delete().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    Toast.makeText(this, "Account has been deleted", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(this, LoginActivity.class));
+                }
+            });
         });
         alert.setNegativeButton("NO", (dialogInterface, i) -> {
             //

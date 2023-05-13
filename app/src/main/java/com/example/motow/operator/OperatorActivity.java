@@ -574,6 +574,11 @@ public class OperatorActivity extends FragmentActivity implements OnMapReadyCall
     }
 
     private void sendMessage() {
+        fStore.collection("Processes").document(currentProcessId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    riderId = documentSnapshot.getString("riderId");
+                });
         HashMap<String, Object> sendMessage = new HashMap<>();
         sendMessage.put("senderId", userId);
         sendMessage.put("receiverId", riderId);

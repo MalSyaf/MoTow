@@ -18,7 +18,8 @@
         android:textSize="26sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="HardcodedText,TextSizeCheck" />
 
     <com.makeramen.roundedimageview.RoundedImageView
         android:id="@+id/pfp"
@@ -30,7 +31,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:riv_oval="true" />
+        app:riv_oval="true"
+        tools:ignore="ImageContrastCheck" />
 
     <TextView
         android:id="@+id/change_pfp_btn"
@@ -44,7 +46,8 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="HardcodedText,TextSizeCheck" />
 
     <View
         android:layout_width="366dp"
@@ -66,7 +69,8 @@
         android:textColor="@color/grey"
         android:textSize="20sp"
         android:textStyle="bold"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="HardcodedText,RtlHardcoded,UseCompatTextViewDrawableXml" />
 
     <View
         android:layout_width="366dp"
@@ -86,7 +90,8 @@
         android:textColor="@color/grey"
         android:textSize="20sp"
         android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@+id/personal_info" />
+        app:layout_constraintTop_toBottomOf="@+id/personal_info"
+        tools:ignore="HardcodedText,RtlHardcoded,UseCompatTextViewDrawableXml" />
 
     <View
         android:layout_width="366dp"
@@ -101,23 +106,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="15dp"
-        android:text="      Request Account Deletion"
+        android:text="      Delete Account"
         android:textColor="@color/grey"
         android:textSize="20sp"
         android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@+id/manage_vehicles" />
-
-    <TextView
-        android:id="@+id/cancel_delete"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="15dp"
-        android:text="      Cancel Deletion Request"
-        android:textColor="@color/red"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@+id/manage_vehicles" />
+        app:layout_constraintTop_toBottomOf="@+id/manage_vehicles"
+        tools:ignore="HardcodedText" />
 
     <View
         android:layout_width="366dp"
@@ -126,14 +120,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/delete_account" />
-
-    <View
-        android:layout_width="366dp"
-        android:layout_height="2dp"
-        android:background="@color/line"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cancel_delete" />
 
     <TextView
         android:id="@+id/logout_btn"
@@ -147,7 +133,8 @@
         app:layout_constraintBottom_toTopOf="@+id/navbar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/delete_account" />
+        app:layout_constraintTop_toBottomOf="@+id/delete_account"
+        tools:ignore="HardcodedText" />
 
     <!-- Navbar -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -168,7 +155,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/manageBtn"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription" />
 
         <ImageView
             android:id="@+id/manageBtn"
@@ -178,6 +166,7 @@
             android:src="@drawable/manage_user"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

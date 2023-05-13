@@ -1,21 +1,17 @@
 package com.example.motow.admin.adminvehicles;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.motow.databinding.ActivityAdminVehicleDetailsBinding;
-import com.example.motow.databinding.ActivityLoginBinding;
 import com.example.motow.vehicles.Vehicle;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class AdminVehicleDetailsActivity extends AppCompatActivity {
 
     private ActivityAdminVehicleDetailsBinding binding;
-    private Vehicle vehicle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,7 +19,7 @@ public class AdminVehicleDetailsActivity extends AppCompatActivity {
         binding = ActivityAdminVehicleDetailsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        vehicle = (Vehicle) getIntent().getSerializableExtra("vehicleId");
+        Vehicle vehicle = (Vehicle) getIntent().getSerializableExtra("vehicleId");
 
         loadVehicleDetails(vehicle);
         setListeners();

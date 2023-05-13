@@ -27,9 +27,6 @@
             android:name=".operator.OperatorActivity"
             android:exported="false" />
         <activity
-            android:name=".admin.adminusers.UserDeleteActivity"
-            android:exported="false" />
-        <activity
             android:name=".admin.adminusers.AdminUserActivity"
             android:exported="false" />
         <activity

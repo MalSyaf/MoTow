@@ -23,7 +23,8 @@
             android:src="@drawable/baseline_arrow_back_ios_24"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription,RtlHardcoded" />
 
         <TextView
             android:id="@+id/infoTextview"
@@ -36,7 +37,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="HardcodedText" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ScrollView
@@ -50,7 +52,8 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            tools:ignore="ScrollViewSize">
 
             <TextView
                 android:id="@+id/name"
@@ -61,7 +64,8 @@
                 android:textSize="20sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="HardcodedText" />
 
             <com.makeramen.roundedimageview.RoundedImageView
                 android:id="@+id/profileImage"
@@ -84,7 +88,8 @@
                 android:textSize="20sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/profileImage" />
+                app:layout_constraintTop_toBottomOf="@id/profileImage"
+                tools:ignore="HardcodedText" />
 
             <TableLayout
                 android:id="@+id/userInfoTable"
@@ -107,7 +112,8 @@
                         android:gravity="right"
                         android:padding="8dp"
                         android:text="Status:"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        tools:ignore="HardcodedText,RtlHardcoded" />
 
                     <TextView
                         android:id="@+id/accStatus"
@@ -129,7 +135,8 @@
                         android:gravity="right"
                         android:padding="8dp"
                         android:text="Mykad/Passport:"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        tools:ignore="HardcodedText,RtlHardcoded" />
 
                     <TextView
                         android:id="@+id/idNum"
@@ -151,7 +158,8 @@
                         android:gravity="right"
                         android:padding="8dp"
                         android:text="Email:"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        tools:ignore="HardcodedText,RtlHardcoded" />
 
                     <TextView
                         android:id="@+id/email"
@@ -172,7 +180,8 @@
                         android:gravity="right"
                         android:padding="8dp"
                         android:text="Contact:"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        tools:ignore="HardcodedText,RtlHardcoded" />
 
                     <TextView
                         android:id="@+id/contact"
@@ -193,7 +202,8 @@
                         android:gravity="right"
                         android:padding="8dp"
                         android:text="Identification:"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        tools:ignore="HardcodedText,RtlHardcoded" />
 
                     <TextView
                         android:id="@+id/icBtn"
@@ -204,7 +214,8 @@
                         android:gravity="center"
                         android:padding="8dp"
                         android:text="View Image"
-                        android:textColor="@color/purple_500" />
+                        android:textColor="@color/purple_500"
+                        tools:ignore="HardcodedText" />
                 </TableRow>
             </TableLayout>
 
@@ -230,7 +241,8 @@
                         android:gravity="right"
                         android:padding="8dp"
                         android:text="Company Name:"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        tools:ignore="HardcodedText,RtlHardcoded" />
 
                     <TextView
                         android:id="@+id/companyName"
@@ -241,7 +253,8 @@
                         android:background="@color/white"
                         android:gravity="center"
                         android:padding="8dp"
-                        android:text="For operator only" />
+                        android:text="For operator only"
+                        tools:ignore="HardcodedText" />
                 </TableRow>
 
                 <TableRow>
@@ -253,7 +266,8 @@
                         android:gravity="right"
                         android:padding="8dp"
                         android:text="Registration Number:"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        tools:ignore="HardcodedText,RtlHardcoded" />
 
                     <TextView
                         android:id="@+id/companyRegNo"
@@ -262,7 +276,8 @@
                         android:background="@color/white"
                         android:gravity="center"
                         android:padding="8dp"
-                        android:text="For operator only" />
+                        android:text="For operator only"
+                        tools:ignore="HardcodedText" />
                 </TableRow>
 
                 <TableRow>
@@ -274,7 +289,8 @@
                         android:gravity="right"
                         android:padding="8dp"
                         android:text="License:"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        tools:ignore="HardcodedText,RtlHardcoded" />
 
                     <TextView
                         android:id="@+id/licenseBtn"
@@ -285,7 +301,8 @@
                         android:gravity="center"
                         android:padding="8dp"
                         android:text="View Image"
-                        android:textColor="@color/purple_500" />
+                        android:textColor="@color/purple_500"
+                        tools:ignore="HardcodedText" />
                 </TableRow>
             </TableLayout>
 
@@ -300,7 +317,8 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/rejectButton"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/companyInfoTable" />
+                app:layout_constraintTop_toBottomOf="@id/companyInfoTable"
+                tools:ignore="HardcodedText" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/rejectButton"
@@ -313,20 +331,8 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/verifyButton"
-                app:layout_constraintTop_toBottomOf="@id/companyInfoTable" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/deleteBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
-                android:backgroundTint="@color/red"
-                android:text="Delete"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/companyInfoTable" />
+                app:layout_constraintTop_toBottomOf="@id/companyInfoTable"
+                tools:ignore="HardcodedText,TextContrastCheck" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 
@@ -355,7 +361,8 @@
                 android:src="@drawable/baseline_arrow_back_ios_24"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="ContentDescription,RtlHardcoded" />
 
             <TextView
                 android:id="@+id/icTextView"
@@ -368,7 +375,8 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="HardcodedText" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <ImageView
@@ -378,7 +386,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/icTopBar" />
+            app:layout_constraintTop_toBottomOf="@id/icTopBar"
+            tools:ignore="ContentDescription" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
@@ -407,7 +416,8 @@
                 android:src="@drawable/baseline_arrow_back_ios_24"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="ContentDescription,RtlHardcoded" />
 
             <TextView
                 android:id="@+id/licenseTextView"
@@ -420,7 +430,8 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="HardcodedText" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <ImageView
@@ -430,6 +441,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/licenseTopBar" />
+            app:layout_constraintTop_toBottomOf="@id/licenseTopBar"
+            tools:ignore="ContentDescription" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
