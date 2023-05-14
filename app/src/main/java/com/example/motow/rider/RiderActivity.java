@@ -21,6 +21,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
@@ -58,6 +59,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.stripe.android.PaymentConfiguration;
@@ -104,15 +107,16 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
     private List<Chats> chatMessages;
     private ChatsAdapter chatsAdapter;
 
-    // operator
+    // Operator
     private String operatorId, tCurrentVehicle, operatorVehicle;
     private LatLng operatorLocation;
     private Double tLatitude, tLongitude;
 
     private static final int REQUEST_CALL = 1;
-    public String processId, riderVehicle;
+    public String currentProcessId, riderVehicle;
     private LatLng currentLocation;
     private CircleOptions circleOptions;
+    private ListenerRegistration getAssistance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,7 +138,9 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
 
         // Stripe
         paymentSheet = new PaymentSheet(this, this::onPaymentSheetResult);
+        fetchApi();
 
+        // Chat adapter
         chatMessages = new ArrayList<>();
         chatsAdapter = new ChatsAdapter(chatMessages, userId);
         binding.chatRecycler.setAdapter(chatsAdapter);
@@ -142,20 +148,36 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
         supportMapFragment();
         loadUserDetails();
         setListeners();
-        fetchApi();
         checkProcessStatus();
         setUpRecyclerView();
         eventChangeListener();
     }
 
-    public boolean foreGroundServiceRunning() {
-        ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : activityManager.getRunningServices(Integer.MAX_VALUE)) {
-            if (ForegroundService.class.getName().equals(service.service.getClassName())) {
-                return true;
-            }
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+        check = true;
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
         }
-        return false;
+        mMap.setMyLocationEnabled(true);
+
+        fStore.collection("Users")
+                .document(userId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    LatLng firstCamera = new LatLng(documentSnapshot.getDouble("latitude"), documentSnapshot.getDouble("longitude"));
+                    CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(firstCamera, 15);
+                    mMap.moveCamera(cameraUpdate);
+                });
     }
 
     private void supportMapFragment() {
@@ -204,35 +226,6 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
         });
     }
 
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-        check = true;
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        mMap.setMyLocationEnabled(true);
-
-        fStore.collection("Users")
-                .document(userId)
-                .get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.getDouble("latitude") != null) {
-                        LatLng firstCamera = new LatLng(documentSnapshot.getDouble("latitude"), documentSnapshot.getDouble("longitude"));
-                        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(firstCamera, 15);
-                        mMap.moveCamera(cameraUpdate);
-                    }
-                });
-    }
-
     private void loadUserDetails() {
         fStore.collection("Users")
                 .document(userId)
@@ -264,16 +257,16 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                         }));
 
         // Chat listener
-        binding.chatButton.setOnClickListener(v -> {
+        binding.chatBtn.setOnClickListener(v -> {
             binding.chatLayout.setVisibility(View.VISIBLE);
-            binding.chatButton.setVisibility(View.GONE);
+            binding.chatBtn.setVisibility(View.GONE);
             binding.operatorBar.setVisibility(View.GONE);
             listenMessages();
             loadReceiverName();
         });
         binding.chatBackBtn.setOnClickListener(v -> {
             binding.chatLayout.setVisibility(View.GONE);
-            binding.chatButton.setVisibility(View.VISIBLE);
+            binding.chatBtn.setVisibility(View.VISIBLE);
             binding.operatorBar.setVisibility(View.VISIBLE);
         });
         binding.callBtn.setOnClickListener(v ->
@@ -302,7 +295,7 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
         binding.okBtn.setOnClickListener(view -> {
             binding.operatorBar.setVisibility(View.VISIBLE);
             binding.operatorContainer.setVisibility(View.GONE);
-            changeoperatorStatus();
+            getAssistance.remove();
         });
         binding.cancelBtn.setOnClickListener(view -> {
             binding.searchText.setVisibility(View.GONE);
@@ -313,7 +306,7 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
             binding.operatorContainer.setVisibility(View.VISIBLE);
             binding.operatorBar.setVisibility(View.GONE);
             binding.operatorBarStatus.setText("Assistance is on the way");
-            binding.waiting.setVisibility(View.GONE);
+            binding.waitingText.setVisibility(View.GONE);
             fStore.collection("Users")
                     .document(operatorId)
                     .get()
@@ -327,7 +320,11 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
             binding.requestBtn.setVisibility(View.VISIBLE);
             binding.completionContainer.setVisibility(View.GONE);
             operatorId = null;
-            changeRiderStatus();
+            HashMap<String, Object> status = new HashMap<>();
+            status.put("status", null);
+            fStore.collection("Users")
+                    .document(userId)
+                    .update(status);
         });
         binding.addVehicle.setOnClickListener(v -> {
             startActivity(new Intent(getApplicationContext(), ManageVehicleActivity.class));
@@ -353,62 +350,451 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                         new PaymentSheet.Configuration("MoTow", configuration));
             }
         });
+        binding.confirmBtn.setOnClickListener(view -> {
+            binding.selectVehicle.setVisibility(View.GONE);
+            binding.cancelBtn.setVisibility(View.VISIBLE);
+            binding.searchText.setVisibility(View.VISIBLE);
+            createProcess();
+
+        });
+        binding.okCancelBtn.setOnClickListener(view -> {
+            binding.cancelationContainer.setVisibility(View.GONE);
+            binding.requestBtn.setVisibility(View.VISIBLE);
+            HashMap<String, Object> status = new HashMap<>();
+            status.put("status", null);
+            fStore.collection("Users")
+                    .document(userId)
+                    .update(status);
+        });
     }
 
-    private void changeRiderStatus() {
-        HashMap<String, Object> status = new HashMap<>();
-        status.put("status", null);
-        fStore.collection("Users")
-                .document(userId)
-                .update(status);
-    }
-
-    private void changeoperatorStatus() {
+    private void checkProcessStatus() {
         fStore.collection("Processes")
                 .addSnapshotListener((value, error) -> {
-                    // Check process towed
-                    fStore.collection("Processes")
-                            .whereEqualTo("riderId", userId)
-                            .whereEqualTo("operatorId", operatorId)
-                            .whereEqualTo("processStatus", "towed")
-                            .get()
-                            .addOnCompleteListener(task -> {
-                                if (task.isSuccessful()) {
-                                    for (QueryDocumentSnapshot document : task.getResult()) {
-                                        binding.operatorBarStatus.setText("Vehicle has been towed");
+                    for (QueryDocumentSnapshot documentSnapshot : value) {
+                        // Check process ongoing
+                        fStore.collection("Processes")
+                                .whereEqualTo("riderId", userId)
+                                .whereEqualTo("operatorId", operatorId)
+                                .whereEqualTo("processStatus", "Ongoing")
+                                .whereEqualTo("processId", currentProcessId)
+                                .get()
+                                .addOnCompleteListener(task -> {
+                                    if (task.isSuccessful()) {
+                                        for (QueryDocumentSnapshot document : task.getResult()) {
+                                            binding.chatBtn.setVisibility(View.VISIBLE);
+                                            binding.operatorBarStatus.setText("Assistance is on the way");
+                                            // Display operator's detail
+                                            displayOperatorInfo(operatorId);
+                                            mMap.addMarker(new MarkerOptions().position(operatorLocation).title(document.getString("fullName")).icon(BitmapDescriptorFactory.fromResource(R.drawable.tow_truck)));
+                                            fStore.collection("Users")
+                                                    .document(operatorId)
+                                                    .get()
+                                                    .addOnSuccessListener(documentSnapshot1 -> {
+                                                        LatLng firstCamera = new LatLng(documentSnapshot1.getDouble("latitude"), documentSnapshot1.getDouble("longitude"));
+                                                        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(firstCamera, 15);
+                                                        mMap.animateCamera(cameraUpdate);
+                                                    });
+                                            notificationAssistanceOtw();
+                                            // Update rider's status
+                                            HashMap<String, Object> status = new HashMap<>();
+                                            status.put("status", "inassistance");
+                                            fStore.collection("Users")
+                                                    .document(userId)
+                                                    .update(status);
+                                        }
                                     }
-                                }
-                            });
+                                });
 
-                    // Check process paid
-                    fStore.collection("Processes")
-                            .whereEqualTo("riderId", userId)
-                            .whereEqualTo("operatorId", operatorId)
-                            .whereEqualTo("processId", processId)
-                            .whereEqualTo("processStatus", "paid")
-                            .get()
-                            .addOnCompleteListener(task -> {
-                                if (task.isSuccessful()) {
-                                    for (QueryDocumentSnapshot document : task.getResult()) {
-                                        binding.operatorBarStatus.setText("Confirming payment");
+                        // Assistance towed
+                        fStore.collection("Processes")
+                                .whereEqualTo("riderId", userId)
+                                .whereEqualTo("operatorId", operatorId)
+                                .whereEqualTo("processId", currentProcessId)
+                                .whereEqualTo("processStatus", "Towed")
+                                .get()
+                                .addOnCompleteListener(task -> {
+                                    if (task.isSuccessful()) {
+                                        for (QueryDocumentSnapshot ignored : task.getResult()) {
+                                            binding.paymentBtn.setVisibility(View.VISIBLE);
+                                            binding.operatorBarStatus.setText("Vehicle has been towed");
+                                            notificationTowed();
+                                        }
                                     }
-                                }
-                            });
+                                });
 
-                    // Check process ongoing
-                    fStore.collection("Processes")
-                            .whereEqualTo("riderId", userId)
-                            .whereEqualTo("operatorId", operatorId)
-                            .whereEqualTo("processStatus", "ongoing")
-                            .whereEqualTo("processId", processId)
-                            .get()
-                            .addOnCompleteListener(task -> {
-                                if (task.isSuccessful()) {
-                                    for (QueryDocumentSnapshot document : task.getResult()) {
-                                        binding.operatorBarStatus.setText("Assistance is on the way");
+                        // Assistance paid
+                        fStore.collection("Processes")
+                                .whereEqualTo("riderId", userId)
+                                .whereEqualTo("operatorId", operatorId)
+                                .whereEqualTo("processId", currentProcessId)
+                                .whereEqualTo("processStatus", "Paid")
+                                .get()
+                                .addOnCompleteListener(task -> {
+                                    if (task.isSuccessful()) {
+                                        for (QueryDocumentSnapshot document : task.getResult()) {
+                                            binding.operatorBarStatus.setText("Confirming payment");
+                                            notificationConfirmation();
+                                        }
                                     }
-                                }
+                                });
+
+                        // Assistance complete
+                        fStore.collection("Processes")
+                                .whereEqualTo("riderId", userId)
+                                .whereEqualTo("operatorId", operatorId)
+                                .whereEqualTo("processId", currentProcessId)
+                                .whereEqualTo("processStatus", "Completed")
+                                .get()
+                                .addOnCompleteListener(task -> {
+                                    if (task.isSuccessful()) {
+                                        for (QueryDocumentSnapshot document : task.getResult()) {
+                                            mMap.clear();
+                                            binding.waitingText.setVisibility(View.GONE);
+                                            binding.operatorBar.setVisibility(View.GONE);
+                                            binding.chatBtn.setVisibility(View.GONE);
+
+                                            HashMap<String, Object> status = new HashMap<>();
+                                            status.put("status", null);
+                                            fStore.collection("Users")
+                                                    .document(userId)
+                                                    .update(status);
+
+                                            loadCompletion();
+                                        }
+                                    }
+                                });
+
+                        // Assistance canceled
+                        fStore.collection("Processes")
+                                .whereEqualTo("riderId", userId)
+                                .whereEqualTo("operatorId", operatorId)
+                                .whereEqualTo("processId", currentProcessId)
+                                .whereEqualTo("processStatus", "Canceled")
+                                .get()
+                                .addOnCompleteListener(task -> {
+                                    if (task.isSuccessful()) {
+                                        for (QueryDocumentSnapshot ignored : task.getResult()) {
+                                            mMap.clear();
+                                            binding.waitingText.setVisibility(View.GONE);
+                                            binding.operatorBar.setVisibility(View.GONE);
+                                            binding.chatBtn.setVisibility(View.GONE);
+                                            binding.operatorBar.setVisibility(View.GONE);
+                                            binding.waitingText.setVisibility(View.GONE);
+
+                                            HashMap<String, Object> status = new HashMap<>();
+                                            status.put("status", null);
+                                            fStore.collection("Users")
+                                                    .document(userId)
+                                                    .update(status);
+
+                                            loadCancelation();
+                                        }
+                                    }
+                                });
+                    }
+                });
+    }
+
+    private void loadCancelation() {
+        binding.cancelationContainer.setVisibility(View.VISIBLE);
+        fStore.collection("Users")
+                .document(operatorId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    binding.operatorNameCancel.setText(documentSnapshot.getString("name"));
+                    byte[] bytes = Base64.decode(documentSnapshot.getString("pfp"), Base64.DEFAULT);
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                    binding.operatorPfpCancel.setImageBitmap(bitmap);
+                });
+    }
+
+    private void loadReceiverName() {
+        fStore.collection("Users")
+                .document(operatorId)
+                .get()
+                .addOnSuccessListener(documentSnapshot ->
+                        binding.chatName.setText(documentSnapshot.getString("name")));
+    }
+
+    private void makePhoneCall() {
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.CALL_PHONE}, REQUEST_CALL);
+        } else {
+            fStore.collection("Users")
+                    .document(operatorId)
+                    .get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        String contact = documentSnapshot.getString("contact");
+                        String dial = "tel:" + contact;
+                        startActivity(new Intent(Intent.ACTION_CALL, Uri.parse(dial)));
+                    });
+        }
+    }
+
+    private void sendMessage() {
+        HashMap<String, Object> sendMessage = new HashMap<>();
+        sendMessage.put("senderId", userId);
+        sendMessage.put("receiverId", operatorId);
+        sendMessage.put("message", binding.inputMessage.getText().toString());
+        sendMessage.put("timestamp", new Date());
+        fStore.collection("Chats")
+                .add(sendMessage);
+        binding.inputMessage.setText("");
+    }
+
+    private void listenMessages() {
+        fStore.collection("Chats")
+                .whereEqualTo("senderId", userId)
+                .whereEqualTo("receiverId", operatorId)
+                .addSnapshotListener(eventListener);
+        fStore.collection("Chats")
+                .whereEqualTo("senderId", operatorId)
+                .whereEqualTo("receiverId", userId)
+                .addSnapshotListener(eventListener);
+    }
+
+    private final EventListener<QuerySnapshot> eventListener = (value, error) -> {
+        if (error != null) {
+            return;
+        }
+        if (value != null) {
+            int count = chatMessages.size();
+            for (DocumentChange documentChange : value.getDocumentChanges()) {
+                if (documentChange.getType() == DocumentChange.Type.ADDED) {
+                    Chats chatMessage = new Chats();
+                    chatMessage.sender = documentChange.getDocument().getString("senderId");
+                    chatMessage.receiver = documentChange.getDocument().getString("receiverId");
+                    chatMessage.message = documentChange.getDocument().getString("message");
+                    chatMessage.dateTime = getReadableDateTime(documentChange.getDocument().getDate("timestamp"));
+                    chatMessage.dateObject = documentChange.getDocument().getDate("timestamp");
+                    chatMessages.add(chatMessage);
+                }
+            }
+            Collections.sort(chatMessages, (obj1, obj2) -> obj1.dateObject.compareTo(obj2.dateObject));
+            if (count == 0) {
+                chatsAdapter.notifyDataSetChanged();
+            } else {
+                chatsAdapter.notifyItemRangeInserted(chatMessages.size(), chatMessages.size());
+                binding.chatRecycler.smoothScrollToPosition(chatMessages.size() - 1);
+            }
+            binding.chatRecycler.setVisibility(View.VISIBLE);
+        }
+    };
+
+    private String getReadableDateTime(Date date) {
+        return new SimpleDateFormat("MMMM dd, yyyy - hh:mm a", Locale.getDefault()).format(date);
+    }
+
+    private void updateCurrentLocation(double latitude, double longitude) {
+        Map<String, Object> infoUpdate = new HashMap<>();
+        infoUpdate.put("latitude", latitude);
+        infoUpdate.put("longitude", longitude);
+        fStore.collection("Users")
+                .document(userId)
+                .update(infoUpdate);
+    }
+
+    @Override
+    public void onVehicleClicked(Vehicle vehicle) {
+        HashMap<String, Object> updateVehicle = new HashMap<>();
+        updateVehicle.put("currentVehicle", vehicle.vehicleId);
+        fStore.collection("Users")
+                .document(userId)
+                .update(updateVehicle);
+    }
+
+    private void createProcess() {
+        currentProcessId = null;
+        fStore.collection("Users")
+                .document(userId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    //riderVehicle = documentSnapshot.getString("currentVehicle");
+                    Map<String, Object> process = new HashMap<>();
+                    process.put("riderId", userId);
+                    process.put("riderVehicle", documentSnapshot.getString("currentVehicle"));
+                    process.put("operatorId", null);
+                    process.put("operatorVehicle", null);
+                    process.put("processStatus", "Requesting");
+                    process.put("timestamp", new Date());
+                    // Add process document in database
+                    fStore.collection("Processes")
+                            .add(process)
+                            .addOnSuccessListener(documentReference -> {
+                                currentProcessId = documentReference.getId();
+                                Map<String, Object> updateProcessId = new HashMap<>();
+                                updateProcessId.put("processId", currentProcessId);
+                                fStore.collection("Processes")
+                                        .document(currentProcessId)
+                                        .update(updateProcessId);
+                                getAssistance(currentProcessId);
                             });
+                });
+    }
+
+    private void getAssistance(String currentProcessId) {
+        operatorId = null;
+        getAssistance = fStore.collection("Users")
+                .whereEqualTo("isOperator", "1")
+                .whereEqualTo("status", "online")
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                        if (error != null) {
+                            return;
+                        }
+                        for (QueryDocumentSnapshot doc : value) {
+                            tLatitude = doc.getDouble("latitude");
+                            tLongitude = doc.getDouble("longitude");
+                            float[] distance = new float[2];
+
+                            Location.distanceBetween(tLatitude, tLongitude, circleOptions.getCenter().latitude, circleOptions.getCenter().longitude, distance);
+
+                            if (distance[0] > circleOptions.getRadius()) {
+                                // Outside the radius
+                                Toast.makeText(RiderActivity.this, "No assistance currently available", Toast.LENGTH_SHORT).show();
+                                binding.cancelBtn.setVisibility(View.GONE);
+                                binding.searchText.setVisibility(View.GONE);
+                                binding.requestBtn.setVisibility(View.VISIBLE);
+                            } else if (distance[0] < circleOptions.getRadius()) {
+                                // Inside the radius
+                                operatorId = doc.getId();
+                                operatorVehicle = doc.getString("currentVehicle");
+                                // Add operator's id
+                                HashMap<String, Object> operatorInfo = new HashMap<>();
+                                operatorInfo.put("operatorId", operatorId);
+                                operatorInfo.put("operatorVehicle", operatorVehicle);
+                                fStore.collection("Processes")
+                                        .document(currentProcessId)
+                                        .update(operatorInfo);
+                                // Add operator's marker
+                                fStore.collection("Users")
+                                        .document(operatorId)
+                                        .addSnapshotListener((value1, error1) -> {
+                                            mMap.clear();
+                                            double tCurrentLatitude = value1.getDouble("latitude");
+                                            double tCurrentLongitude = value1.getDouble("longitude");
+                                            operatorLocation = new LatLng(tCurrentLatitude, tCurrentLongitude);
+                                            mMap.addMarker(new MarkerOptions().position(operatorLocation).title(value1.getString("fullName")).icon(BitmapDescriptorFactory.fromResource(R.drawable.tow_truck)));
+                                        });
+                            }
+                        }
+                    }
+                });
+    }
+
+
+    private void loadCompletion() {
+        binding.completionContainer.setVisibility(View.VISIBLE);
+        fStore.collection("Users")
+                .document(operatorId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    binding.operatorNameComplete.setText(documentSnapshot.getString("name"));
+                    byte[] bytes = Base64.decode(documentSnapshot.getString("pfp"), Base64.DEFAULT);
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                    binding.operatorPfpComplete.setImageBitmap(bitmap);
+                });
+    }
+
+    private void displayOperatorInfo(String operatorId) {
+        binding.cancelBtn.setVisibility(View.GONE);
+        binding.searchText.setVisibility(View.GONE);
+        binding.operatorContainer.setVisibility(View.VISIBLE);
+
+        // Display operator's info
+        fStore.collection("Users")
+                .document(operatorId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    binding.operatorName.setText(documentSnapshot.getString("name"));
+                    binding.operatorType.setText(documentSnapshot.getString("companyName"));
+                    byte[] bytes = Base64.decode(documentSnapshot.getString("pfp"), Base64.DEFAULT);
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                    binding.operatorBarPfp.setImageBitmap(bitmap);
+                    binding.operatorPfp.setImageBitmap(bitmap);
+
+                    tCurrentVehicle = documentSnapshot.getString("currentVehicle");
+                    // Get operator's current vehicle info
+                    fStore.collection("Vehicles")
+                            .document(tCurrentVehicle)
+                            .get()
+                            .addOnSuccessListener(documentSnapshot1 -> {
+                                binding.operatorVehicle.setText(documentSnapshot1.getString("brand") + " " + documentSnapshot1.getString("model") + " (" + documentSnapshot1.getString("color") + ")");
+                                binding.operatorPlate.setText(documentSnapshot1.getString("plateNumber"));
+                            });
+                });
+    }
+
+    private void updatePayment() {
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle("Cash or QR");
+        alert.setMessage("Cash/QR payment is successful?");
+        alert.setPositiveButton("YES", (dialogInterface, i) -> {
+            HashMap<String, Object> updateStatus = new HashMap<>();
+            updateStatus.put("processStatus", "Paid");
+            fStore.collection("Processes")
+                    .document(currentProcessId)
+                    .update(updateStatus)
+                    .addOnSuccessListener(unused -> {
+                        Toast.makeText(this, "Payment success", Toast.LENGTH_SHORT).show();
+                        binding.selectPayMethod.setVisibility(View.GONE);
+                        binding.paymentBtn.setVisibility(View.GONE);
+                        binding.waitingText.setVisibility(View.VISIBLE);
+                    });
+        }).setNegativeButton("No", (dialogInterface, i) -> {
+            binding.donePayment.setVisibility(View.GONE);
+        });
+        alert.create().show();
+    }
+
+    private void onPaymentSheetResult(final PaymentSheetResult paymentSheetResult) {
+        if (paymentSheetResult instanceof PaymentSheetResult.Canceled) {
+            Toast.makeText(this, "Payment has been canceled", Toast.LENGTH_SHORT).show();
+        }
+        if (paymentSheetResult instanceof PaymentSheetResult.Failed) {
+            Toast.makeText(this, (((PaymentSheetResult.Failed) paymentSheetResult).getError().getMessage()), Toast.LENGTH_SHORT).show();
+        }
+        if (paymentSheetResult instanceof PaymentSheetResult.Completed) {
+            HashMap<String, Object> updateStatus = new HashMap<>();
+            updateStatus.put("processStatus", "Paid");
+            fStore.collection("Processes")
+                    .document(currentProcessId)
+                    .update(updateStatus)
+                    .addOnSuccessListener(unused -> {
+                        Toast.makeText(this, "Payment success", Toast.LENGTH_SHORT).show();
+                        binding.selectPayMethod.setVisibility(View.GONE);
+                        binding.paymentBtn.setVisibility(View.GONE);
+                        binding.waitingText.setVisibility(View.VISIBLE);
+                    });
+        }
+    }
+
+    private void setUpRecyclerView() {
+        binding.vehicleRecycler.setHasFixedSize(true);
+        binding.vehicleRecycler.setLayoutManager(new LinearLayoutManager(this));
+        vehicleArrayList = new ArrayList<Vehicle>();
+        vehicleAdapter = new VehicleAdapter(vehicleArrayList, this);
+        binding.vehicleRecycler.setAdapter(vehicleAdapter);
+    }
+
+    private void eventChangeListener() {
+        fStore.collection("Vehicles").whereEqualTo("ownerId", userId)
+                .addSnapshotListener((value, error) -> {
+                    if (value.isEmpty()) {
+                        binding.noVehicleText.setVisibility(View.VISIBLE);
+                        binding.noVehicleBtn.setVisibility(View.VISIBLE);
+                    }
+                    if (error != null) {
+                        return;
+                    }
+                    for (DocumentChange dc : value.getDocumentChanges()) {
+                        if (dc.getType() == DocumentChange.Type.ADDED) {
+                            vehicleArrayList.add(dc.getDocument().toObject(Vehicle.class));
+                        }
+                    }
+                    vehicleAdapter.notifyDataSetChanged();
                 });
     }
 
@@ -509,402 +895,13 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
         queue.add(stringRequest);
     }
 
-    private void checkProcessStatus() {
-        fStore.collection("Processes")
-                .addSnapshotListener((value, error) -> {
-                    for (QueryDocumentSnapshot documentSnapshot : value) {
-                        // Check process ongoing
-                        fStore.collection("Processes")
-                                .whereEqualTo("riderId", userId)
-                                .whereEqualTo("operatorId", operatorId)
-                                .whereEqualTo("processStatus", "ongoing")
-                                .whereEqualTo("processId", processId)
-                                .get()
-                                .addOnCompleteListener(task -> {
-                                    if (task.isSuccessful()) {
-                                        for (QueryDocumentSnapshot document : task.getResult()) {
-                                            binding.chatButton.setVisibility(View.VISIBLE);
-                                            // Display operator's detail
-                                            displayoperatorInfo(operatorId);
-                                            mMap.addMarker(new MarkerOptions().position(operatorLocation).title(document.getString("fullName")).icon(BitmapDescriptorFactory.fromResource(R.drawable.tow_truck)));
-                                            fStore.collection("Users")
-                                                    .document(operatorId)
-                                                    .get()
-                                                    .addOnSuccessListener(documentSnapshot1 -> {
-                                                        LatLng firstCamera = new LatLng(documentSnapshot1.getDouble("latitude"), documentSnapshot1.getDouble("longitude"));
-                                                        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(firstCamera, 15);
-                                                        mMap.animateCamera(cameraUpdate);
-                                                    });
-                                            notificationAssistanceOtw();
-                                            // Update rider's status
-                                            HashMap<String, Object> status = new HashMap<>();
-                                            status.put("status", "inassistance");
-                                            fStore.collection("Users")
-                                                    .document(userId)
-                                                    .update(status);
-                                        }
-                                    }
-                                });
-
-                        // Check process towed
-                        fStore.collection("Processes")
-                                .whereEqualTo("riderId", userId)
-                                .whereEqualTo("operatorId", operatorId)
-                                .whereEqualTo("processStatus", "towed")
-                                .get()
-                                .addOnCompleteListener(task -> {
-                                    if (task.isSuccessful()) {
-                                        for (QueryDocumentSnapshot document : task.getResult()) {
-                                            binding.paymentBtn.setVisibility(View.VISIBLE);
-                                            binding.operatorBarStatus.setText("Vehicle has been towed");
-                                            notificationTowed();
-                                        }
-                                    }
-                                });
-
-                        // Check process completed
-                        fStore.collection("Processes")
-                                .whereEqualTo("riderId", userId)
-                                .whereEqualTo("operatorId", operatorId)
-                                .whereEqualTo("processId", processId)
-                                .whereEqualTo("processStatus", "completed")
-                                .get()
-                                .addOnCompleteListener(task -> {
-                                    if (task.isSuccessful()) {
-                                        for (QueryDocumentSnapshot document : task.getResult()) {
-                                            mMap.clear();
-                                            binding.waiting.setVisibility(View.GONE);
-                                            binding.operatorBar.setVisibility(View.GONE);
-                                            binding.chatButton.setVisibility(View.GONE);
-
-                                            HashMap<String, Object> status = new HashMap<>();
-                                            status.put("status", null);
-                                            fStore.collection("Users")
-                                                    .document(userId)
-                                                    .update(status);
-
-                                            loadCompletion();
-                                        }
-                                    }
-                                });
-
-                        // Check process paid
-                        fStore.collection("Processes")
-                                .whereEqualTo("riderId", userId)
-                                .whereEqualTo("operatorId", operatorId)
-                                .whereEqualTo("processId", processId)
-                                .whereEqualTo("processStatus", "paid")
-                                .get()
-                                .addOnCompleteListener(task -> {
-                                    if (task.isSuccessful()) {
-                                        for (QueryDocumentSnapshot document : task.getResult()) {
-                                            binding.operatorBarStatus.setText("Confirming payment");
-                                            notificationConfirmation();
-                                        }
-                                    }
-                                });
-                    }
-                });
-    }
-
-    private void loadReceiverName() {
-        fStore.collection("Users")
-                .document(operatorId)
-                .get()
-                .addOnSuccessListener(documentSnapshot ->
-                        binding.chatName.setText(documentSnapshot.getString("name")));
-    }
-
-    private void makePhoneCall() {
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.CALL_PHONE}, REQUEST_CALL);
-        } else {
-            fStore.collection("Users")
-                    .document(operatorId)
-                    .get()
-                    .addOnSuccessListener(documentSnapshot -> {
-                        String contact = documentSnapshot.getString("contact");
-                        String dial = "tel:" + contact;
-                        startActivity(new Intent(Intent.ACTION_CALL, Uri.parse(dial)));
-                    });
-        }
-    }
-
-    private void sendMessage() {
-        HashMap<String, Object> sendMessage = new HashMap<>();
-        sendMessage.put("senderId", userId);
-        sendMessage.put("receiverId", operatorId);
-        sendMessage.put("message", binding.inputMessage.getText().toString());
-        sendMessage.put("timestamp", new Date());
-        fStore.collection("Chats")
-                .add(sendMessage);
-        binding.inputMessage.setText("");
-    }
-
-    private void listenMessages() {
-        fStore.collection("Chats")
-                .whereEqualTo("senderId", userId)
-                .whereEqualTo("receiverId", operatorId)
-                .addSnapshotListener(eventListener);
-        fStore.collection("Chats")
-                .whereEqualTo("senderId", operatorId)
-                .whereEqualTo("receiverId", userId)
-                .addSnapshotListener(eventListener);
-    }
-
-    private final EventListener<QuerySnapshot> eventListener = (value, error) -> {
-        if (error != null) {
-            return;
-        }
-        if (value != null) {
-            int count = chatMessages.size();
-            for (DocumentChange documentChange : value.getDocumentChanges()) {
-                if (documentChange.getType() == DocumentChange.Type.ADDED) {
-                    Chats chatMessage = new Chats();
-                    chatMessage.sender = documentChange.getDocument().getString("senderId");
-                    chatMessage.receiver = documentChange.getDocument().getString("receiverId");
-                    chatMessage.message = documentChange.getDocument().getString("message");
-                    chatMessage.dateTime = getReadableDateTime(documentChange.getDocument().getDate("timestamp"));
-                    chatMessage.dateObject = documentChange.getDocument().getDate("timestamp");
-                    chatMessages.add(chatMessage);
-                }
+    public boolean foreGroundServiceRunning() {
+        ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : activityManager.getRunningServices(Integer.MAX_VALUE)) {
+            if (ForegroundService.class.getName().equals(service.service.getClassName())) {
+                return true;
             }
-            Collections.sort(chatMessages, (obj1, obj2) -> obj1.dateObject.compareTo(obj2.dateObject));
-            if (count == 0) {
-                chatsAdapter.notifyDataSetChanged();
-            } else {
-                chatsAdapter.notifyItemRangeInserted(chatMessages.size(), chatMessages.size());
-                binding.chatRecycler.smoothScrollToPosition(chatMessages.size() - 1);
-            }
-            binding.chatRecycler.setVisibility(View.VISIBLE);
         }
-    };
-
-    private String getReadableDateTime(Date date) {
-        return new SimpleDateFormat("MMMM dd, yyyy - hh:mm a", Locale.getDefault()).format(date);
-    }
-
-    private void updateCurrentLocation(double latitude, double longitude) {
-        Map<String, Object> infoUpdate = new HashMap<>();
-        infoUpdate.put("latitude", latitude);
-        infoUpdate.put("longitude", longitude);
-        fStore.collection("Users")
-                .document(userId)
-                .update(infoUpdate);
-    }
-
-    private void getAssistance() {
-        fStore.collection("Users")
-                .addSnapshotListener((value, error) ->
-                        fStore.collection("Users")
-                                .whereEqualTo("isOperator", "1")
-                                .whereEqualTo("status", "online")
-                                .get()
-                                .addOnCompleteListener(task -> {
-                                    for (QueryDocumentSnapshot document : task.getResult()) {
-                                        tLatitude = document.getDouble("latitude");
-                                        tLongitude = document.getDouble("longitude");
-                                        float[] distance = new float[2];
-
-                                        Location.distanceBetween(tLatitude, tLongitude, circleOptions.getCenter().latitude, circleOptions.getCenter().longitude, distance);
-                                        // Check if operator's location is within the circle
-                                        if (distance[0] > circleOptions.getRadius()) {
-                                            // Outside the radius
-                                            Toast.makeText(RiderActivity.this, "No assistance currently available in the area.", Toast.LENGTH_SHORT).show();
-                                            binding.cancelBtn.setVisibility(View.GONE);
-                                            binding.searchText.setVisibility(View.GONE);
-                                            binding.requestBtn.setVisibility(View.VISIBLE);
-                                        } else if (distance[0] < circleOptions.getRadius()) {
-                                            // Inside the radius
-                                            operatorId = null;
-                                            operatorId = document.getString("userId");
-                                            operatorVehicle = document.getString("currentVehicle");
-                                            // Add operator's marker
-                                            fStore.collection("Users")
-                                                    .document(operatorId)
-                                                    .addSnapshotListener((value1, error1) -> {
-                                                        mMap.clear();
-                                                        double tCurrentLatitude = value1.getDouble("latitude");
-                                                        double tCurrentLongitude = value1.getDouble("longitude");
-                                                        operatorLocation = new LatLng(tCurrentLatitude, tCurrentLongitude);
-                                                    });
-                                        }
-                                    }
-                                }));
-        createProcess(operatorId, operatorVehicle);
-    }
-
-    private void createProcess(String operatorId, String operatorVehicle) {
-        if (operatorId != null) {
-
-            fStore.collection("Users")
-                    .document(userId)
-                    .get()
-                    .addOnSuccessListener(documentSnapshot -> {
-                        riderVehicle = documentSnapshot.getString("currentVehicle");
-                        Map<String, Object> process = new HashMap<>();
-                        process.put("riderId", userId);
-                        process.put("riderVehicle", riderVehicle);
-                        process.put("operatorId", operatorId);
-                        process.put("operatorVehicle", operatorVehicle);
-                        process.put("processStatus", "requesting");
-                        process.put("timestamp", new Date());
-                        // Add process document in database
-                        fStore.collection("Processes")
-                                .add(process)
-                                .addOnSuccessListener(documentReference -> {
-                                    processId = documentReference.getId();
-                                    Map<String, Object> updateProcessId = new HashMap<>();
-                                    updateProcessId.put("processId", processId);
-                                    fStore.collection("Processes")
-                                            .document(processId)
-                                            .update(updateProcessId);
-                                });
-                    });
-        }
-
-        fStore.collection("Processes")
-                .whereEqualTo("riderId", userId)
-                .whereEqualTo("operatorId", operatorId)
-                .whereEqualTo("processStatus", "requesting")
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        for (QueryDocumentSnapshot dc : task.getResult()) {
-                            String processId = dc.getId();
-
-                        }
-                    }
-                });
-    }
-
-    private void loadCompletion() {
-        binding.completionContainer.setVisibility(View.VISIBLE);
-        fStore.collection("Users")
-                .document(operatorId)
-                .get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    binding.operatorNameComplete.setText(documentSnapshot.getString("name"));
-                    byte[] bytes = Base64.decode(documentSnapshot.getString("pfp"), Base64.DEFAULT);
-                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                    binding.operatorPfpComplete.setImageBitmap(bitmap);
-                });
-    }
-
-    private void displayoperatorInfo(String operatorId) {
-        binding.cancelBtn.setVisibility(View.GONE);
-        binding.searchText.setVisibility(View.GONE);
-        binding.operatorContainer.setVisibility(View.VISIBLE);
-
-        // Display operator's info
-        fStore.collection("Users")
-                .document(operatorId)
-                .get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    binding.operatorName.setText(documentSnapshot.getString("name"));
-                    binding.operatorType.setText(documentSnapshot.getString("companyName"));
-                    byte[] bytes = Base64.decode(documentSnapshot.getString("pfp"), Base64.DEFAULT);
-                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                    binding.operatorBarPfp.setImageBitmap(bitmap);
-                    binding.operatorPfp.setImageBitmap(bitmap);
-
-                    tCurrentVehicle = documentSnapshot.getString("currentVehicle");
-                    // Get operator's current vehicle info
-                    fStore.collection("Vehicles")
-                            .document(tCurrentVehicle)
-                            .get()
-                            .addOnSuccessListener(documentSnapshot1 -> {
-                                binding.operatorVehicle.setText(documentSnapshot1.getString("brand") + " " + documentSnapshot1.getString("model") + " (" + documentSnapshot1.getString("color") + ")");
-                                binding.operatorPlate.setText(documentSnapshot1.getString("plateNumber"));
-                            });
-                });
-    }
-
-    private void updatePayment() {
-        AlertDialog.Builder alert = new AlertDialog.Builder(this);
-        alert.setTitle("Cash or QR");
-        alert.setMessage("Cash/QR payment is successful?");
-        alert.setPositiveButton("YES", (dialogInterface, i) -> {
-            HashMap<String, Object> updateStatus = new HashMap<>();
-            updateStatus.put("processStatus", "paid");
-            fStore.collection("Processes")
-                    .document(processId)
-                    .update(updateStatus)
-                    .addOnSuccessListener(unused -> {
-                        Toast.makeText(this, "Payment success", Toast.LENGTH_SHORT).show();
-                        binding.selectPayMethod.setVisibility(View.GONE);
-                        binding.paymentBtn.setVisibility(View.GONE);
-                        binding.waiting.setVisibility(View.VISIBLE);
-                    });
-        }).setNegativeButton("No", (dialogInterface, i) -> {
-            binding.donePayment.setVisibility(View.GONE);
-        });
-        alert.create().show();
-    }
-
-    private void onPaymentSheetResult(final PaymentSheetResult paymentSheetResult) {
-        if (paymentSheetResult instanceof PaymentSheetResult.Canceled) {
-            Toast.makeText(this, "Payment has been canceled", Toast.LENGTH_SHORT).show();
-        }
-        if (paymentSheetResult instanceof PaymentSheetResult.Failed) {
-            Toast.makeText(this, (((PaymentSheetResult.Failed) paymentSheetResult).getError().getMessage()), Toast.LENGTH_SHORT).show();
-        }
-        if (paymentSheetResult instanceof PaymentSheetResult.Completed) {
-            HashMap<String, Object> updateStatus = new HashMap<>();
-            updateStatus.put("processStatus", "paid");
-            fStore.collection("Processes")
-                    .document(processId)
-                    .update(updateStatus)
-                    .addOnSuccessListener(unused -> {
-                        Toast.makeText(this, "Payment success", Toast.LENGTH_SHORT).show();
-                        binding.selectPayMethod.setVisibility(View.GONE);
-                        binding.paymentBtn.setVisibility(View.GONE);
-                        binding.waiting.setVisibility(View.VISIBLE);
-                    });
-        }
-    }
-
-    private void setUpRecyclerView() {
-        binding.vehicleRecycler.setHasFixedSize(true);
-        binding.vehicleRecycler.setLayoutManager(new LinearLayoutManager(this));
-        vehicleArrayList = new ArrayList<Vehicle>();
-        vehicleAdapter = new VehicleAdapter(vehicleArrayList, this);
-        binding.vehicleRecycler.setAdapter(vehicleAdapter);
-    }
-
-    private void eventChangeListener() {
-        fStore.collection("Vehicles").whereEqualTo("ownerId", userId)
-                .addSnapshotListener((value, error) -> {
-                    if (value.isEmpty()) {
-                        binding.noVehicleText.setVisibility(View.VISIBLE);
-                        binding.noVehicleBtn.setVisibility(View.VISIBLE);
-                    }
-                    if (error != null) {
-                        return;
-                    }
-                    for (DocumentChange dc : value.getDocumentChanges()) {
-                        if (dc.getType() == DocumentChange.Type.ADDED) {
-                            vehicleArrayList.add(dc.getDocument().toObject(Vehicle.class));
-                        }
-                    }
-                    vehicleAdapter.notifyDataSetChanged();
-                });
-    }
-
-    @Override
-    public void onVehicleClicked(Vehicle vehicle) {
-        binding.confirmBtn.setOnClickListener(view -> {
-            binding.selectVehicle.setVisibility(View.GONE);
-            binding.cancelBtn.setVisibility(View.VISIBLE);
-            binding.searchText.setVisibility(View.VISIBLE);
-            // Update current vehicle
-            HashMap<String, Object> updateVehicle = new HashMap<>();
-            updateVehicle.put("currentVehicle", vehicle.vehicleId);
-            fStore.collection("Users")
-                    .document(userId)
-                    .update(updateVehicle);
-            // Find operator
-            getAssistance();
-        });
+        return false;
     }
 }

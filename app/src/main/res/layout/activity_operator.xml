@@ -17,6 +17,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- Buttons & Texts -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/offlineBtn"
         android:layout_width="264dp"
@@ -25,7 +26,7 @@
         android:layout_marginBottom="103dp"
         android:backgroundTint="@color/grey_btn"
         android:padding="8dp"
-        android:text="OFFLINE"
+        android:text="Offline"
         android:textColor="@color/white"
         android:textSize="18sp"
         app:cornerRadius="40dp"
@@ -46,7 +47,7 @@
         android:layout_marginBottom="103dp"
         android:backgroundTint="@color/green_btn"
         android:padding="8dp"
-        android:text="ONLINE"
+        android:text="Online"
         android:textColor="@color/white"
         android:textSize="18sp"
         android:visibility="gone"
@@ -57,7 +58,7 @@
         tools:ignore="HardcodedText" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/pickup_btn"
+        android:id="@+id/pickupBtn"
         android:layout_width="264dp"
         android:layout_height="wrap_content"
         android:layout_above="@+id/navbar"
@@ -67,7 +68,7 @@
         android:layout_marginBottom="10dp"
         android:backgroundTint="@color/purple_200"
         android:padding="8dp"
-        android:text="PICK-UP"
+        android:text="PICK UP"
         android:textColor="@color/white"
         android:textSize="18sp"
         android:translationZ="1dp"
@@ -79,7 +80,7 @@
         tools:ignore="HardcodedText" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/complete_btn"
+        android:id="@+id/completeBtn"
         android:layout_width="264dp"
         android:layout_height="wrap_content"
         android:layout_above="@+id/navbar"
@@ -115,7 +116,22 @@
         app:layout_constraintStart_toStartOf="parent"
         tools:ignore="HardcodedText" />
 
-    <!--Welcome Bar-->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/chatBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="250dp"
+        android:backgroundTint="@color/white"
+        android:src="@drawable/chat"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:ignore="ContentDescription,RtlHardcoded" />
+    <!-- Buttons Texts-->
+
+    <!-- Bars -->
+    <!-- Welcome Bar -->
     <RelativeLayout
         android:id="@+id/welcomeBar"
         android:layout_width="313dp"
@@ -155,152 +171,7 @@
             android:translationZ="90dp"
             tools:ignore="RtlHardcoded" />
     </RelativeLayout>
-
-    <!-- Assistance Needed Container -->
-    <RelativeLayout
-        android:id="@+id/riderContainer"
-        android:layout_width="291dp"
-        android:layout_height="397dp"
-        android:layout_alignParentTop="true"
-        android:layout_centerInParent="true"
-        android:layout_marginTop="156dp"
-        android:layout_marginBottom="114dp"
-        android:background="@drawable/welcome_bar"
-        android:elevation="50dp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/navbar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <TextView
-            android:id="@+id/textStatus"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="20dp"
-            android:text="Assistance Needed!"
-            android:textAlignment="center"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            tools:ignore="HardcodedText" />
-
-        <com.makeramen.roundedimageview.RoundedImageView
-            android:id="@+id/riderPfp"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="60dp"
-            android:background="@drawable/default_pfp"
-            android:scaleType="centerCrop"
-            app:riv_oval="true" />
-
-        <TextView
-            android:id="@+id/riderName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="178dp"
-            android:text="Name"
-            android:textAlignment="center"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            tools:ignore="HardcodedText" />
-
-        <TextView
-            android:id="@+id/riderVehicle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="220dp"
-            android:text="Type"
-            android:textAlignment="center"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            tools:ignore="HardcodedText" />
-
-        <TextView
-            android:id="@+id/riderPlate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="262dp"
-            android:text="Vehicle"
-            android:textAlignment="center"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            tools:ignore="HardcodedText" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/acceptBtn"
-            android:layout_width="264dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginStart="5dp"
-            android:layout_marginTop="290dp"
-            android:layout_marginEnd="5dp"
-            android:backgroundTint="@color/purple_200"
-            android:padding="8dp"
-            android:text="ACCEPT"
-            android:textColor="@color/white"
-            android:textSize="18sp"
-            app:cornerRadius="40dp"
-            tools:ignore="HardcodedText" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/rejectBtn"
-            android:layout_width="264dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginStart="5dp"
-            android:layout_marginTop="341dp"
-            android:layout_marginEnd="5dp"
-            android:backgroundTint="@color/red"
-            android:padding="8dp"
-            android:text="REJECT"
-            android:textColor="@color/white"
-            android:textSize="18sp"
-            app:cornerRadius="40dp"
-            tools:ignore="HardcodedText" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/okBtn"
-            android:layout_width="264dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginStart="5dp"
-            android:layout_marginTop="320dp"
-            android:layout_marginEnd="5dp"
-            android:backgroundTint="@color/purple_200"
-            android:padding="8dp"
-            android:text="OK"
-            android:textColor="@color/white"
-            android:textSize="18sp"
-            android:visibility="gone"
-            app:cornerRadius="40dp"
-            tools:ignore="HardcodedText" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/doneBtn"
-            android:layout_width="264dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginStart="5dp"
-            android:layout_marginTop="320dp"
-            android:layout_marginEnd="5dp"
-            android:backgroundTint="@color/purple_200"
-            android:padding="8dp"
-            android:text="OK"
-            android:textColor="@color/white"
-            android:textSize="18sp"
-            android:visibility="gone"
-            app:cornerRadius="40dp"
-            tools:ignore="HardcodedText" />
-    </RelativeLayout>
+    <!-- Welcome Bar -->
 
     <!-- Rider Bar -->
     <RelativeLayout
@@ -309,7 +180,7 @@
         android:layout_height="62dp"
         android:layout_alignParentTop="true"
         android:layout_centerInParent="true"
-        android:layout_marginTop="520dp"
+        android:layout_marginTop="550dp"
         android:background="@drawable/welcome_bar"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/navbar"
@@ -359,21 +230,240 @@
             android:translationZ="90dp"
             tools:ignore="RtlHardcoded" />
     </RelativeLayout>
+    <!-- Rider Bar -->
+    <!-- Bars -->
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/chatBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="20dp"
-        android:layout_marginBottom="250dp"
-        android:backgroundTint="@color/white"
-        android:src="@drawable/chat"
+    <!-- Containers -->
+    <!-- Assistance Needed Container -->
+    <RelativeLayout
+        android:id="@+id/riderContainer"
+        android:layout_width="291dp"
+        android:layout_height="397dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="156dp"
+        android:layout_marginBottom="114dp"
+        android:background="@drawable/welcome_bar"
+        android:elevation="50dp"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/navbar"
         app:layout_constraintEnd_toEndOf="parent"
-        tools:ignore="ContentDescription,RtlHardcoded" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-    <!-- Chatbox -->
+        <TextView
+            android:id="@+id/textStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="15dp"
+            android:text="Assistance Needed!"
+            android:textAlignment="center"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            tools:ignore="HardcodedText" />
+
+        <com.makeramen.roundedimageview.RoundedImageView
+            android:id="@+id/riderPfp"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="50dp"
+            android:background="@drawable/default_pfp"
+            android:scaleType="centerCrop"
+            app:riv_oval="true" />
+
+        <TextView
+            android:id="@+id/riderName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="170dp"
+            android:text="Name"
+            android:textAlignment="center"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            tools:ignore="HardcodedText" />
+
+        <TextView
+            android:id="@+id/riderVehicle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="210dp"
+            android:text="Type"
+            android:textAlignment="center"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            tools:ignore="HardcodedText" />
+
+        <TextView
+            android:id="@+id/riderPlate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="250dp"
+            android:text="Vehicle"
+            android:textAlignment="center"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            tools:ignore="HardcodedText" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/confirmBtn"
+            android:layout_width="240dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="320dp"
+            android:layout_marginEnd="5dp"
+            android:backgroundTint="@color/purple_200"
+            android:padding="8dp"
+            android:text="Confirm"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            app:cornerRadius="40dp"
+            tools:ignore="HardcodedText" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/okBtn"
+            android:layout_width="240dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="320dp"
+            android:layout_marginEnd="5dp"
+            android:backgroundTint="@color/purple_200"
+            android:padding="8dp"
+            android:text="Ok"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:visibility="gone"
+            app:cornerRadius="40dp"
+            tools:ignore="HardcodedText" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/closeBtn"
+            android:layout_width="240dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="280dp"
+            android:layout_marginEnd="5dp"
+            android:backgroundTint="@color/purple_200"
+            android:padding="8dp"
+            android:text="Close"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:visibility="gone"
+            app:cornerRadius="40dp"
+            tools:ignore="HardcodedText" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/cancelBtn"
+            android:layout_width="240dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="330dp"
+            android:layout_marginEnd="5dp"
+            android:backgroundTint="@color/red"
+            android:padding="8dp"
+            android:text="Cancel"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:visibility="gone"
+            app:cornerRadius="40dp"
+            tools:ignore="HardcodedText" />
+    </RelativeLayout>
+    <!-- Assistance Needed Container -->
+
+    <!-- Completion Container -->
+    <RelativeLayout
+        android:id="@+id/completionContainer"
+        android:layout_width="291dp"
+        android:layout_height="397dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="156dp"
+        android:layout_marginBottom="114dp"
+        android:background="@drawable/welcome_bar"
+        android:elevation="50dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/navbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/completionHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:text="Assistance Complete"
+            android:textAlignment="center"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            tools:ignore="HardcodedText" />
+
+        <com.makeramen.roundedimageview.RoundedImageView
+            android:id="@+id/riderCompletePfp"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="60dp"
+            android:background="@drawable/default_pfp"
+            android:scaleType="centerCrop"
+            app:riv_oval="true" />
+
+        <TextView
+            android:id="@+id/riderCompleteName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="200dp"
+            android:text="Name"
+            android:textAlignment="center"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            tools:ignore="HardcodedText" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="260dp"
+            android:text="Thank you for your service!"
+            android:textAlignment="center"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            tools:ignore="HardcodedText" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/doneBtn"
+            android:layout_width="230dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="320dp"
+            android:layout_marginEnd="5dp"
+            android:backgroundTint="@color/purple_200"
+            android:padding="8dp"
+            android:text="Done"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            app:cornerRadius="40dp"
+            tools:ignore="HardcodedText" />
+    </RelativeLayout>
+    <!-- Completion Container -->
+
+    <!-- Chat Box -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/chatLayout"
         android:layout_width="350dp"
@@ -401,10 +491,10 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="30dp"
             android:layout_marginTop="30dp"
+            android:contentDescription="TODO"
             android:src="@drawable/baseline_arrow_back_ios_24"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:contentDescription="TODO"
             tools:ignore="ContentDescription,HardcodedText,RtlHardcoded" />
 
         <TextView
@@ -490,6 +580,8 @@
             app:layout_constraintStart_toStartOf="parent"
             tools:ignore="HardcodedText,RtlHardcoded" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+    <!-- Chat Box -->
+    <!-- Containers -->
 
     <!-- Navbar -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -524,4 +616,5 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="ContentDescription" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+    <!-- Navbar -->
 </androidx.constraintlayout.widget.ConstraintLayout>

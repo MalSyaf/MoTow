@@ -66,7 +66,6 @@ import java.util.Map;
 
 public class OperatorActivity extends FragmentActivity implements OnMapReadyCallback {
 
-
     private ActivityOperatorBinding binding;
 
     // Google Map
@@ -111,8 +110,8 @@ public class OperatorActivity extends FragmentActivity implements OnMapReadyCall
 
         supportMapFragment();
         loadUserDetails();
-        createNotificationChannel();
         setListeners();
+        createNotificationChannel();
     }
 
     public boolean foreGroundServiceRunning() {
@@ -268,10 +267,10 @@ public class OperatorActivity extends FragmentActivity implements OnMapReadyCall
             changeStatusToOffline();
         });
         binding.doneBtn.setOnClickListener(view -> {
-            binding.doneBtn.setVisibility(View.GONE);
+            binding.cancelBtn.setVisibility(View.GONE);
+            binding.closeBtn.setVisibility(View.GONE);
             binding.onlineBtn.setVisibility(View.VISIBLE);
-            binding.acceptBtn.setVisibility(View.VISIBLE);
-            binding.rejectBtn.setVisibility(View.VISIBLE);
+            binding.confirmBtn.setVisibility(View.VISIBLE);
             binding.riderContainer.setVisibility(View.GONE);
             binding.textStatus.setText("Assistance Needed!");
         });
@@ -280,12 +279,22 @@ public class OperatorActivity extends FragmentActivity implements OnMapReadyCall
             binding.riderContainer.setVisibility(View.GONE);
             binding.riderBar.setVisibility(View.VISIBLE);
         });
+        binding.closeBtn.setOnClickListener(v -> {
+            binding.riderContainer.setVisibility(View.GONE);
+            binding.closeBtn.setVisibility(View.GONE);
+            binding.cancelBtn.setVisibility(View.GONE);
+            binding.riderBar.setVisibility(View.VISIBLE);
+        });
+        binding.cancelBtn.setOnClickListener(v -> {
+            cancelAssistance();
+        });
         binding.riderBar.setOnClickListener(view -> {
             binding.riderContainer.setVisibility(View.VISIBLE);
             binding.riderBar.setVisibility(View.GONE);
-            binding.okBtn.setVisibility(View.VISIBLE);
-            binding.acceptBtn.setVisibility(View.GONE);
-            binding.rejectBtn.setVisibility(View.GONE);
+            binding.closeBtn.setVisibility(View.VISIBLE);
+            binding.cancelBtn.setVisibility(View.VISIBLE);
+            binding.okBtn.setVisibility(View.GONE);
+            binding.confirmBtn.setVisibility(View.GONE);
             fStore.collection("Users")
                     .document(riderId)
                     .get()
@@ -297,6 +306,34 @@ public class OperatorActivity extends FragmentActivity implements OnMapReadyCall
         });
     }
 
+    private void cancelAssistance() {
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle("Cancel Assistance?");
+        alert.setMessage("Are you sure? (Note: Please inform the rider before cancelling)");
+        alert.setPositiveButton("YES", (dialogInterface, i) -> {
+            HashMap<String, Object> status = new HashMap<>();
+            status.put("processStatus", "Canceled");
+            fStore.collection("Processes")
+                    .document(currentProcessId)
+                    .update(status);
+            // Interface update
+            binding.onlineBtn.setVisibility(View.VISIBLE);
+            binding.confirmBtn.setVisibility(View.VISIBLE);
+            binding.riderContainer.setVisibility(View.GONE);
+            binding.riderBar.setVisibility(View.GONE);
+            binding.waitingText.setVisibility(View.GONE);
+            binding.pickupBtn.setVisibility(View.GONE);
+            binding.closeBtn.setVisibility(View.GONE);
+            binding.cancelBtn.setVisibility(View.GONE);
+            binding.completeBtn.setVisibility(View.GONE);
+            binding.chatBtn.setVisibility(View.GONE);
+            changeStatusToOnline();
+        }).setNegativeButton("NO", (dialogInterface, i) -> {
+
+        });
+        alert.create().show();
+    }
+
     private void updateCurrentLocation(double latitude, double longitude) {
         Map<String, Object> infoUpdate = new HashMap<>();
         infoUpdate.put("latitude", latitude);
@@ -304,18 +341,7 @@ public class OperatorActivity extends FragmentActivity implements OnMapReadyCall
 
         fStore.collection("Users")
                 .document(userId)
-                .update(infoUpdate)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void unused) {
-                        //
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        //
-                    }
-                });
+                .update(infoUpdate);
     }
 
     private void loadReceiverName() {
@@ -350,28 +376,11 @@ public class OperatorActivity extends FragmentActivity implements OnMapReadyCall
                         for (QueryDocumentSnapshot documentSnapshot : value) {
                             riderId = null;
                             riderId = documentSnapshot.getString("riderId");
-
-                            fStore.collection("Processes")
-                                    .whereEqualTo("riderId", riderId)
-                                    .whereEqualTo("operatorId", userId)
-                                    .whereEqualTo("processStatus", "paid")
-                                    .whereEqualTo("processId", currentProcessId)
-                                    .get()
-                                    .addOnCompleteListener(task -> {
-                                        if (task.isSuccessful()) {
-                                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                                binding.completeBtn.setVisibility(View.VISIBLE);
-                                                binding.waitingText.setVisibility(View.GONE);
-                                                notificationPaid();
-                                            }
-                                        }
-                                    });
-
                             // Find request
                             fStore.collection("Processes")
                                     .whereEqualTo("operatorId", userId)
                                     .whereEqualTo("riderId", riderId)
-                                    .whereEqualTo("processStatus", "requesting")
+                                    .whereEqualTo("processStatus", "Requesting")
                                     .get()
                                     .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                         @Override
@@ -405,14 +414,14 @@ public class OperatorActivity extends FragmentActivity implements OnMapReadyCall
                                                                         });
                                                             });
 
-                                                    binding.acceptBtn.setOnClickListener(v -> {
+                                                    binding.confirmBtn.setOnClickListener(v -> {
                                                         binding.riderContainer.setVisibility(View.GONE);
                                                         binding.riderBar.setVisibility(View.VISIBLE);
                                                         binding.pickupBtn.setVisibility(View.VISIBLE);
                                                         binding.okBtn.setVisibility(View.VISIBLE);
-                                                        binding.acceptBtn.setVisibility(View.GONE);
-                                                        binding.rejectBtn.setVisibility(View.GONE);
+                                                        binding.confirmBtn.setVisibility(View.GONE);
                                                         binding.chatBtn.setVisibility(View.VISIBLE);
+                                                        binding.onlineBtn.setVisibility(View.GONE);
 
                                                         fStore.collection("Users")
                                                                 .document(riderId)
@@ -430,7 +439,7 @@ public class OperatorActivity extends FragmentActivity implements OnMapReadyCall
                                                                 .update(userStatus);
 
                                                         HashMap<String, Object> updateStatus = new HashMap<>();
-                                                        updateStatus.put("processStatus", "ongoing");
+                                                        updateStatus.put("processStatus", "Ongoing");
                                                         fStore.collection("Processes")
                                                                 .document(currentProcessId)
                                                                 .update(updateStatus)
@@ -463,30 +472,11 @@ public class OperatorActivity extends FragmentActivity implements OnMapReadyCall
                                                                 });
                                                     });
 
-                                                    binding.rejectBtn.setOnClickListener(v -> {
-                                                        binding.riderContainer.setVisibility(View.GONE);
-                                                        binding.offlineBtn.setVisibility(View.VISIBLE);
-
-                                                        HashMap<String, Object> updateStatus = new HashMap<>();
-                                                        updateStatus.put("processStatus", "rejected");
-                                                        fStore.collection("Processes")
-                                                                .document(currentProcessId)
-                                                                .update(updateStatus)
-                                                                .addOnSuccessListener(unused ->
-                                                                        Toast.makeText(OperatorActivity.this, "Request has been rejected", Toast.LENGTH_SHORT).show());
-
-                                                        HashMap<String, Object> userStatus = new HashMap<>();
-                                                        userStatus.put("status", "offline");
-                                                        fStore.collection("Users")
-                                                                .document(userId)
-                                                                .update(userStatus);
-                                                    });
-
                                                     binding.pickupBtn.setOnClickListener(v -> {
                                                         binding.pickupBtn.setVisibility(View.GONE);
 
                                                         HashMap<String, Object> updateStatus = new HashMap<>();
-                                                        updateStatus.put("processStatus", "towed");
+                                                        updateStatus.put("processStatus", "Towed");
                                                         fStore.collection("Processes")
                                                                 .document(currentProcessId)
                                                                 .update(updateStatus)
@@ -496,14 +486,20 @@ public class OperatorActivity extends FragmentActivity implements OnMapReadyCall
                                                                 });
                                                     });
 
+                                                    binding.doneBtn.setOnClickListener(v -> {
+                                                        binding.completionContainer.setVisibility(View.GONE);
+                                                        binding.onlineBtn.setVisibility(View.VISIBLE);
+                                                        binding.confirmBtn.setVisibility(View.VISIBLE);
+                                                    });
+
                                                     binding.completeBtn.setOnClickListener(v -> {
                                                         binding.riderBar.setVisibility(View.GONE);
                                                         binding.completeBtn.setVisibility(View.GONE);
-                                                        binding.textStatus.setText("Thank you for the assistance");
                                                         binding.okBtn.setVisibility(View.GONE);
-                                                        binding.riderContainer.setVisibility(View.VISIBLE);
-                                                        binding.doneBtn.setVisibility(View.VISIBLE);
                                                         binding.chatBtn.setVisibility(View.GONE);
+                                                        binding.completionContainer.setVisibility(View.VISIBLE);
+
+                                                        loadCompletionDetails();
 
                                                         riderId = null;
                                                         mMap.clear();
@@ -515,7 +511,7 @@ public class OperatorActivity extends FragmentActivity implements OnMapReadyCall
                                                                 .update(userStatus);
 
                                                         HashMap<String, Object> updateStatus = new HashMap<>();
-                                                        updateStatus.put("processStatus", "completed");
+                                                        updateStatus.put("processStatus", "Completed");
                                                         fStore.collection("Processes")
                                                                 .document(currentProcessId)
                                                                 .update(updateStatus)
@@ -526,8 +522,36 @@ public class OperatorActivity extends FragmentActivity implements OnMapReadyCall
                                             }
                                         }
                                     });
+
+                            fStore.collection("Processes")
+                                    .whereEqualTo("riderId", riderId)
+                                    .whereEqualTo("operatorId", userId)
+                                    .whereEqualTo("processStatus", "Paid")
+                                    .whereEqualTo("processId", currentProcessId)
+                                    .get()
+                                    .addOnCompleteListener(task -> {
+                                        if (task.isSuccessful()) {
+                                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                                binding.completeBtn.setVisibility(View.VISIBLE);
+                                                binding.waitingText.setVisibility(View.GONE);
+                                                notificationPaid();
+                                            }
+                                        }
+                                    });
                         }
                     }
+                });
+    }
+
+    private void loadCompletionDetails() {
+        fStore.collection("Users")
+                .document(riderId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    binding.riderCompleteName.setText(documentSnapshot.getString("name"));
+                    byte[] bytes = Base64.decode(documentSnapshot.getString("pfp"), Base64.DEFAULT);
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                    binding.riderCompletePfp.setImageBitmap(bitmap);
                 });
     }
 

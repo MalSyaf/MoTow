@@ -17,9 +17,9 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Start of Buttons -->
+    <!-- Buttons & Texts -->
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/request_btn"
+        android:id="@+id/requestBtn"
         android:layout_width="264dp"
         android:layout_height="wrap_content"
         android:layout_above="@+id/navbar"
@@ -39,7 +39,7 @@
         tools:ignore="HardcodedText,TextSizeCheck" />
 
     <TextView
-        android:id="@+id/search_text"
+        android:id="@+id/searchText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Searching for assistance"
@@ -49,13 +49,13 @@
         android:textStyle="bold"
         android:translationZ="90dp"
         android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/cancel_btn"
+        app:layout_constraintBottom_toTopOf="@+id/cancelBtn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         tools:ignore="HardcodedText" />
 
     <TextView
-        android:id="@+id/waiting"
+        android:id="@+id/waitingText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
@@ -72,7 +72,7 @@
         tools:ignore="HardcodedText" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/cancel_btn"
+        android:id="@+id/cancelBtn"
         android:layout_width="264dp"
         android:layout_height="wrap_content"
         android:layout_above="@+id/navbar"
@@ -94,7 +94,7 @@
         tools:ignore="HardcodedText" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/payment_btn"
+        android:id="@+id/paymentBtn"
         android:layout_width="264dp"
         android:layout_height="wrap_content"
         android:layout_above="@+id/navbar"
@@ -115,7 +115,7 @@
         tools:ignore="HardcodedText" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/chatButton"
+        android:id="@+id/chatBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginRight="20dp"
@@ -126,7 +126,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         tools:ignore="ContentDescription,RtlHardcoded" />
-    <!-- End of Buttons -->
+    <!-- Buttons & Texts -->
 
     <!-- Start of Bars -->
     <!-- Welcome Bar -->
@@ -170,7 +170,7 @@
     </RelativeLayout>
     <!-- Welcome Bar -->
 
-    <!-- operator Bar -->
+    <!-- Operator Bar -->
     <RelativeLayout
         android:id="@+id/operator_bar"
         android:layout_width="291dp"
@@ -213,7 +213,7 @@
             android:translationZ="90dp"
             tools:ignore="RtlHardcoded" />
     </RelativeLayout>
-    <!-- operator Bar -->
+    <!-- Operator Bar -->
     <!-- End of Bars -->
 
     <!-- Starting of Containers-->
@@ -289,7 +289,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/confirmBtn"
-            android:layout_width="264dp"
+            android:layout_width="240dp"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/purple_200"
             android:padding="8dp"
@@ -320,7 +320,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/noVehicleBtn"
-            android:layout_width="264dp"
+            android:layout_width="240dp"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/purple_200"
             android:padding="8dp"
@@ -337,7 +337,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
     <!-- Select Vehicle Container -->
 
-    <!-- operator Container -->
+    <!-- Operator Container -->
     <RelativeLayout
         android:id="@+id/operator_container"
         android:layout_width="291dp"
@@ -392,7 +392,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="220dp"
+            android:layout_marginTop="215dp"
             android:text="Type"
             android:textAlignment="center"
             android:textSize="16sp"
@@ -404,7 +404,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="262dp"
+            android:layout_marginTop="250dp"
             android:text="Vehicle"
             android:textAlignment="center"
             android:textSize="16sp"
@@ -416,7 +416,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="303dp"
+            android:layout_marginTop="285dp"
             android:text="Plate"
             android:textAlignment="center"
             android:textSize="16sp"
@@ -425,12 +425,12 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/ok_btn"
-            android:layout_width="264dp"
+            android:layout_width="240dp"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
             android:layout_marginStart="5dp"
-            android:layout_marginTop="341dp"
+            android:layout_marginTop="325dp"
             android:layout_marginEnd="5dp"
             android:backgroundTint="@color/purple_200"
             android:padding="8dp"
@@ -440,7 +440,7 @@
             app:cornerRadius="40dp"
             tools:ignore="HardcodedText" />
     </RelativeLayout>
-    <!-- operator Container -->
+    <!-- Operator Container -->
 
     <!-- Payment Method Containers -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -557,7 +557,7 @@
         <!-- Done Payment Button -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/donePayment"
-            android:layout_width="264dp"
+            android:layout_width="240dp"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/purple_200"
             android:padding="8dp"
@@ -597,7 +597,7 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="20dp"
-            android:text="Assistance Completed!"
+            android:text="Assistance Completed"
             android:textAlignment="center"
             android:textSize="16sp"
             android:textStyle="bold"
@@ -608,7 +608,7 @@
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="60dp"
+            android:layout_marginTop="70dp"
             android:background="@drawable/default_pfp"
             android:scaleType="centerCrop"
             app:riv_oval="true" />
@@ -618,7 +618,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="178dp"
+            android:layout_marginTop="190dp"
             android:text="Name"
             android:textAlignment="center"
             android:textSize="16sp"
@@ -630,8 +630,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="230dp"
-            android:text="Thank you for using MoTow"
+            android:layout_marginTop="250dp"
+            android:text="Thank you for using MoTow!"
             android:textAlignment="center"
             android:textSize="16sp"
             android:textStyle="bold"
@@ -642,12 +642,92 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="270dp"
-            android:src="@drawable/baseline_check_circle_24"
             tools:ignore="ContentDescription" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/okCompleteBtn"
-            android:layout_width="264dp"
+            android:layout_width="240dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="320dp"
+            android:layout_marginEnd="5dp"
+            android:backgroundTint="@color/purple_200"
+            android:padding="8dp"
+            android:text="OK"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            app:cornerRadius="40dp"
+            tools:ignore="HardcodedText" />
+    </RelativeLayout>
+    <!-- Completion Container -->
+
+    <!-- Cancelation Container -->
+    <RelativeLayout
+        android:id="@+id/cancelationContainer"
+        android:layout_width="291dp"
+        android:layout_height="397dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="156dp"
+        android:layout_marginBottom="114dp"
+        android:background="@drawable/welcome_bar"
+        android:elevation="50dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/navbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:text="Assistance Canceled"
+            android:textAlignment="center"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            tools:ignore="HardcodedText" />
+
+        <com.makeramen.roundedimageview.RoundedImageView
+            android:id="@+id/operatorPfpCancel"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="70dp"
+            android:background="@drawable/default_pfp"
+            android:scaleType="centerCrop"
+            app:riv_oval="true" />
+
+        <TextView
+            android:id="@+id/operatorNameCancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="210dp"
+            android:text="Name"
+            android:textAlignment="center"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            tools:ignore="HardcodedText" />
+
+        <TextView
+            android:id="@+id/operatorCancelText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="270dp"
+            android:text="Sorry for the inconvenience!"
+            android:textAlignment="center"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            tools:ignore="HardcodedText" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/okCancelBtn"
+            android:layout_width="230dp"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
@@ -662,7 +742,7 @@
             app:cornerRadius="40dp"
             tools:ignore="HardcodedText" />
     </RelativeLayout>
-    <!-- Completion Container -->
+    <!-- Cancelation Container -->
     <!-- End of Containers-->
 
     <!-- Chatbox -->
