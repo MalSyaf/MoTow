@@ -370,6 +370,7 @@ public class OperatorActivity extends FragmentActivity implements OnMapReadyCall
 
     private void getAssistance(String userId) {
         fStore.collection("Processes")
+                .whereEqualTo("operatorId", userId)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
