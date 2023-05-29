@@ -174,9 +174,11 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                 .document(userId)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
-                    LatLng firstCamera = new LatLng(documentSnapshot.getDouble("latitude"), documentSnapshot.getDouble("longitude"));
-                    CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(firstCamera, 15);
-                    mMap.moveCamera(cameraUpdate);
+                    if(!documentSnapshot.getDouble("latitude").equals(null)) {
+                        LatLng firstCamera = new LatLng(documentSnapshot.getDouble("latitude"), documentSnapshot.getDouble("longitude"));
+                        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(firstCamera, 15);
+                        mMap.moveCamera(cameraUpdate);
+                    }
                 });
     }
 
@@ -663,6 +665,11 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                             if (distance[0] > circleOptions.getRadius()) {
                                 // Outside the radius
                                 Toast.makeText(RiderActivity.this, "No assistance currently available", Toast.LENGTH_SHORT).show();
+                                HashMap<String, Object> updateStatus = new HashMap<>();
+                                updateStatus.put("processStatus", "No operator in area");
+                                fStore.collection("Processes")
+                                                .document(currentProcessId)
+                                                        .update(updateStatus);
                                 binding.cancelBtn.setVisibility(View.GONE);
                                 binding.searchText.setVisibility(View.GONE);
                                 binding.requestBtn.setVisibility(View.VISIBLE);

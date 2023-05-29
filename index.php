@@ -20,7 +20,7 @@ $ephemeralKey = $stripe->ephemeralKeys->create([
   'stripe_version' => '2022-08-01',
 ]);
 $paymentIntent = $stripe->paymentIntents->create([
-  'amount' => 1099, // 10.99 myr
+  'amount' => '', // 10.99 myr
   'currency' => 'myr',
   'description' => 'Payment for Android Course',
   'customer' => $customer->id,
