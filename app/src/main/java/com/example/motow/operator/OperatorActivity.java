@@ -368,7 +368,7 @@ public class OperatorActivity extends FragmentActivity implements OnMapReadyCall
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                        for (QueryDocumentSnapshot documentSnapshot : value) {
+                       for (QueryDocumentSnapshot documentSnapshot : value) {
                             riderId = null;
                             riderId = documentSnapshot.getString("riderId");
                             // Find request
@@ -534,7 +534,7 @@ public class OperatorActivity extends FragmentActivity implements OnMapReadyCall
                                         }
                                     });
                         }
-                    }
+                 }
                 });
     }
 
