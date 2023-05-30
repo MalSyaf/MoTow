@@ -124,10 +124,6 @@ public class UserInfoActivity extends AppCompatActivity {
                                 Toast.makeText(UserInfoActivity.this, "Enter contact number", Toast.LENGTH_SHORT).show();
                                 return;
                             }
-                            if (licenseImage == null) {
-                                Toast.makeText(UserInfoActivity.this, "Upload license", Toast.LENGTH_SHORT).show();
-                                return;
-                            }
 
                             binding.backBtn.setVisibility(View.VISIBLE);
                             binding.manageInfoBtn.setVisibility(View.VISIBLE);
@@ -140,6 +136,7 @@ public class UserInfoActivity extends AppCompatActivity {
                             binding.editName.setVisibility(View.GONE);
                             binding.editEmail.setVisibility(View.GONE);
                             binding.editPhone.setVisibility(View.GONE);
+                            binding.licenseLayout.setVisibility(View.GONE);
 
                             Map<String, Object> updateUser = new HashMap<>();
                             updateUser.put("name", nameFilled);
@@ -169,10 +166,6 @@ public class UserInfoActivity extends AppCompatActivity {
                             }
                             if (TextUtils.isEmpty(regNumFilled)) {
                                 Toast.makeText(UserInfoActivity.this, "Enter registration number", Toast.LENGTH_SHORT).show();
-                                return;
-                            }
-                            if (licenseImage == null) {
-                                Toast.makeText(UserInfoActivity.this, "Upload license", Toast.LENGTH_SHORT).show();
                                 return;
                             }
 

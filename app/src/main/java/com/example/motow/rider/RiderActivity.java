@@ -159,13 +159,8 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
         check = true;
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PackageManager.PERMISSION_GRANTED);
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, PackageManager.PERMISSION_GRANTED);
             return;
         }
         mMap.setMyLocationEnabled(true);
@@ -174,11 +169,11 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                 .document(userId)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
-                    if(!documentSnapshot.getDouble("latitude").equals(null)) {
+                    //if(!documentSnapshot.getDouble("latitude").equals(null)) {
                         LatLng firstCamera = new LatLng(documentSnapshot.getDouble("latitude"), documentSnapshot.getDouble("longitude"));
                         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(firstCamera, 15);
                         mMap.moveCamera(cameraUpdate);
-                    }
+                   // }
                 });
     }
 
@@ -381,7 +376,7 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                        for (QueryDocumentSnapshot ignored : value) {
+                       // for (QueryDocumentSnapshot ignored : value) {
                             // Check process ongoing
                             fStore.collection("Processes")
                                     .whereEqualTo("riderId", userId)
@@ -503,7 +498,7 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                                         }
                                     });
                         }
-                    }
+                  //  }
                 });
     }
 
@@ -800,10 +795,6 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                        if (value.isEmpty()) {
-                            binding.noVehicleText.setVisibility(View.VISIBLE);
-                            binding.noVehicleBtn.setVisibility(View.VISIBLE);
-                        }
                         if (error != null) {
                             return;
                         }
@@ -813,6 +804,10 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
                             }
                         }
                         vehicleAdapter.notifyDataSetChanged();
+                        if (value.isEmpty()) {
+                            binding.noVehicleText.setVisibility(View.VISIBLE);
+                            binding.noVehicleBtn.setVisibility(View.VISIBLE);
+                        }
                     }
                 });
     }

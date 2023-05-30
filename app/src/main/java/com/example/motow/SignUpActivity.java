@@ -15,13 +15,19 @@ import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.motow.databinding.ActivitySignUpBinding;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -140,7 +146,7 @@ public class SignUpActivity extends AppCompatActivity {
                     } else {
                         // If sign in fails, display a message to the user.
                         loading(false);
-                        Toast.makeText(SignUpActivity.this, "Authentication failed", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(SignUpActivity.this, "Signup failed", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -217,7 +223,27 @@ public class SignUpActivity extends AppCompatActivity {
             }
     );
 
+    private void checkEmailExists(String email) {
+        fAuth.fetchSignInMethodsForEmail(email)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        boolean emailExists = !task.getResult().getSignInMethods().isEmpty();
+                        if (emailExists) {
+                            Toast.makeText(this, "Email has already been registered", Toast.LENGTH_SHORT).show();
+                        } else {
+                            //
+                        }
+                    } else {
+                        // Error occurred while checking email existence
+                        Exception exception = task.getException();
+                        // Handle the exception
+                    }
+                });
+    }
+
+
     private Boolean isValidSignUpDetails() {
+        checkEmailExists(binding.email.getText().toString());
         if (profileImage == null) {
             showToast("Upload profile image");
             return false;

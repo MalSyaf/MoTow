@@ -90,7 +90,6 @@ public class ManageVehicleActivity extends AppCompatActivity implements VehicleL
     private void eventChangeListener() {
         fStore.collection("Vehicles").whereEqualTo("ownerId", userId)
                 .addSnapshotListener((value, error) -> {
-                    assert value != null;
                     if (value.isEmpty()) {
                         binding.errorMessage.setVisibility(View.VISIBLE);
                     }
