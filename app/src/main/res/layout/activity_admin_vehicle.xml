@@ -59,7 +59,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/vehicleText"
                 app:layout_constraintTop_toTopOf="parent"
-                android:queryHint="Enter Plate No."/>
+                android:queryHint="Plate No."/>
 
             <TextView
                 android:id="@+id/emptyVechicle"

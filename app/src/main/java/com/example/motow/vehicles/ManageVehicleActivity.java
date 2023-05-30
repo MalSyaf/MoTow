@@ -90,9 +90,6 @@ public class ManageVehicleActivity extends AppCompatActivity implements VehicleL
     private void eventChangeListener() {
         fStore.collection("Vehicles").whereEqualTo("ownerId", userId)
                 .addSnapshotListener((value, error) -> {
-                    if (value.isEmpty()) {
-                        binding.errorMessage.setVisibility(View.VISIBLE);
-                    }
                     if (error != null) {
                         return;
                     }
@@ -103,6 +100,9 @@ public class ManageVehicleActivity extends AppCompatActivity implements VehicleL
                         }
                     }
                     vehicleAdapter.notifyDataSetChanged();
+                    if (value.isEmpty()) {
+                        binding.errorMessage.setVisibility(View.VISIBLE);
+                    }
                 });
     }
 

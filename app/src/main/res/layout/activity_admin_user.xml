@@ -73,7 +73,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/usersHeader"
                 app:layout_constraintTop_toTopOf="parent"
-                android:queryHint="Enter User ID"/>
+                android:queryHint="Mykad/Passport"/>
 
             <TextView
                 android:id="@+id/emptyUsersText"

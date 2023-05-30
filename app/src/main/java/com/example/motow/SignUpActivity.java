@@ -1,10 +1,15 @@
 package com.example.motow;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -17,8 +22,11 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import com.example.motow.databinding.ActivitySignUpBinding;
+import com.google.android.gms.maps.model.CircleOptions;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -61,6 +69,7 @@ public class SignUpActivity extends AppCompatActivity {
     private void setListeners() {
         binding.loginRedirectText.setOnClickListener(v -> onBackPressed());
         binding.signupButton.setOnClickListener(v -> {
+            checkEmailExists(binding.email.getText().toString());
             if (isValidSignUpDetails()) {
                 signUp();
             }
@@ -87,6 +96,7 @@ public class SignUpActivity extends AppCompatActivity {
         String email = binding.email.getText().toString();
         String password = binding.password.getText().toString();
 
+
         fAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -104,10 +114,11 @@ public class SignUpActivity extends AppCompatActivity {
                             userInfo.put("contact", binding.contact.getText().toString());
                             userInfo.put("pfp", profileImage);
                             userInfo.put("ic", icImage);
+                            userInfo.put("longitude", 0);
+                            userInfo.put("latitude", 0);
                             userInfo.put("license", licenseImage);
                             userInfo.put("currentVehicle", null);
-                            userInfo.put("longitude", null);
-                            userInfo.put("latitude", null);
+
                             // Account requests
                             userInfo.put("isVerified", null);
                             userInfo.put("isRejected", null);
@@ -127,8 +138,8 @@ public class SignUpActivity extends AppCompatActivity {
                             userInfo.put("ic", icImage);
                             userInfo.put("license", licenseImage);
                             userInfo.put("currentVehicle", null);
-                            userInfo.put("longitude", null);
-                            userInfo.put("latitude", null);
+                            userInfo.put("longitude", 0);
+                            userInfo.put("latitude", 0);
                             userInfo.put("status", "offline");
                             // Account requests
                             userInfo.put("isVerified", null);
@@ -231,7 +242,7 @@ public class SignUpActivity extends AppCompatActivity {
                         if (emailExists) {
                             Toast.makeText(this, "Email has already been registered", Toast.LENGTH_SHORT).show();
                         } else {
-                            //
+                            isValidSignUpDetails();
                         }
                     } else {
                         // Error occurred while checking email existence
@@ -243,7 +254,6 @@ public class SignUpActivity extends AppCompatActivity {
 
 
     private Boolean isValidSignUpDetails() {
-        checkEmailExists(binding.email.getText().toString());
         if (profileImage == null) {
             showToast("Upload profile image");
             return false;
