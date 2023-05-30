@@ -359,6 +359,7 @@ public class RiderActivity extends FragmentActivity implements OnMapReadyCallbac
 
         });
         binding.okCancelBtn.setOnClickListener(view -> {
+            mMap.clear();
             binding.cancelationContainer.setVisibility(View.GONE);
             binding.requestBtn.setVisibility(View.VISIBLE);
             HashMap<String, Object> status = new HashMap<>();
