@@ -1,6 +1,6 @@
 # MoTow (v0.0.0-alpha)
 
-MoTow is an android mobile application that provides roadside assistance services to riders and a platform for tow truck operators to run their business. 
+MoTow is an Android mobile application that provides roadside assistance services to riders and a platform for tow truck operators to run their business. 
 There are a total of three users for this application, which are riders, operators, and admins. 
 The main feature for the rider is the ability to request for assistance efficiently and quickly. 
 For operators, they shall be able to provide assistance for riders.
