@@ -67,7 +67,7 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     private void setListeners() {
-        //binding.loginRedirectText.setOnClickListener(v -> onBackPressed());
+        binding.loginRedirectText.setOnClickListener(v -> onBackPressed());
         binding.signupButton.setOnClickListener(v -> {
             checkEmailExists(binding.email.getText().toString());
             if (isValidSignUpDetails()) {
