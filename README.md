@@ -1,6 +1,6 @@
 # MoTow
 
-DISCLAIMER: This application is developed for my bachelor's degree final year project.
+This application is developed for my bachelor's degree final year project.
 
 MoTow is an Android mobile application that provides roadside assistance services to riders and a platform for tow truck operators to run their business. 
 There are a total of three users for this application, which are riders, operators, and admins. 
